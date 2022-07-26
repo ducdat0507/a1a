@@ -116,11 +116,13 @@ function renderControls(cts, rect) {
 }
 
 function onCanvasPointerDown(e) {
+    if (e.pointerId >= 4) return;
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onpointerdown");
 }
 
 function onCanvasPointerUp(e) {
+    if (e.pointerId >= 4) return;
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onclick");
 }
