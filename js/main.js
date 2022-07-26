@@ -131,6 +131,8 @@ function onCanvasPointerUp(e) {
         delete pointers[e.pointerId];
         let pos = { x: e.clientX, y: e.clientY };
         doPointerEvent(pos, scene.controls, "onclick");
+    } else {
+        pointers = {};
     }
     e.preventDefault();
 }
