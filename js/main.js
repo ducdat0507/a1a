@@ -116,12 +116,15 @@ function renderControls(cts, rect) {
 }
 
 function onCanvasPointerDown(e) {
+    e.preventDefault();
+    scene._base._machine._button._label.text = e.pointerId;
     if (e.pointerId >= 4) return;
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onpointerdown");
 }
 
 function onCanvasPointerUp(e) {
+    e.preventDefault();
     if (e.pointerId >= 4) return;
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onclick");
