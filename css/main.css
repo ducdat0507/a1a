@@ -1,0 +1,11 @@
+body {
+    background: black;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+#mainCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
