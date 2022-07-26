@@ -116,18 +116,20 @@ function renderControls(cts, rect) {
 }
 
 function onCanvasPointerDown(e) {
-    e.preventDefault();
     scene._base._machine._button._label.text = e.pointerId;
-    if (e.pointerId >= 4) return;
-    let pos = { x: e.clientX, y: e.clientY };
-    doPointerEvent(pos, scene.controls, "onpointerdown");
+    if (e.pointerId <= 4 || true) {
+        let pos = { x: e.clientX, y: e.clientY };
+        doPointerEvent(pos, scene.controls, "onpointerdown");
+    }
+    e.preventDefault();
 }
 
 function onCanvasPointerUp(e) {
+    if (e.pointerId <= 4 || true) {
+        let pos = { x: e.clientX, y: e.clientY };
+        doPointerEvent(pos, scene.controls, "onclick");
+    }
     e.preventDefault();
-    if (e.pointerId >= 4) return;
-    let pos = { x: e.clientX, y: e.clientY };
-    doPointerEvent(pos, scene.controls, "onclick");
 }
 
 function doPointerEvent(pos, cts, event) {
