@@ -118,7 +118,7 @@ function renderControls(cts, rect) {
 let pointers = {};
 
 function onCanvasPointerDown(e) {
-    if (Object.keys(pointers).length <= 4 || true) {
+    if (Object.keys(pointers).length <= 4) {
         pointers[e.pointerId] = true;
         let pos = { x: e.clientX, y: e.clientY };
         doPointerEvent(pos, scene.controls, "onpointerdown");
