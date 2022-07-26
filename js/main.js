@@ -118,22 +118,16 @@ function renderControls(cts, rect) {
 let pointers = {};
 
 function onCanvasPointerDown(e) {
-    if (Object.keys(pointers).length <= 4) {
-        pointers[e.pointerId] = true;
-        let pos = { x: e.clientX, y: e.clientY };
-        doPointerEvent(pos, scene.controls, "onpointerdown");
-    }
+    pointers[e.pointerId] = true;
+    let pos = { x: e.clientX, y: e.clientY };
+    doPointerEvent(pos, scene.controls, "onpointerdown");
     e.preventDefault();
 }
 
 function onCanvasPointerUp(e) {
-    if (pointers[e.pointerId] || e.pointerId) {
-        delete pointers[e.pointerId];
-        let pos = { x: e.clientX, y: e.clientY };
-        doPointerEvent(pos, scene.controls, "onclick");
-    } else {
-        pointers = {};
-    }
+    delete pointers[e.pointerId];
+    let pos = { x: e.clientX, y: e.clientY };
+    doPointerEvent(pos, scene.controls, "onclick");
     e.preventDefault();
 }
 
