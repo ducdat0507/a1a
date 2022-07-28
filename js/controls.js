@@ -70,22 +70,43 @@ let controls = {
             ...args
         }
     },
-    text(args) {
+    label(args) {
         return {
             ...controls.base(),
             fill: "white",
             text: "",
-            size: 16,
-            font: "Arial",
+            fontSize: 16,
+            font: "Lexend Exa, Futura, Arial",
 
             render() {
                 ctx.fillStyle = this.fill;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.font = (this.size * scale) + "px " + this.font;
-                ctx.fillText(this.text, this.rect.x, this.rect.y);
+                ctx.font = (this.fontSize * scale) + "px " + this.font;
+                ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
             },
             ...args
         }
     },
+    counter(args) {
+        return {
+            ...controls.base(),
+            fillMain: "white",
+            fillSub: "#0000001f",
+            value: 0,
+            design: {
+                segments: [
+
+                ],
+                digits: {
+                    0: []
+                },
+            },
+            size: 16,
+
+            render() {
+            },
+            ...args
+        }
+    }
 }
