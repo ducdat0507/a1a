@@ -2,8 +2,10 @@ let ctx;
 
 function init() {
     ctx = mainCanvas.getContext("2d");
-    window.ontouchdown = window.onmousedown = onCanvasPointerDown;
-    window.ontouchup = window.onmouseup = onCanvasPointerUp;
+    window.ontouchdown = onCanvasPointerDown;
+    window.onmousedown = onCanvasPointerDown;
+    window.ontouchup = onCanvasPointerUp;
+    window.onmouseup = onCanvasPointerUp;
     window.oncontextmenu = e => false;
     load();
 
@@ -13,7 +15,7 @@ function init() {
         onclick() {
             this.onclick = () => {};
             startAnimation((t) => {
-                t = Math.min(t / 2000, 1);
+                t = Math.min(t / 3000, 1);
                 let machine = scene._base._machine;
                 machine.position.fy = ease.quart.inout(t) * -6 + 40;
                 machine.position.sy = 1 - ease.quart.inout(t);
