@@ -2,8 +2,8 @@ let ctx;
 
 function init() {
     ctx = mainCanvas.getContext("2d");
-    window.onpointerdown = onCanvasPointerDown;
-    window.onpointerup = onCanvasPointerUp;
+    window.ontouchdown = window.onmousedown = onCanvasPointerDown;
+    window.ontouchup = window.onmouseup = onCanvasPointerUp;
     window.oncontextmenu = e => false;
     load();
 
@@ -13,12 +13,13 @@ function init() {
         onclick() {
             this.onclick = () => {};
             startAnimation((t) => {
-                t = Math.min(t / 4000, 1);
+                t = Math.min(t / 2000, 1);
                 let machine = scene._base._machine;
                 machine.position.fy = ease.quart.inout(t) * -20 + 45;
                 machine.position.sy = 1 - ease.quart.inout(t);
                 if (t >= 1) {
                     let button = scene._base._machine._button
+                    let labelLabel = scene._base._machine._button._label
                     let valueLabel = scene._base._machine._button._value
                     button.onupdate = () => {
                         button.position.fy += (-12 - button.position.fy) * 0.978 ** delta;
@@ -27,7 +28,7 @@ function init() {
                         console.log(e.touches);
                         if (!e.touches || e.touches.length <= 4) {
                             gameData.number++;
-                            valueLabel.text = formatFixed(gameData.number);
+                            valueLabel.value = gameData.number;
                             button.position.fy = -3;
                         }
                     }
@@ -53,7 +54,7 @@ function init() {
 
     scene._base._machine._button.append(controls.label({
         position: { fx: 0, fy: -80, sx: 0.5, sy: 0.5 },
-        fontSize: 16,
+        scale: 16,
         text: "A =",
         fill: "#8f8f8f",
     }), "label");
@@ -65,11 +66,11 @@ function init() {
         fill: "#000000",
     }), "valueBackground");
 
-    scene._base._machine._button.append(controls.label({
-        position: { fx: 0, fy: 5, sx: 0.5, sy: 0.5 },
-        fontSize: 120,
-        // font: "Wire One",
-        text: formatFixed(gameData.number),
+    scene._base._machine._button.append(controls.counter({
+        position: { fx: 0, fy: 0, sx: 0.5, sy: 0.5 },
+        size: { fx: 0, fy: 0, sx: 0, sy: 0 },
+        scale: 90,
+        value: gameData.number,
         fill: "#ffffff",
     }), "value");
 
@@ -79,6 +80,7 @@ function init() {
 let time = Date.now();
 let saveTime = 0;
 let delta = 0;
+let strain = 0;
 
 let scene = controls.base();
 let scale = 1;
@@ -94,13 +96,14 @@ function loop() {
 
     let width = mainCanvas.width = window.innerWidth;
     let height = mainCanvas.height = window.innerHeight;
-    scale = Math.min(width / 600, window.devicePixelRatio);
+    scale = Math.min(width / 600, height / 800, window.devicePixelRatio);
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, width, height);
 
     updateAnimations();
     renderControls(scene.controls, { x: 0, y: 0, width, height });
 
+    strain = Date.now() - time;
     window.requestAnimationFrame(loop);
 }
 

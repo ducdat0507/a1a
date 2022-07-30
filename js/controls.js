@@ -75,14 +75,14 @@ let controls = {
             ...controls.base(),
             fill: "white",
             text: "",
-            fontSize: 16,
+            scale: 16,
             font: "Lexend Exa, Futura, Arial",
 
             render() {
                 ctx.fillStyle = this.fill;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.font = (this.fontSize * scale) + "px " + this.font;
+                ctx.font = (this.scale * scale) + "px " + this.font;
                 ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
             },
             ...args
@@ -92,19 +92,124 @@ let controls = {
         return {
             ...controls.base(),
             fillMain: "white",
-            fillSub: "#0000001f",
+            fillSub: "#ffffff18",
             value: 0,
             design: {
+                width: 12,
+                height: 30,
+                charSpace: 2,
+                sepSpace: 5,
                 segments: [
-
+                    [
+                        ["moveTo", "1.5x", "0y"],
+                        ["lineTo", "9.5x", "0y"],
+                        ["lineTo", "9.5x", "2y"],
+                        ["lineTo", "0x", "2y"],
+                        ["lineTo", "0x", "1.5y"],
+                    ],
+                    [
+                        ["moveTo", "10.5x", "0y"],
+                        ["lineTo", "12x", "1.5y"],
+                        ["lineTo", "12x", "14.6y"],
+                        ["lineTo", "11x", "14.6y"],
+                        ["lineTo", "10x", "13.6y"],
+                        ["lineTo", "10x", "0y"],
+                    ],
+                    [
+                        ["moveTo", "11x", "15.4y"],
+                        ["lineTo", "12x", "15.4y"],
+                        ["lineTo", "12x", "28.5y"],
+                        ["lineTo", "10.5x", "30y"],
+                        ["lineTo", "10x", "30y"],
+                        ["lineTo", "10x", "16.4y"],
+                    ],
+                    [
+                        ["moveTo", "0x", "28y"],
+                        ["lineTo", "9.5x", "28y"],
+                        ["lineTo", "9.5x", "30y"],
+                        ["lineTo", "1.5x", "30y"],
+                        ["lineTo", "0x", "28.5y"],
+                    ],
+                    [
+                        ["moveTo", "1x", "15.4y"],
+                        ["lineTo", "2x", "16.4y"],
+                        ["lineTo", "2x", "27.5y"],
+                        ["lineTo", "0x", "27.5y"],
+                        ["lineTo", "0x", "15.4y"],
+                    ],
+                    [
+                        ["moveTo", "0x", "2.5y"],
+                        ["lineTo", "2x", "2.5y"],
+                        ["lineTo", "2x", "13.6y"],
+                        ["lineTo", "1x", "14.6y"],
+                        ["lineTo", "0x", "14.6y"],
+                    ],
+                    [
+                        ["moveTo", "2.7x", "14y"],
+                        ["lineTo", "9.3x", "14y"],
+                        ["lineTo", "10.3x", "15y"],
+                        ["lineTo", "9.3x", "16y"],
+                        ["lineTo", "2.7x", "16y"],
+                        ["lineTo", "1.7x", "15y"],
+                    ],
                 ],
                 digits: {
-                    0: []
+                    0: [1, 1, 1, 1, 1, 1, 0],
+                    1: [0, 1, 1, 0, 0, 0, 0],
+                    2: [1, 1, 0, 1, 1, 0, 1],
+                    3: [1, 1, 1, 1, 0, 0, 1],
+                    4: [0, 1, 1, 0, 0, 1, 1],
+                    5: [1, 0, 1, 1, 0, 1, 1],
+                    6: [1, 0, 1, 1, 1, 1, 1],
+                    7: [1, 1, 1, 0, 0, 0, 0],
+                    8: [1, 1, 1, 1, 1, 1, 1],
+                    9: [1, 1, 1, 1, 0, 1, 1],
                 },
             },
-            size: 16,
+            scale: 16,
 
             render() {
+                let str = this.value.toFixed(0).padStart(10);
+                let unit = this.scale * scale / this.design.height;
+                let width = (
+                    str.length * this.design.width
+                    + (str.length - 1) * this.design.charSpace
+                    + Math.floor((str.length - 1) / 3) * this.design.sepSpace
+                ) * unit;
+                let offset = width / 2 - (this.design.width - this.design.sepSpace) * unit;
+
+                for (let a = 0; a < str.length; a++) {
+                    let digit = str[str.length - 1 - a];
+                    if (a % 3 == 0) offset -= (this.design.sepSpace) * unit;
+                    for (let s in this.design.segments) {
+                        let seg = this.design.segments[s];
+                        ctx.beginPath();
+                        for (let ins of seg) {
+                            let cmd = ins[0];
+                            let args = [];
+                            for (let i = 1; i < ins.length; i++) {
+                                let code = ins[i][ins[i].length - 1];
+                                if (code == "x") {
+                                    args.push(ins[i].slice(0, ins[i].length - 1) * unit + offset + this.rect.x + this.rect.width / 2);
+                                } else if (code == "y") {
+                                    args.push(((ins[i].slice(0, ins[i].length - 1)) - this.design.height / 2) * unit + this.rect.y + this.rect.height / 2);
+                                } else if (code == " ") {
+                                    args.push(ins[i].slice(0, ins[i].length - 1));
+                                } else {
+                                    args.push(ins[i]);
+                                }
+                            }
+                            ctx[cmd](...args);
+                        }
+                        ctx.fillStyle = this.design.digits[digit]?.[s] ? this.fillMain : this.fillSub;
+                        ctx.shadowBlur = this.design.digits[digit]?.[s] ? 50 : 0;
+                        ctx.shadowColor = ctx.fillStyle;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.shadowColor = "";
+                    }
+                    offset -= (this.design.width + this.design.charSpace) * unit;
+                }
             },
             ...args
         }
