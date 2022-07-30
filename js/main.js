@@ -2,10 +2,10 @@ let ctx;
 
 function init() {
     ctx = mainCanvas.getContext("2d");
-    window.ontouchdown = onCanvasPointerDown;
-    window.onmousedown = onCanvasPointerDown;
-    window.ontouchup = onCanvasPointerUp;
-    window.onmouseup = onCanvasPointerUp;
+    window.ontouchstart = onCanvasTouchStart;
+    window.onmousedown = onCanvasMouseDown;
+    window.ontouchend = onCanvasTouchEnd;
+    window.onmouseup = onCanvasMouseUp;
     window.oncontextmenu = e => false;
     load();
 
@@ -144,15 +144,33 @@ function renderControls(cts, rect) {
 
 let pointers = {};
 
-function onCanvasPointerDown(e) {
+function onCanvasMouseDown(e) {
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onpointerdown", e);
     e.preventDefault();
 }
 
-function onCanvasPointerUp(e) {
+function onCanvasTouchStart(e) {
+    for (let touch of e.changedTouches) {
+        let pos = { x: touch.clientX, y: touch.clientY };
+        touch.touches = e.touches;
+        doPointerEvent(pos, scene.controls, "onpointerdown", touch);
+    }
+    e.preventDefault();
+}
+
+function onCanvasMouseUp(e) {
     let pos = { x: e.clientX, y: e.clientY };
     doPointerEvent(pos, scene.controls, "onclick", e);
+    e.preventDefault();
+}
+
+function onCanvasTouchEnd(e) {
+    for (let touch of e.changedTouches) {
+        let pos = { x: touch.clientX, y: touch.clientY };
+        touch.touches = e.touches;
+        doPointerEvent(pos, scene.controls, "onclick", touch);
+    }
     e.preventDefault();
 }
 
