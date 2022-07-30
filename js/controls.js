@@ -76,14 +76,33 @@ let controls = {
             fill: "white",
             text: "",
             scale: 16,
+            style: "normal",
             font: "Lexend Exa, Futura, Arial",
+            align: "center",
+            wrap: false,
 
             render() {
                 ctx.fillStyle = this.fill;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.font = (this.scale * scale) + "px " + this.font;
-                ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
+                ctx.textAlign = this.align;
+                ctx.textBaseline = "top";
+                ctx.font = this.style + " " + (this.scale * scale) + "px " + this.font;
+                if (this.wrap) {
+                    let words = this.text.split(" ");
+                    let line = "";
+                    let pos = this.rect.y;
+                    for (let word of words) {
+                        if (ctx.measureText(line + word).width > this.rect.width) {
+                            ctx.fillText(line, this.rect.x, pos);
+                            pos += this.scale * scale * 1.2;
+                            line = word + " ";
+                        } else {
+                            line += word + " ";
+                        }
+                    }
+                    ctx.fillText(line, this.rect.x, pos);
+                } else {
+                    ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
+                }
             },
             ...args
         }

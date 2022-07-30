@@ -15,7 +15,7 @@ function init() {
             startAnimation((t) => {
                 t = Math.min(t / 2000, 1);
                 let machine = scene._base._machine;
-                machine.position.fy = ease.quart.inout(t) * -20 + 45;
+                machine.position.fy = ease.quart.inout(t) * -6 + 40;
                 machine.position.sy = 1 - ease.quart.inout(t);
                 if (t >= 1) {
                     let button = scene._base._machine._button
@@ -40,10 +40,29 @@ function init() {
 
     scene._base.append(controls.rect({
         position: { fx: 20, fy: 40, sx: 0, sy: 1 },
-        size: { fx: -40, fy: -45, sx: 1, sy: 1 },
+        size: { fx: -40, fy: -50, sx: 1, sy: 1 },
         radius: 30,
         fill: "#1f1f1f",
     }), "machine");
+
+    scene._base._machine.append(controls.label({
+        position: { fx: -200, fy: -150, sx: 0.5, sy: -0.5 },
+        text: "A+1→A",
+        scale: 64,
+        align: "left",
+        fill: "#ffffff",
+    }), "title");
+
+    scene._base._machine.append(controls.label({
+        position: { fx: -200, fy: -80, sx: 0.5, sy: -0.5 },
+        size: { fx: 400, fy: 0, sx: 0, sy: 0 },
+        text: "- a simulation of adding the number 1 repeatedly to a variable on a calculator, and enjoying doing it.",
+        scale: 16,
+        wrap: true,
+        align: "left",
+        style: "italic",
+        fill: "#ffffff",
+    }), "description");
 
     scene._base._machine.append(controls.rect({
         position: { fx: 0, fy: 0, sx: 0, sy: 0 },
@@ -53,9 +72,9 @@ function init() {
     }), "button");
 
     scene._base._machine._button.append(controls.label({
-        position: { fx: 0, fy: -80, sx: 0.5, sy: 0.5 },
-        scale: 16,
+        position: { fx: 0, fy: -90, sx: 0.5, sy: 0.5 },
         text: "A =",
+        scale: 16,
         fill: "#8f8f8f",
     }), "label");
 
