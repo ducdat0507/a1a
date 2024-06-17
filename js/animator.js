@@ -8,6 +8,24 @@ function startAnimation(func) {
     func(0);
 }
 
+function tween(duration, func) {
+    let doneFunc;
+    let promise = new Promise((r) => { doneFunc = r });
+    animations.push({
+        func: (x) => {
+            func(Math.min(x / duration, 1));
+            if (x >= duration) {
+                doneFunc();
+            }
+            return x >= duration;
+        },
+        time: 0,
+    })
+    func(0);
+    return promise;
+}
+
+
 function updateAnimations() {
     for (let a = 0; a < animations.length; a++) {
         let data = animations[a];
@@ -33,4 +51,7 @@ let ease = {
     cubic: makeEase(x => x ** 3),
     quart: makeEase(x => x ** 4),
     quint: makeEase(x => x ** 5),
+    exp: makeEase(x => Math.pow(1e-4, 1 - x) - 1e-4 * (1 - x)),
+    elastic: makeEase(x => (x == 0 ? 0 : x == 1 ? 1 : Math.sin((x * 10 - 10.75) * (2 * Math.PI) / 3))),
+    back: makeEase(x => 2.70158 * x ** 3 - 1.70158 * x * x),
 }

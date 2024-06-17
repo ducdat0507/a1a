@@ -1,10 +1,11 @@
 body {
     background: black;
     user-select: none;
+    -moz-user-select: none;
     touch-action: none;
 }
 
-#mainCanvas {
+#main-canvas {
     position: absolute;
     top: 0;
     left: 0;

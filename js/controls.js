@@ -6,7 +6,7 @@ let controls = {
             append(ct, id = "") {
                 this.controls.push(ct);
                 if (id) {
-                    this["_" + id] = ct;
+                    this["$" + id] = ct;
                     ct.id = id;
                 }
             },
@@ -14,18 +14,26 @@ let controls = {
                 let index = this.controls.indexOf(ct);
                 if (index > 0) {
                     this.controls.splice(index, 1);
-                    if (ct.id && this.controls["_" + id]) delete this.controls["_" + id];
+                    if (ct.id && this.controls["$" + id]) delete this.controls["$" + id];
                 }
             },
 
-            position: { fx: 0, fy: 0, sx: 0, sy: 0 },
-            size: { fx: 0, fy: 0, sx: 0, sy: 0 },
-            rect: { x: 0, y: 0, width: 0, height: 0 },
+            position: Ex(0, 0, 0, 0),
+            size: Ex(0, 0, 1, 1),
+            rect: Rect(0, 0, 0, 0),
+
+            alpha: 1,
+            clickthrough: false,
 
             render() {},
 
             onupdate() {},
             onpointerdown() {},
+            onpointerup() {},
+            onpointerin() {},
+            onpointerout() {},
+            onpointermove() {},
+            onmousewheel() {},
             onclick() {},
             ...args
         }
@@ -36,8 +44,79 @@ let controls = {
             fill: "white",
             radius: 0,
 
+            getBoundingRect() {
+                let radius = this.radius * scale;
+                ctx.moveTo(this.rect.x + radius, this.rect.y);
+                ctx.arc(
+                    this.rect.x + this.rect.width - radius, 
+                    this.rect.y + radius,
+                    radius, Math.PI * -.5, 0
+                );
+                ctx.arc(
+                    this.rect.x + this.rect.width - radius, 
+                    this.rect.y + this.rect.height - radius,
+                    radius, 0, Math.PI * .5
+                );
+                ctx.arc(
+                    this.rect.x + radius,
+                    this.rect.y + this.rect.height - radius, 
+                    radius, Math.PI * .5, Math.PI
+                );
+                ctx.arc(
+                    this.rect.x + radius, 
+                    this.rect.y + radius,
+                    radius, Math.PI, Math.PI * 1.5
+                );
+            },
+
             render() {
                 ctx.fillStyle = this.fill;
+                if (this.radius) {
+                    ctx.beginPath();
+                    this.getBoundingRect();
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+                }
+            },
+            ...args
+        }
+    },
+    button(args) {
+        return {
+            ...controls.rect(),
+
+            fillHover: "#fff7",
+            fillActive: "#0003",
+
+            __mouseActive: false,
+
+            onpointerin() {
+                pushCursor("pointer");
+            },
+
+            onpointerout() {
+                popCursor();
+            },
+
+            onpointerdown() {
+                this.__mouseActive = true;
+                let handler = (e) => {
+                    this.__mouseActive = false;
+                    if (this.__mouseIn) this.onclick();
+                    document.removeEventListener("pointerup", handler);
+                }
+                document.addEventListener("pointerup", handler);
+            },
+
+            onclick() {},
+            
+            render() {
+                ctx.fillStyle = this.fill;
+                
+                let level = this.__mouseActive * this.__mouseIn;
+                if (!isTouch) level += this.__mouseIn 
+
                 if (this.radius) {
                     let radius = this.radius * scale;
                     ctx.beginPath();
@@ -63,10 +142,27 @@ let controls = {
                         radius, Math.PI, Math.PI * 1.5
                     );
                     ctx.fill();
+                    if (level >= 1) {
+                        ctx.fillStyle = this.fillHover;
+                        ctx.fill();
+                        if (level >= 2) {
+                            ctx.fillStyle = this.fillActive;
+                            ctx.fill();
+                        }
+                    }
                 } else {
                     ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+                    if (level >= 1) {
+                        ctx.fillStyle = this.fillHover;
+                        ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+                        if (level >= 2) {
+                            ctx.fillStyle = this.fillActive;
+                            ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
+                        }
+                    }
                 }
             },
+
             ...args
         }
     },
@@ -186,9 +282,10 @@ let controls = {
                 },
             },
             scale: 16,
+            digits: 0,
 
             render() {
-                let str = this.value.toFixed(0).padStart(10);
+                let str = this.value.toFixed(0).padStart(this.digits);
                 let unit = this.scale * scale / this.design.height;
                 let width = (
                     str.length * this.design.width
