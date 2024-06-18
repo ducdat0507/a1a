@@ -62,9 +62,9 @@ screens.base = () => {
     }), "pop");
 
     machineBody.append(controls.rect({
-        position: Ex(120, 180, 0.5, 1),
-        size: Ex(80, 80, 0, 0),
-        radius: 40,
+        position: Ex(110, 190, 0.5, 1),
+        size: Ex(100, 100, 0, 0),
+        radius: 50,
         fill: "#2f2f2f",
     }), "menuBtn");
 
