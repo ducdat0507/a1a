@@ -15,7 +15,7 @@ screens.base = () => {
         position: Ex(20, 20, 0, 1),
         size: Ex(-40, -40, 1, 1),
         radius: 30,
-        fill: "#0f0f0f",
+        fill: "#2f2f2f",
     }), "machine");
 
     let machineBody;
@@ -51,7 +51,7 @@ screens.base = () => {
         position: Ex(-80, 180, 0.5, 1),
         size: Ex(160, 160, 0, 0),
         radius: 80,
-        fill: "#2f2f2f",
+        fill: "#1f1f1f",
     }), "button");
 
     machineBody.$button.append(controls.rect({
@@ -65,13 +65,13 @@ screens.base = () => {
         position: Ex(110, 190, 0.5, 1),
         size: Ex(100, 100, 0, 0),
         radius: 50,
-        fill: "#2f2f2f",
+        fill: "#1f1f1f",
     }), "menuBtn");
 
     machineBody.$menuBtn.append(controls.rect({
         position: Ex(0, 0, 0, 0),
         size: Ex(0, 0, 1, 1),
-        radius: 40,
+        radius: 50,
         fill: "#4f4f4f",
     }), "pop");
 
@@ -85,7 +85,7 @@ screens.base = () => {
     }
     setZoom(1);
 
-    function makePushyButton(button, pop, events = {}) {
+    function makePushyButton(button, pop, events = {}, popValue = 10) {
         let buttonDown = 0;
 
         button.onpointerin = () => {
@@ -95,7 +95,7 @@ screens.base = () => {
             popCursor();
         }
         button.onupdate = () => {
-            if (!buttonDown) pop.position.y += (-5 - pop.position.y) * 0.978 ** delta;
+            if (!buttonDown) pop.position.y += (-popValue - pop.position.y) * 0.978 ** delta;
         }
         button.onpointerdown = (e) => {
             if (!buttonDown) {
@@ -140,19 +140,19 @@ screens.base = () => {
         makePushyButton(machineBody.$menuBtn, machineBody.$menuBtn.$pop, {
             click() {
                 isMenuOpen = !isMenuOpen;
-                if (isMenuOpen) tween(1000, (t) => {
+                if (isMenuOpen) tween(800, (t) => {
                     let value = ease.cubic.out(t);
                     setZoom(value);
-                    let value2 = ease.back.out(t) * ease.cubic.inout(Math.min(t * 2, 1));
-                    machine.position.y = value2 * -400;
+                    let value2 = ease.back.out(t) ** .5 * ease.cubic.out(Math.min(t * 2, 1));
+                    machine.position.y = value2 * -500;
                 })
-                else tween(1000, (t) => {
+                else tween(600, (t) => {
                     let value = ease.cubic.out(t);
                     setZoom(1 - value);
-                    let value2 = ease.back.out(t) * ease.cubic.inout(Math.min(t * 2, 1));
-                    machine.position.y = (1 - value2) * -400;
+                    let value2 = ease.cubic.out(t);
+                    machine.position.y = (1 - value2) * -500;
                 }) 
             }
-        })
+        }, 5)
     })
 }
