@@ -26,11 +26,16 @@ let strain = [];
 let fps = [];
 
 let scene = controls.base();
-let screens = {}
 let scale = 1;
 let resScale = 1;
 
+let screens = {}
+let menus = {}
+let machines = {}
+
 let currentMode = "";
+
+let debugWireframe = false;
 
 function loop(timestamp) {
     delta = (timestamp ?? performance.now()) - time;
@@ -86,6 +91,14 @@ function renderControls(cts, rect, alpha = 1) {
         if (a > 0 && ct.mask) {
             ctx.restore();
         }
+        if (debugWireframe) {
+            ctx.fillStyle = ctx.strokeStyle = ct.__mouseIn ? "lime" : "white";
+            ctx.strokeWidth = 2 * scale;
+            ctx.strokeRect(ct.rect.x, ct.rect.y, ct.rect.width, ct.rect.height);
+            ctx.font = 10 * scale + "px SF Pro, Inter, sans-serif";
+            ctx.textAlign = "left"; ctx.textBaseline = "bottom";
+            ctx.fillText(ct.id, ct.rect.x, ct.rect.y);
+        }
     }
 }
 
@@ -99,11 +112,12 @@ function updateInMouseState(cts, clickthrough = false, did = false) {
     let did2 = did;
     for (let ct of [...cts].reverse()) {
 
-        let ctr = clickthrough || ct.clickthrough
-
-        if (!ctr && !did && mousePos.x >= ct.rect.x && mousePos.y >= ct.rect.y
+        let ctr = clickthrough || ct.clickthrough;
+        let inBox = mousePos.x >= ct.rect.x && mousePos.y >= ct.rect.y
             && mousePos.x <= ct.rect.x + ct.rect.width
-            && mousePos.y <= ct.rect.y + ct.rect.height) {
+            && mousePos.y <= ct.rect.y + ct.rect.height;
+
+        if (!ctr && !did && inBox) {
             if (!ct.__mouseIn) {
                 ct.onpointerin(mousePos, lastArgs);
                 ct.__mouseIn = true;

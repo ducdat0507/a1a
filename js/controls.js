@@ -12,14 +12,14 @@ let controls = {
             },
             remove(ct) {
                 let index = this.controls.indexOf(ct);
-                if (index > 0) {
+                if (index >= 0) {
                     this.controls.splice(index, 1);
-                    if (ct.id && this.controls["$" + id]) delete this.controls["$" + id];
+                    if (ct.id && this.controls["$" + ct.id]) delete this.controls["$" + ct.id];
                 }
             },
 
             position: Ex(0, 0, 0, 0),
-            size: Ex(0, 0, 1, 1),
+            size: Ex(0, 0, 0, 0),
             rect: Rect(0, 0, 0, 0),
 
             alpha: 1,
@@ -173,7 +173,7 @@ let controls = {
             text: "",
             scale: 16,
             style: "normal",
-            font: "Lexend Exa, Futura, Arial",
+            font: "SF Pro, Inter, Arial",
             align: "center",
             wrap: false,
 
@@ -200,6 +200,26 @@ let controls = {
                     ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
                 }
             },
+            ...args
+        }
+    },
+    icon(args) {
+        return {
+            ...controls.label(),
+            set: "tabler",
+            fill: "white",
+            scale: 16,
+
+            render() {
+                let iconset = iconsets[this.set];
+
+                ctx.fillStyle = this.fill;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.font = (this.scale * scale) + "px " + iconset.font;
+                ctx.fillText(iconset.charmap[this.icon], this.rect.x, this.rect.y, this.rect.width || undefined);
+            },
+
             ...args
         }
     },

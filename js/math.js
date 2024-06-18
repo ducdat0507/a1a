@@ -6,3 +6,7 @@ function formatFixed(num, sig = 0) {
         minimumFractionDigits: sig,
     }).replace(/,/g, ' ');
 }
+
+function lerp(from, to, x) {
+    return from + (to - from) * x;
+}

@@ -1,3 +1,13 @@
+@font-face {
+    font-family: "tabler icons";
+    src: url(../res/fonts/tabler-icons.woff);
+}
+
+@font-face {
+    font-family: "inter";
+    src: url(../res/fonts/InterVariable.woff2);
+}
+
 body {
     background: black;
     user-select: none;
