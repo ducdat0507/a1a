@@ -9,7 +9,7 @@ screens.base = () => {
 
     let menuHolder
     scene.append(menuHolder = controls.base({
-        position: Ex(-280, 20, 0.5, 1),
+        position: Ex(-280, 20, 0.5, 0),
         size: Ex(560, -40, 0, 1),
     }), "menu");
 
@@ -104,6 +104,14 @@ screens.base = () => {
     }, "category", "arrow-right");
 
     // -------------------- Menu
+    
+    let menuHeader;
+    machine.append(menuHeader = controls.label({
+        position: Ex(25, -55, 0, 1),
+        scale: 32,
+        align: "left",
+        style: "700",
+    }), "header");
 
     function setZoom(value) {
         machineBody.position.x = machineBody.position.y
@@ -115,10 +123,11 @@ screens.base = () => {
     }
     setZoom(1);
 
+    let headerLerp = 0;
     function setButtonOffset(value) {
-        machineBody.$button.position.y = -180 - 20 * value;
+        machineBody.$button.position.y = -180 - 20 * value - 50 * headerLerp;
         machineBody.$menuBtn.position.x = 120 - 20 * value;
-        machineBody.$menuBtn.position.y = -150 + 10 * value;
+        machineBody.$menuBtn.position.y = -150 + 10 * value - 50 * headerLerp;
 
         for (let btn of [machineBody.$button, machineBody.$menuBtn]) {
             btn.$pop.$icon.position.ey = 0.5 - value;
@@ -131,22 +140,49 @@ screens.base = () => {
         let elm = menus[menu](openMenu, closeMenu);
         menuHierarchy.push(elm);
 
-        if (menuHolder.$body) menuHolder.remove(menuHolder.$body);
-        menuHolder.append(elm, "body");
+        let lastY = menuHolder.$body?.position.y;
+        tween(100, (t) => {
+            if (!menuHolder.$body) return true
+            menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
+            menuHolder.$body.position.y = lastY - 20 * ease.cubic.in(t);
+        }).then(() => {
+            if (menuHolder.$body) menuHolder.remove(menuHolder.$body);
+            menuHolder.append(elm, "body");
+            menuHeader.text = elm.menuTitle ?? "";
+            tween(100, (t) => {
+                menuHeader.alpha = t;
+            })
+        })
+        
+        if (!!elm.menuTitle ^ !!menuHeader.text) animateHeader(!!elm.menuTitle);
 
         if (menu == "main") animateMenu(-500, 0);
-        else animateMenu(100, 1);
+        else animateMenu(120, -1);
     }
 
     function closeMenu() {
         if (isAnimating) return;
         menuHierarchy.splice(menuHierarchy.length - 1);
         
-        setTimeout(() => {
-            let last = menuHierarchy[menuHierarchy.length - 1];
-            menuHolder.remove(menuHierarchy.$body);
-            if (last) menuHolder.append(last, "body");
-        }, 200)
+        let lastY = menuHolder.$body.position.y;
+        let last = menuHierarchy[menuHierarchy.length - 1];
+        tween(100, (t) => {
+            menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
+            menuHolder.$body.position.y = lastY + 20 * ease.cubic.in(t);
+        }).then(() => {
+            menuHolder.remove(menuHolder.$body);
+            if (last) {
+                menuHolder.append(last, "body");
+                let lastY = menuHolder.$body.position.y;
+                menuHeader.text = last.menuTitle ?? "";
+                return tween(100, (t) => {
+                    menuHeader.alpha = menuHolder.$body.alpha = t;
+                    menuHolder.$body.position.y = lastY + 20 * ease.cubic.out(t);
+                })
+            }
+        })
+
+        if (!!last?.menuTitle ^ !!menuHeader.text) animateHeader(!!last.menuTitle);
 
         if (menuHierarchy.length == 1) animateMenu(-500, 0);
         else if (menuHierarchy[0]) animateMenu(100, 1);
@@ -176,6 +212,17 @@ screens.base = () => {
             machine.position.y = lerp(lastY, targetY, value2);
             machine.position.ey = lerp(lastEy, targetEy, value2);
         }).then(() => {isAnimating = false});
+    }
+
+    function animateHeader(target) {
+        if (target) tween(600, (t) => {
+            headerLerp = ease.back.out(t) ** .5 * ease.cubic.out(Math.min(t * 2, 1));
+            setButtonOffset(1);
+        });
+        else tween(600, (t) => {
+            headerLerp = 1 - ease.back.out(t) ** .5 * ease.cubic.out(Math.min(t * 2, 1));
+            setButtonOffset(1);
+        });
     }
 
     // -------------------- Intro

@@ -108,7 +108,7 @@ let lastArgs;
 let isTouch;
 let isDown;
 
-function updateInMouseState(cts, clickthrough = false, did = false) {
+function updateInMouseState(cts, clickthrough = false, did = false, brk = false) {
     let did2 = did;
     for (let ct of [...cts].reverse()) {
 
@@ -117,7 +117,7 @@ function updateInMouseState(cts, clickthrough = false, did = false) {
             && mousePos.x <= ct.rect.x + ct.rect.width
             && mousePos.y <= ct.rect.y + ct.rect.height;
 
-        if (!ctr && !did && inBox) {
+        if (!ctr && !did && !brk && inBox) {
             if (!ct.__mouseIn) {
                 ct.onpointerin(mousePos, lastArgs);
                 ct.__mouseIn = true;
@@ -131,7 +131,7 @@ function updateInMouseState(cts, clickthrough = false, did = false) {
         }
 
         if (ct.controls.length) {
-            if (updateInMouseState(ct.controls, ctr, did2)) did = true;
+            if (updateInMouseState(ct.controls, ctr, did2, brk || (ct.mask && !inBox))) did = true;
         }
 
         did2 = did;
@@ -139,20 +139,22 @@ function updateInMouseState(cts, clickthrough = false, did = false) {
     return did;
 }
 
-function doPointerEvent(pos, cts, event, args, did = false) {
+function doPointerEvent(pos, cts, event, args, did = false, brk = false) {
     let did2 = did;
     for (let ct of [...cts].reverse()) {
         if (ct.clickthrough) continue;
 
-        if (!did && pos.x >= ct.rect.x && pos.y >= ct.rect.y
+        let inBox = pos.x >= ct.rect.x && pos.y >= ct.rect.y
             && pos.x <= ct.rect.x + ct.rect.width
-            && pos.y <= ct.rect.y + ct.rect.height) {
+            && pos.y <= ct.rect.y + ct.rect.height;
+
+        if (!did && !brk && inBox) {
             ct[event](pos, args);
             did = true;
         }
 
         if (ct.controls.length) {
-            if (doPointerEvent(pos, ct.controls, event, args, did2)) did = true;
+            if (doPointerEvent(pos, ct.controls, event, args, did2, brk || (ct.mask && !inBox))) did = true;
         }
 
         did2 = did;

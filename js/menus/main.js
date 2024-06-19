@@ -1,11 +1,11 @@
-menus.main = () => {
+menus.main = (openMenu, closeMenu) => {
 
     let menu = controls.base({
         size: Ex(0, 0, 1, 1),
     })
 
     let machBtn = controls.button({
-        position: Ex(0, -500, 0, 0),
+        position: Ex(0, -460, 0, 1),
         size: Ex(-10, 200, 0.5, 0),
         mask: true,
         fill: "#ef5340",
@@ -16,7 +16,7 @@ menus.main = () => {
     machBtn.append(controls.icon({
         position: Ex(-50, -50, 1, 1),
         scale: 250,
-        icon: "progress-down",
+        icon: "command",
         fill: "#0003",
     }), "icon")
 
@@ -30,7 +30,7 @@ menus.main = () => {
 
 
     let custBtn = controls.button({
-        position: Ex(10, -500, 0.5, 0),
+        position: Ex(10, -460, 0.5, 1),
         size: Ex(-10, 200, 0.5, 0),
         fill: "#4f4f4f",
         mask: true,
@@ -53,50 +53,10 @@ menus.main = () => {
     }), "title")
 
 
-    let footer = controls.base({
-        position: Ex(0, -100, 0, 0),
-        size: Ex(0, 60, 1, 0),
-    })
-    menu.append(footer, "footer")
-
-    footer.append(controls.label({
-        position: Ex(10, 13, 0, 0),
-        scale: 16,
-        align: "left",
-        weight: 300,
-        fill: "#fff4",
-        text: "A+1→A",
-    }))
-
-    footer.append(controls.label({
-        position: Ex(10, 32, 0, 0),
-        scale: 16,
-        align: "left",
-        weight: 300,
-        fill: "#fff4",
-        text: "a thing by duducat",
-    }))
-
-    let optBtn = controls.button({
-        position: Ex(-60, 0, 1, 0),
-        size: Ex(60, 60, 0, 0),
-        fill: "#4f4f4f",
-        mask: true,
-        radius: 30,
-    })
-    footer.append(optBtn, "optBtn");
-
-    optBtn.append(controls.icon({
-        position: Ex(0, 0, .5, .5),
-        scale: 32,
-        icon: "settings",
-    }), "icon")
-
-
 
     let storeBtn = controls.button({
-        position: Ex(0, -280, 0, 0),
-        size: Ex(0, 100, 1, 0),
+        position: Ex(0, -240, 0, 1),
+        size: Ex(0, 120, 1, 0),
         mask: true,
         fill: "#7c6aff",
         radius: 20,
@@ -104,8 +64,8 @@ menus.main = () => {
     menu.append(storeBtn, "storeBtn");
 
     storeBtn.append(controls.icon({
-        position: Ex(-50, -50, 1, 1),
-        scale: 150,
+        position: Ex(-75, -25, 1, 1),
+        scale: 250,
         icon: "shopping-cart",
         fill: "#0003",
     }), "icon")
@@ -119,10 +79,52 @@ menus.main = () => {
 
 
 
+    let footer = controls.base({
+        position: Ex(0, -80, 0, 1),
+        size: Ex(0, 80, 1, 0),
+    })
+    menu.append(footer, "footer")
+
+    footer.append(controls.label({
+        position: Ex(20, 23, 0, 0),
+        scale: 16,
+        align: "left",
+        style: "300",
+        fill: "#fff4",
+        text: "A+1→A",
+    }))
+
+    footer.append(controls.label({
+        position: Ex(20, 42, 0, 0),
+        scale: 16,
+        align: "left",
+        style: "300",
+        fill: "#fff4",
+        text: "a thing by duducat",
+    }))
+
+    let optBtn = controls.button({
+        position: Ex(-80, 0, 1, 0),
+        size: Ex(80, 80, 0, 0),
+        fill: "#4f4f4f",
+        mask: true,
+        radius: 40,
+        onclick: () => openMenu("settings"),
+    })
+    footer.append(optBtn, "optBtn");
+
+    optBtn.append(controls.icon({
+        position: Ex(0, 0, .5, .5),
+        scale: 40,
+        icon: "settings",
+    }), "icon")
+
+
+
     let lerpItems = [
-        [machBtn, 160],
-        [custBtn, 160],
-        [storeBtn, 80],
+        [machBtn, 200],
+        [custBtn, 200],
+        [storeBtn, 120],
         [footer, 40],
     ]
     for (let [item, delay] of lerpItems) {

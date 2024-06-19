@@ -13,11 +13,11 @@ function tween(duration, func) {
     let promise = new Promise((r) => { doneFunc = r });
     animations.push({
         func: (x) => {
-            func(Math.min(x / duration, 1));
-            if (x >= duration) {
+            let interrupt = func(Math.min(x / duration, 1));
+            if (x >= duration || interrupt) {
                 doneFunc();
             }
-            return x >= duration;
+            return x >= duration || interrupt;
         },
         time: 0,
     })
