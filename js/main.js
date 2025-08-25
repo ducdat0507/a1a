@@ -8,10 +8,10 @@ function init() {
     mainCanvas = document.getElementById("main-canvas");
     ctx = mainCanvas.getContext("2d");
 
-    bindPointerEvent("onpointerdown", "mousedown", "touchstart");
-    bindPointerEvent("onpointermove", "mousemove", "touchmove");
-    bindPointerEvent("onpointerup", "mouseup", "touchend");
-    bindPointerEvent("onmousewheel", "wheel");
+    bindPointerEvent("onPointerDown", "mousedown", "touchstart");
+    bindPointerEvent("onPointerMove", "mousemove", "touchmove");
+    bindPointerEvent("onPointerUp", "mouseup", "touchend");
+    bindPointerEvent("onMouseWheel", "wheel");
     window.oncontextmenu = e => false;
     
     load();
@@ -25,13 +25,12 @@ let delta = 0;
 let strain = [];
 let fps = [];
 
-let scene = controls.base();
+let scene = controls.scene();
 let scale = 1;
 let resScale = 1;
 
 let screens = {}
 let menus = {}
-let machines = {}
 
 let currentMode = "";
 
@@ -44,7 +43,7 @@ function loop(timestamp) {
     if (fps.length > 60) fps.shift();
     delta = Math.max(Math.min(delta, 1000), 0);
 
-    resScale = 1;
+    resScale = window.devicePixelRatio;
     let width = mainCanvas.width = window.innerWidth * resScale;
     let height = mainCanvas.height = window.innerHeight * resScale;
     scale = Math.min(width / 600, height / 800, window.devicePixelRatio * resScale);
@@ -70,7 +69,7 @@ function renderControls(cts, rect, alpha = 1) {
         );
         let a = alpha * ct.alpha;
         ctx.globalAlpha = a;
-        ct.onupdate();
+        ct.onUpdate();
         if (a > 0) {
             if (ct.mask) { 
                 ctx.save();
@@ -119,13 +118,13 @@ function updateInMouseState(cts, clickthrough = false, did = false, brk = false)
 
         if (!ctr && !did && !brk && inBox) {
             if (!ct.__mouseIn) {
-                ct.onpointerin(mousePos, lastArgs);
+                ct.onPointerEnter(mousePos, lastArgs);
                 ct.__mouseIn = true;
             }
             did = true;
         } else {
             if (ct.__mouseIn) {
-                ct.onpointerout(mousePos, lastArgs);
+                ct.onPointerLeave(mousePos, lastArgs);
                 ct.__mouseIn = false;
             }
         }
@@ -163,8 +162,8 @@ function doPointerEvent(pos, cts, event, args, did = false, brk = false) {
 }
 
 function doMouseEvent(e, type) {
-    if (type == "onpointerdown") isDown = true;
-    else if (type == "onpointerup") isDown = false;
+    if (type == "onPointerDown") isDown = true;
+    else if (type == "onPointerUp") isDown = false;
     let pos = mousePos = { x: e.clientX * resScale, y: e.clientY * resScale };
     lastArgs = e;
     doPointerEvent(pos, scene.controls, type, e);
@@ -175,8 +174,8 @@ function doMouseEvent(e, type) {
     return false;
 }
 function doTouchEvent(e, type) {
-    if (type == "onpointerdown") isDown = true;
-    else if (type == "onpointerup") isDown = false;
+    if (type == "onPointerDown") isDown = true;
+    else if (type == "onPointerUp") isDown = false;
     for (let touch of e.changedTouches) {
         let pos = mousePos = { x: touch.clientX * resScale, y: touch.clientY * resScale };
         touch.touches = e.touches;
@@ -191,7 +190,7 @@ function doTouchEvent(e, type) {
 }
 
 function loadScreen(screenName, clear = true) {
-    if (clear) scene = controls.base();
+    if (clear) scene = controls.scene();
     screens[screenName]();
 }
 

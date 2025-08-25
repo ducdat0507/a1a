@@ -3,16 +3,51 @@ let controls = {
         return {
             id: "",
             controls: [],
+
+            __inScene: false,
+
             append(ct, id = "") {
                 this.controls.push(ct);
                 if (id) {
                     this["$" + id] = ct;
                     ct.id = id;
                 }
+                if (this.__inScene) {
+                    function callAdd(control) {
+                        if (control.__inScene) return;
+                        control.__inScene = true;
+                        control.onSceneEnter();
+                        for (let child of control.controls) callAdd(child);
+                    }
+                    callAdd(ct);
+                }
+            },
+            prepend(ct, id = "") {
+                this.controls.unshift(ct);
+                if (id) {
+                    this["$" + id] = ct;
+                    ct.id = id;
+                }
+                if (this.__inScene) {
+                    function callAdd(control) {
+                        if (control.__inScene) return;
+                        control.__inScene = true;
+                        control.onSceneEnter();
+                        for (let child of control.controls) callAdd(child);
+                    }
+                    callAdd(ct);
+                }
             },
             remove(ct) {
                 let index = this.controls.indexOf(ct);
+                function callRemove(control) {
+                    if (!control.__inScene) return;
+                    control.__inScene = false;
+                    control.onSceneLeave();
+                    for (let child of control.controls) callRemove(child);
+                }
                 if (index >= 0) {
+                    callRemove(this.controls[index]);
                     this.controls.splice(index, 1);
                     if (ct.id && this.controls["$" + ct.id]) delete this.controls["$" + ct.id];
                 }
@@ -27,14 +62,23 @@ let controls = {
 
             render() {},
 
-            onupdate() {},
-            onpointerdown() {},
-            onpointerup() {},
-            onpointerin() {},
-            onpointerout() {},
-            onpointermove() {},
-            onmousewheel() {},
-            onclick() {},
+            onUpdate() {},
+            onPointerDown() {},
+            onPointerUp() {},
+            onPointerEnter() {},
+            onPointerLeave() {},
+            onPointerMove() {},
+            onMouseWheel() {},
+            onClick() {},
+            onSceneEnter() {},
+            onSceneLeave() {},
+            ...args
+        }
+    },
+    scene(args) {
+        return {
+            ...controls.base(),
+            __inScene: true,
             ...args
         }
     },
@@ -89,27 +133,36 @@ let controls = {
             fillHover: "#fff7",
             fillActive: "#0003",
 
+            __mouseIn: false,
             __mouseActive: false,
 
-            onpointerin() {
+            onPointerEnter() {
+                this.__mouseIn = true;
                 pushCursor("pointer");
             },
 
-            onpointerout() {
+            onPointerLeave() {
+                this.__mouseIn = false;
                 popCursor();
             },
 
-            onpointerdown() {
+            onSceneLeave() {
+                if (this.__mouseIn) {
+                    popCursor();
+                }
+            },
+
+            onPointerDown() {
                 this.__mouseActive = true;
                 let handler = (e) => {
                     this.__mouseActive = false;
-                    if (this.__mouseIn) this.onclick();
+                    if (this.__mouseIn) this.onClick();
                     document.removeEventListener("pointerup", handler);
                 }
                 document.addEventListener("pointerup", handler);
             },
 
-            onclick() {},
+            onClick() {},
             
             render() {
                 ctx.fillStyle = this.fill;
@@ -232,7 +285,7 @@ let controls = {
             scrollSpd: 0,
             mask: true,
 
-            onupdate() {
+            onUpdate() {
                 let max = Math.max((this.$content.rect.height - this.rect.height) / scale, 0);
 
                 if (!this.__mouseActive) {
@@ -258,7 +311,7 @@ let controls = {
                 }
             },
 
-            onpointerdown(pos, args) {
+            onPointerDown(pos, args) {
                 this.__mouseActive = true;
                 let startPos = mousePos;
                 let startScr = this.scrollPos;
@@ -289,7 +342,7 @@ let controls = {
                 document.addEventListener("pointerup", uphandler);
             },
 
-            onmousewheel(pos, args) {
+            onMouseWheel(pos, args) {
                 this.scrollPos -= Math.sign(args.deltaY) * 50;
             },
 
@@ -320,11 +373,13 @@ let controls = {
         return {
             ...controls.base(),
             fillMain: "white",
-            fillSub: "#ffffff18",
+            fillSub: "#ffffff0c",
             value: 0,
-            design: data.segmented.designs.seven1,
             scale: 16,
             digits: 0,
+
+            currentDigits: [],
+            currentAlpha: [],
 
             render() {
                 let str = this.value.toFixed(0).padStart(this.digits);
@@ -339,6 +394,23 @@ let controls = {
                 for (let a = 0; a < str.length; a++) {
                     let digit = str[str.length - 1 - a];
                     if (a % 3 == 0) offset -= (this.design.sepSpace) * unit;
+
+                    if (this.currentDigits.length <= a) {
+                        this.currentDigits.push(digit);
+                        this.currentAlpha.push(1);
+                    }
+
+                    if (this.currentDigits[a] != digit) {
+                        this.currentAlpha[a] -= 0.05 * delta;
+                        if (this.currentAlpha[a] <= 0) {
+                            this.currentAlpha[a] = 0.5;
+                            this.currentDigits[a] = digit;
+                        }
+                    } else {
+                        this.currentAlpha[a] += 0.01 * delta;
+                        if (this.currentAlpha[a] > 1) this.currentAlpha[a] = 1;
+                    }
+
                     for (let s in this.design.segments) {
                         let seg = this.design.segments[s];
                         ctx.beginPath();
@@ -359,12 +431,19 @@ let controls = {
                             }
                             ctx[cmd](...args);
                         }
-                        ctx.fillStyle = this.design.digits[digit]?.[s] ? this.fillMain : this.fillSub;
-                        ctx.shadowBlur = this.design.digits[digit]?.[s] ? 50 * scale : 0;
-                        ctx.shadowColor = ctx.fillStyle;
+                        ctx.fillStyle = this.fillSub;
                         ctx.fill();
-                        ctx.shadowBlur = 0;
-                        ctx.shadowColor = "";
+                        if (this.design.digits[this.currentDigits[a]]?.[s]) {
+                            let lastAlpha = ctx.globalAlpha;
+                            ctx.fillStyle = this.fillMain;
+                            ctx.globalAlpha *= this.currentAlpha[a];
+                            ctx.shadowBlur = 50 * scale * this.currentAlpha[a];
+                            ctx.shadowColor = ctx.fillStyle;
+                            ctx.fill();
+                            ctx.globalAlpha = lastAlpha;
+                            ctx.shadowBlur = 0;
+                            ctx.shadowColor = "";
+                        }
                     }
                     offset -= (this.design.width + this.design.charSpace) * unit;
                 }

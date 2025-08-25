@@ -1,6 +1,7 @@
-data.segmented = {
+data.machines.segmented = {
     designs: {
-        seven1: {
+        basic7_1: {
+            worth: 0,
             width: 120,
             height: 300,
             charSpace: 25,

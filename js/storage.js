@@ -2,7 +2,21 @@ let gameData = {}
 
 function getStartGame() {
     let data = {
+        machine: 0,
+        machines: [
+            {
+                type: "segmented",
+                prefs: {
+                    design: "basic7_1"
+                }
+            }
+        ],
         number: 0,
+        res: {
+            square: 0,
+            pent: 0,
+            hex: 0,
+        }
     }
     return data;
 }

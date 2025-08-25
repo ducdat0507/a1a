@@ -27,7 +27,8 @@ screens.base = () => {
         size: Ex(0, 0, 1, 1),
     }), "body");
 
-    machines.segmented.setup(machineBody);
+    let machData = getCurrentMachine()
+    machines[machData.type].setup(machineBody, machData);
     machineBody.setValue(gameData.value);
 
     // -------------------- Machine buttons
@@ -67,16 +68,16 @@ screens.base = () => {
     function makePushyButton(button, pop, events = {}, popValue = 10) {
         let buttonDown = 0;
 
-        button.onpointerin = () => {
+        button.onPointerEnter = () => {
             pushCursor("pointer");
         }
-        button.onpointerout = () => {
+        button.onPointerLeave = () => {
             popCursor();
         }
-        button.onupdate = () => {
+        button.onUpdate = () => {
             if (!buttonDown) pop.position.y += (-popValue - pop.position.y) * 0.978 ** delta;
         }
-        button.onpointerdown = (e) => {
+        button.onPointerDown = (e) => {
             if (!buttonDown) {
                 events.push?.();
                 pop.position.y = 0;
@@ -144,7 +145,7 @@ screens.base = () => {
         tween(100, (t) => {
             if (!menuHolder.$body) return true
             menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
-            menuHolder.$body.position.y = lastY - 20 * ease.cubic.in(t);
+            menuHolder.$body.position.y = lastY - 50 * ease.cubic.in(t);
         }).then(() => {
             if (menuHolder.$body) menuHolder.remove(menuHolder.$body);
             menuHolder.append(elm, "body");
@@ -168,7 +169,7 @@ screens.base = () => {
         let last = menuHierarchy[menuHierarchy.length - 1];
         tween(100, (t) => {
             menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
-            menuHolder.$body.position.y = lastY + 20 * ease.cubic.in(t);
+            menuHolder.$body.position.y = lastY + 50 * ease.cubic.in(t);
         }).then(() => {
             menuHolder.remove(menuHolder.$body);
             if (last) {
@@ -177,7 +178,7 @@ screens.base = () => {
                 menuHeader.text = last.menuTitle ?? "";
                 return tween(100, (t) => {
                     menuHeader.alpha = menuHolder.$body.alpha = t;
-                    menuHolder.$body.position.y = lastY + 20 * ease.cubic.out(t);
+                    menuHolder.$body.position.y = lastY + 50 * ease.cubic.out(t);
                 })
             }
         })
@@ -249,6 +250,9 @@ screens.base = () => {
             push() {
                 if (!menuHierarchy[0]) {
                     machineBody.setValue(++gameData.number);
+                    if (gameData.number % 1000 == 0) gameData.res.square += getSquareGain();
+                    if (gameData.number % 10000 == 0) gameData.res.pent++;
+                    if (gameData.number % 100000 == 0) gameData.res.hex++;
                     save();
                 }
             },

@@ -11,7 +11,7 @@ menus.settings = (openMenu, closeMenu) => {
         fill: "#4f4f4f",
         mask: true,
         radius: 40,
-        onclick: () => closeMenu(),
+        onClick: () => closeMenu(),
     })
     menu.append(backBtn, "backBtn");
 
@@ -26,7 +26,7 @@ menus.settings = (openMenu, closeMenu) => {
         position: Ex(0, 80),
         size: Ex(0, -180, 1, 1),
         fill: "#0000",
-        radius: 30,
+        radius: 20,
         mask: true,
     })
     menu.append(box, "box");
@@ -37,30 +37,30 @@ menus.settings = (openMenu, closeMenu) => {
     })
     box.append(scroller);
 
-    function makeButton(title, onclick) {
+    function makeButton(title, onClick) {
         let ctrl;
         scroller.$content.append(ctrl = controls.button({
             position: Ex(0, scroller.$content.size.y),
-            size: Ex(0, 72, 1, 0),
+            size: Ex(0, 80, 1, 0),
             fill: "#3f3f3f",
-            radius: 30,
-            onclick
+            radius: 20,
+            onClick
         }))
 
         ctrl.append(controls.label({
-            position: Ex(20, 24, 0, 0),
+            position: Ex(25, 28, 0, 0),
             scale: 28,
             align: "left",
             text: title,
         }), "title")
 
-        scroller.$content.size.y += 80;
+        scroller.$content.size.y += 90;
     }
 
     makeButton("Save", () => {
         save();
     });
-
+    scroller.$content.size.y += 1500;
     makeButton("Hard reset", () => {
         totalDestruction();
     });
@@ -70,19 +70,11 @@ menus.settings = (openMenu, closeMenu) => {
         [backBtn, 40],
     ]
     for (let ctrl of scroller.$content.controls) {
-        let delay = (mainCanvas.height / scale - ctrl.position.y) * .5;
+        let delay = (mainCanvas.height / scale - ctrl.position.y) * .35 + 20;
         if (delay > 40) lerpItems.push([ctrl, delay]);
         else break;
     }
-    for (let [item, delay] of lerpItems) {
-        let y = item.position.y;
-        item.alpha = 0;
-        setTimeout(() => tween(300, (t) => {
-            let value = ease.back.out(t) ** .5;
-            item.alpha = t;
-            item.position.y = y + 50 * (1 - value);
-        }), delay);
-    }
+    doItemReveal(lerpItems);
 
     return menu
 }

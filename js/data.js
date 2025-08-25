@@ -1,1 +1,3 @@
-let data = {}
+let data = {
+    machines: {}
+}

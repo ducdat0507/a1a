@@ -1,5 +1,52 @@
 machines.segmented = {
-    setup(body) {
+    prefs: {
+        design: {
+            name: "Display Designs",
+            items: () => data.machines.segmented.designs,
+            makeItems(body, items) {
+                const itemsPerRow = 4;
+                const itemGap = 10;
+                const itemHeight = 150;
+                const startPos = body.size.y;
+
+                let index = 0;
+                for (let id in items) {
+                    let item = items[id];
+
+                    let button = controls.button({
+                        position: Ex(
+                            itemGap * (index % itemsPerRow) / itemsPerRow,
+                            startPos + Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
+                            (index % itemsPerRow) / itemsPerRow,
+                            0
+                        ),
+                        size: Ex(
+                            -itemGap * (itemsPerRow - 1) / itemsPerRow,
+                            itemHeight,
+                            1 / itemsPerRow,
+                            0,
+                        ),
+                        fill: "#3f3f3f",
+                        radius: 15,
+                        mask: true,
+                    });
+                    button.append(controls.counter({
+                        position: Ex(0, 0, 0.6, 0.4),
+                        scale: 80,
+                        fillSub: "#fff3",
+                        design: items[id],
+                        value: 42,
+                    }));
+                    body.append(button);
+                    
+                    index++;
+                }
+
+                body.size.y += Math.ceil(index / itemsPerRow) * (itemHeight + itemGap) - itemGap;
+            }
+        }
+    },
+    setup(body, machine) {
         body.append(controls.label({
             position: Ex(0, -200, 0.5, 0.5),
             size: Ex(0, 0),
@@ -21,6 +68,7 @@ machines.segmented = {
             scale: 120,
             digits: 6,
             fill: "#ffffff",
+            design: data.machines.segmented.designs[machine.prefs.design]
         }), "value");
 
         body.setValue = (value) => {

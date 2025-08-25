@@ -10,3 +10,8 @@ function formatFixed(num, sig = 0) {
 function lerp(from, to, x) {
     return from + (to - from) * x;
 }
+
+
+function getSquareGain() {
+    return 20;
+}
