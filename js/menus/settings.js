@@ -57,11 +57,13 @@ menus.settings = (openMenu, closeMenu) => {
         scroller.$content.size.y += 80;
     }
 
-    for (let a = 0; a < 20; a++) makeButton("Useless button " + a, () => {});
-    
     makeButton("Save", () => {
         save();
-    });;
+    });
+
+    makeButton("Hard reset", () => {
+        totalDestruction();
+    });
 
 
     let lerpItems = [
