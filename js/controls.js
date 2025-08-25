@@ -437,7 +437,7 @@ let controls = {
                             let lastAlpha = ctx.globalAlpha;
                             ctx.fillStyle = this.fillMain;
                             ctx.globalAlpha *= this.currentAlpha[a];
-                            ctx.shadowBlur = 50 * scale * this.currentAlpha[a];
+                            ctx.shadowBlur = 0.1 * this.scale * scale * this.currentAlpha[a] ** 0.5;
                             ctx.shadowColor = ctx.fillStyle;
                             ctx.fill();
                             ctx.globalAlpha = lastAlpha;
