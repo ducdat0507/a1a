@@ -27,7 +27,7 @@ screens.base = () => {
         size: Ex(0, 0, 1, 1),
     }), "body");
 
-    machines.segmented(machineBody);
+    machines.segmented.setup(machineBody);
     machineBody.setValue(gameData.value);
 
     // -------------------- Machine buttons

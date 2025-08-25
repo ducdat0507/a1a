@@ -322,78 +322,7 @@ let controls = {
             fillMain: "white",
             fillSub: "#ffffff18",
             value: 0,
-            design: {
-                width: 12,
-                height: 30,
-                charSpace: 2,
-                sepSpace: 5,
-                segments: [
-                    [
-                        ["moveTo", "1.5x", "0y"],
-                        ["lineTo", "9.5x", "0y"],
-                        ["lineTo", "9.5x", "2y"],
-                        ["lineTo", "0x", "2y"],
-                        ["lineTo", "0x", "1.5y"],
-                    ],
-                    [
-                        ["moveTo", "10.5x", "0y"],
-                        ["lineTo", "12x", "1.5y"],
-                        ["lineTo", "12x", "14.6y"],
-                        ["lineTo", "11x", "14.6y"],
-                        ["lineTo", "10x", "13.6y"],
-                        ["lineTo", "10x", "0y"],
-                    ],
-                    [
-                        ["moveTo", "11x", "15.4y"],
-                        ["lineTo", "12x", "15.4y"],
-                        ["lineTo", "12x", "28.5y"],
-                        ["lineTo", "10.5x", "30y"],
-                        ["lineTo", "10x", "30y"],
-                        ["lineTo", "10x", "16.4y"],
-                    ],
-                    [
-                        ["moveTo", "0x", "28y"],
-                        ["lineTo", "9.5x", "28y"],
-                        ["lineTo", "9.5x", "30y"],
-                        ["lineTo", "1.5x", "30y"],
-                        ["lineTo", "0x", "28.5y"],
-                    ],
-                    [
-                        ["moveTo", "1x", "15.4y"],
-                        ["lineTo", "2x", "16.4y"],
-                        ["lineTo", "2x", "27.5y"],
-                        ["lineTo", "0x", "27.5y"],
-                        ["lineTo", "0x", "15.4y"],
-                    ],
-                    [
-                        ["moveTo", "0x", "2.5y"],
-                        ["lineTo", "2x", "2.5y"],
-                        ["lineTo", "2x", "13.6y"],
-                        ["lineTo", "1x", "14.6y"],
-                        ["lineTo", "0x", "14.6y"],
-                    ],
-                    [
-                        ["moveTo", "2.7x", "14y"],
-                        ["lineTo", "9.3x", "14y"],
-                        ["lineTo", "10.3x", "15y"],
-                        ["lineTo", "9.3x", "16y"],
-                        ["lineTo", "2.7x", "16y"],
-                        ["lineTo", "1.7x", "15y"],
-                    ],
-                ],
-                digits: {
-                    0: [1, 1, 1, 1, 1, 1, 0],
-                    1: [0, 1, 1, 0, 0, 0, 0],
-                    2: [1, 1, 0, 1, 1, 0, 1],
-                    3: [1, 1, 1, 1, 0, 0, 1],
-                    4: [0, 1, 1, 0, 0, 1, 1],
-                    5: [1, 0, 1, 1, 0, 1, 1],
-                    6: [1, 0, 1, 1, 1, 1, 1],
-                    7: [1, 1, 1, 0, 0, 0, 0],
-                    8: [1, 1, 1, 1, 1, 1, 1],
-                    9: [1, 1, 1, 1, 0, 1, 1],
-                },
-            },
+            design: data.segmented.designs.seven1,
             scale: 16,
             digits: 0,
 
@@ -431,7 +360,7 @@ let controls = {
                             ctx[cmd](...args);
                         }
                         ctx.fillStyle = this.design.digits[digit]?.[s] ? this.fillMain : this.fillSub;
-                        ctx.shadowBlur = this.design.digits[digit]?.[s] ? 50 : 0;
+                        ctx.shadowBlur = this.design.digits[digit]?.[s] ? 50 * scale : 0;
                         ctx.shadowColor = ctx.fillStyle;
                         ctx.fill();
                         ctx.shadowBlur = 0;
