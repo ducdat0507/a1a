@@ -59,7 +59,7 @@ menus.customize = (openMenu, closeMenu) => {
         }))
 
         ctrl.append(controls.label({
-            position: Ex(25, 30, 0, 0),
+            position: Ex(25, 42, 0, 0),
             scale: 32,
             align: "left",
             text: title,
@@ -85,10 +85,10 @@ menus.customize = (openMenu, closeMenu) => {
     menu.append(resBox, "resBox");
     
     resBox.append(controls.label({
-        position: Ex(-274, 48, 1, 0),
+        position: Ex(-274, 60, 1, 0),
         scale: 24,
         align: "right",
-        text: (+gameData.res.square).toLocaleString("en-US"),
+        text: formatFixed(gameData.res.square),
     }), "squareAmount");
     resBox.append(controls.icon({
         position: Ex(-250, 58, 1, 0),
@@ -97,11 +97,11 @@ menus.customize = (openMenu, closeMenu) => {
         fill: "#9f5",
     }), "squareIcon");
     resBox.append(controls.label({
-        position: Ex(-24, 48, 1, 0),
+        position: Ex(-24, 60, 1, 0),
         scale: 24,
         align: "right",
         fill: "#fffa",
-        text: `(+${(+getSquareGain()).toLocaleString("en-US")} / 1k)`,
+        text: `(+${formatFixed(getSquareGain())} / 1k)`,
     }), "squareSpeed");
 
     let lerpItems = [
@@ -176,10 +176,10 @@ menus.customize = (openMenu, closeMenu) => {
             box.position.x = 
                 (box.position.ex = -1 + value) * 40;
             box.alpha = value;
-            if (t == 1) {
-                menu.remove(currentViewBox);
-                currentViewBox = currentViewScroller = null;
-            }
+        }).then(() => {
+            if (currentView) return;
+            menu.remove(currentViewBox);
+            currentViewBox = currentViewScroller = null;
         })
     }
 

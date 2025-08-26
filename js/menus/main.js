@@ -21,7 +21,7 @@ menus.main = (openMenu, closeMenu) => {
     }), "icon")
 
     machBtn.append(controls.label({
-        position: Ex(25, 30, 0, 0),
+        position: Ex(25, 40, 0, 0),
         scale: 32,
         align: "left",
         text: "Machines",
@@ -47,7 +47,7 @@ menus.main = (openMenu, closeMenu) => {
     }), "icon")
 
     custBtn.append(controls.label({
-        position: Ex(25, 30, 0, 0),
+        position: Ex(25, 40, 0, 0),
         scale: 32,
         align: "left",
         text: "Customize",
@@ -72,7 +72,7 @@ menus.main = (openMenu, closeMenu) => {
     }), "icon")
 
     storeBtn.append(controls.label({
-        position: Ex(25, 30, 0, 0),
+        position: Ex(25, 40, 0, 0),
         scale: 32,
         align: "left",
         text: "Store",
@@ -87,7 +87,7 @@ menus.main = (openMenu, closeMenu) => {
     menu.append(footer, "footer")
 
     footer.append(controls.label({
-        position: Ex(20, 23, 0, 0),
+        position: Ex(20, 35, 0, 0),
         scale: 16,
         align: "left",
         style: "400",
@@ -96,7 +96,7 @@ menus.main = (openMenu, closeMenu) => {
     }))
 
     footer.append(controls.label({
-        position: Ex(20, 42, 0, 0),
+        position: Ex(20, 55, 0, 0),
         scale: 16,
         align: "left",
         style: "400",

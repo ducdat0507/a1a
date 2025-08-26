@@ -223,35 +223,65 @@ let controls = {
         return {
             ...controls.base(),
             fill: "white",
+            stroke: "#0000",
+            thickness: 4,
             text: "",
             scale: 16,
             style: "normal",
-            font: "Inter, SF Pro, Arial",
+            font: "SF Pro, Inter, Arial, tabler icons, sans-serif",
             align: "center",
+            baseline: "middle",
             wrap: false,
+            lines: [],
+            oldArgs: {},
 
             render() {
                 ctx.fillStyle = this.fill;
+                ctx.strokeStyle = this.stroke;
+                ctx.lineWidth = this.thickness * scale;
                 ctx.textAlign = this.align;
-                ctx.textBaseline = "top";
+                ctx.textBaseline = this.baseline;
                 ctx.font = this.style + " " + (this.scale * scale) + "px " + this.font;
-                if (this.wrap) {
-                    let words = this.text.split(" ");
-                    let line = "";
-                    let pos = this.rect.y;
-                    for (let word of words) {
-                        if (ctx.measureText(line + word).width > this.rect.width) {
-                            ctx.fillText(line, this.rect.x, pos);
-                            pos += this.scale * scale * 1.2;
-                            line = word + " ";
-                        } else {
-                            line += word + " ";
-                        }
-                    }
-                    ctx.fillText(line, this.rect.x, pos);
+
+                let lines;
+                let pos = this.rect.y;
+
+                if (this.oldArgs.width == this.rect.width && this.oldArgs.height == this.rect.height && this.oldArgs.font == ctx.font && this.oldArgs.text == this.text) {
+                    lines = this.lines;
+                } else if (!this.wrap) {
+                    lines = this.text.split("\n");
                 } else {
-                    ctx.fillText(this.text, this.rect.x, this.rect.y, this.rect.width || undefined);
+                    let newLines = [];
+                    for (let line of this.text.split("\n")) {
+                        let words = line.split(" ");
+                        let newLine = "";
+                        for (let word of words) {
+                            if (ctx.measureText(newLine + word).width > this.rect.width) {
+                                newLines.push(newLine);
+                                newLine = word + " ";
+                            } else {
+                                newLine += word + " ";
+                            }
+                        }
+                        newLines.push(newLine);
+                    }
+                    lines = newLines;
                 }
+
+                this.oldArgs = {
+                    width: this.rect.width,
+                    height: this.rect.height,
+                    font: ctx.font,
+                    text: this.text
+                }
+
+                for (let line of lines) {
+                    ctx.strokeText(line, this.rect.x, pos);
+                    ctx.fillText(line, this.rect.x, pos);
+                    pos += this.scale * scale * 1.3;
+                }
+
+                this.lines = lines;
             },
             ...args
         }

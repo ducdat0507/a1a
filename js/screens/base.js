@@ -108,7 +108,7 @@ screens.base = () => {
     
     let menuHeader;
     machine.append(menuHeader = controls.label({
-        position: Ex(25, -55, 0, 1),
+        position: Ex(25, -38, 0, 1),
         scale: 32,
         align: "left",
         style: "700",
@@ -142,7 +142,7 @@ screens.base = () => {
         menuHierarchy.push(elm);
 
         let lastY = menuHolder.$body?.position.y;
-        tween(100, (t) => {
+        tween(150, (t) => {
             if (!menuHolder.$body) return true
             menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
             menuHolder.$body.position.y = lastY - 50 * ease.cubic.in(t);
@@ -167,7 +167,7 @@ screens.base = () => {
         
         let lastY = menuHolder.$body.position.y;
         let last = menuHierarchy[menuHierarchy.length - 1];
-        tween(100, (t) => {
+        tween(150, (t) => {
             menuHeader.alpha = menuHolder.$body.alpha = 1 - t;
             menuHolder.$body.position.y = lastY + 50 * ease.cubic.in(t);
         }).then(() => {
@@ -176,7 +176,7 @@ screens.base = () => {
                 menuHolder.append(last, "body");
                 let lastY = menuHolder.$body.position.y;
                 menuHeader.text = last.menuTitle ?? "";
-                return tween(100, (t) => {
+                return tween(150, (t) => {
                     menuHeader.alpha = menuHolder.$body.alpha = t;
                     menuHolder.$body.position.y = lastY + 50 * ease.cubic.out(t);
                 })

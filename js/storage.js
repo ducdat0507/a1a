@@ -2,6 +2,13 @@ let gameData = {}
 
 function getStartGame() {
     let data = {
+        number: 0,
+        res: {
+            square: 0,
+            pent: 0,
+            hex: 0,
+        },
+
         machine: 0,
         machines: [
             {
@@ -11,11 +18,9 @@ function getStartGame() {
                 }
             }
         ],
-        number: 0,
-        res: {
-            square: 0,
-            pent: 0,
-            hex: 0,
+
+        prefs: {
+            maxRes: 0,
         }
     }
     return data;
