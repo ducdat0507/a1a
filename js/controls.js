@@ -226,7 +226,7 @@ let controls = {
             text: "",
             scale: 16,
             style: "normal",
-            font: "SF Pro, Inter, Arial",
+            font: "Inter, SF Pro, Arial",
             align: "center",
             wrap: false,
 
@@ -431,8 +431,10 @@ let controls = {
                             }
                             ctx[cmd](...args);
                         }
-                        ctx.fillStyle = this.fillSub;
-                        ctx.fill();
+                        if (!this.design.digits[this.currentDigits[a]]?.[s] || this.currentAlpha[a] < 1) {
+                            ctx.fillStyle = this.fillSub;
+                            ctx.fill();
+                        }
                         if (this.design.digits[this.currentDigits[a]]?.[s]) {
                             let lastAlpha = ctx.globalAlpha;
                             ctx.fillStyle = this.fillMain;
