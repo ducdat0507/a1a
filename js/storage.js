@@ -27,17 +27,43 @@ function getStartGame() {
 }
 
 function load() {
-
-    let data = localStorage.getItem("a1a");
-    if (!data) {
-        gameData = getStartGame()
-    } else {
-        gameData = deepCopy(JSON.parse(decodeURIComponent(atob(data))), getStartGame())
+    try {
+        let data = localStorage.getItem("a1a");
+        if (!data) {
+            gameData = getStartGame()
+        } else if (data.startsWith("J")) {
+            gameData = deepCopy(JSON.parse(decodeURIComponent(atob(data))), getStartGame())
+        } else {
+            gameData = deepCopy(JSON.parse(LZString.decompressFromUTF16(data)), getStartGame())
+        }
+    } catch (e) {
+        console.warn("Save loading encountered an error: \n", e);
     }
 }
 
 function save() {
-    localStorage.setItem("a1a", btoa(encodeURIComponent(JSON.stringify(gameData))))
+    localStorage.setItem("a1a", LZString.compressToUTF16(JSON.stringify(gameData)))
+}
+
+function downloadSave() {
+    let text = LZString.compressToUTF16(JSON.stringify(gameData))
+    
+    var element = document.createElement("a");
+    element.href = "data:application/octet-stream;charset=utf-8," + encodeURIComponent(text);
+    element.download = Date.now() + ".a1a";
+    element.click();
+}
+
+function uploadSave() {
+    var element = document.createElement("input");
+    element.type = "file";
+    element.accept = ".a1a";
+    element.oninput = () => {
+        element.files[0]?.text().then((txt) => {
+            callPopup("save", txt);
+        });
+    }
+    element.click();
 }
 
 function totalDestruction() {

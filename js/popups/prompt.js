@@ -1,16 +1,16 @@
 popups.prompt = {
-    make(popup, title, body, options, onAnswer) {
+    make(popup, title, body, options, onAnswer = null) {
         popup.$title.$label.text = title;
 
         if (typeof body == "string") {
             let box = controls.rect({
                 size: Ex(0, 0, 1, 1),
-                fill: "#111",
-                radius: 20,
+                fill: "#1f1f1f",
+                radius: 40,
             })
             box.append(controls.label({
                 position: Ex(0, 54, 0.5, 0),
-                size: Ex(-60, -60, 1, 1),
+                size: Ex(-80, -60, 1, 1),
                 scale: 24,
                 text: body,
                 wrap: true,
@@ -36,7 +36,7 @@ popups.prompt = {
                 radius: 40,
                 fill: "#3f3f3f",
                 onClick() {
-                    if (!onAnswer(item.id ?? item.icon)) popup.close();
+                    if (!onAnswer?.(item.id ?? item.icon)) popup.close();
                 }
             })
             button.append(controls.icon({

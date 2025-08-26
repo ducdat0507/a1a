@@ -128,7 +128,7 @@ screens.base = () => {
     function setButtonOffset(value) {
         machineBody.$button.position.y = -180 - 20 * value - 50 * headerLerp;
         machineBody.$menuBtn.position.x = 120 - 20 * value;
-        machineBody.$menuBtn.position.y = -150 + 10 * value - 50 * headerLerp;
+        machineBody.$menuBtn.position.y = -150 + 250 * value - 50 * headerLerp;
 
         for (let btn of [machineBody.$button, machineBody.$menuBtn]) {
             btn.$pop.$icon.position.ey = 0.5 - value;

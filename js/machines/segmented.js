@@ -2,6 +2,7 @@ machines.segmented = {
     prefs: {
         design: {
             name: "Display Designs",
+            icon: "numbers",
             items: () => data.machines.segmented.designs,
             makeItems(body, items) {
                 const itemsPerRow = 4;

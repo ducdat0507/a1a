@@ -49,7 +49,6 @@ function loop(timestamp) {
     scale = Math.min(width / 600, height / 800, window.devicePixelRatio * resScale);
     if (gameData.prefs.maxRes) {
         let scaleMult = Math.min(gameData.prefs.maxRes / Math.max(width, height), 1);
-        console.log(scaleMult);
         resScale *= scaleMult; width *= scaleMult; height *= scaleMult; scale *= scaleMult;
     }
     mainCanvas.width = width;

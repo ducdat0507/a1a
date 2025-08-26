@@ -33,7 +33,7 @@ menus.customize = (openMenu, closeMenu) => {
         position: Ex(0, 80),
         size: Ex(0, -180, 1, 1),
         fill: "#0000",
-        radius: 20,
+        radius: 40,
         mask: true,
     })
     menu.append(box, "box");
@@ -48,7 +48,7 @@ menus.customize = (openMenu, closeMenu) => {
     box.append(scroller);
     scroller.$content.size.y = 60;
 
-    function makeButton(title, onClick) {
+    function makeViewButton(item, onClick) {
         let ctrl;
         scroller.$content.append(ctrl = controls.button({
             position: Ex(0, scroller.$content.size.y),
@@ -58,12 +58,25 @@ menus.customize = (openMenu, closeMenu) => {
             onClick
         }))
 
+        ctrl.append(controls.icon({
+            position: Ex(-50, -50, 1, 1),
+            scale: 250,
+            icon: item.icon,
+            fill: "#0003",
+        }), "icon")
+
         ctrl.append(controls.label({
             position: Ex(25, 42, 0, 0),
             scale: 32,
             align: "left",
-            text: title,
+            text: item.name,
         }), "title")
+        ctrl.append(controls.icon({
+            position: Ex(-40, 40, 1, 0),
+            scale: 40,
+            icon: "chevron-right",
+        }), "title")
+
 
         scroller.$content.size.y += 150;
     }
@@ -71,7 +84,7 @@ menus.customize = (openMenu, closeMenu) => {
     let machInfo = getCurrentMachine();
     for (let itemId in machines[machInfo.type].prefs) {
         let item = machines[machInfo.type].prefs[itemId];
-        makeButton(item.name, () => setView(itemId));
+        makeViewButton(item, () => setView(itemId));
     }
 
     // Currency display

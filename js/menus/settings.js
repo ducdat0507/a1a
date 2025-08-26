@@ -26,7 +26,7 @@ menus.settings = (openMenu, closeMenu) => {
         position: Ex(0, 80),
         size: Ex(0, -180, 1, 1),
         fill: "#0000",
-        radius: 20,
+        radius: 40,
         mask: true,
     })
     menu.append(box, "box");
@@ -40,18 +40,35 @@ menus.settings = (openMenu, closeMenu) => {
     function makeHeader(title) {
         let ctrl;
         scroller.$content.append(ctrl = controls.label({
-            position: Ex(1, scroller.$content.size.y + 35, 0, 0),
+            position: Ex(1, scroller.$content.size.y + 45, 0, 0),
             scale: 32,
             style: "700",
             align: "left",
             text: title,
         }));
 
-        scroller.$content.size.y += 65;
+        scroller.$content.size.y += 75;
         return ctrl;
     }
 
-    function makeButton(title, onClick) {
+    function makeText(content, lines) {
+        let ctrl;
+
+        scroller.$content.append(ctrl = controls.label({
+            position: Ex(0, scroller.$content.size.y + 18, 0, 0),
+            size: Ex(0, 0, 1, 0),
+            scale: 24,
+            align: "left",
+            text: content,
+            fill: "#fffa",
+            wrap: true,
+        }))
+
+        scroller.$content.size.y += 24 * 1.3 * lines + 20;
+        return ctrl;
+    }
+
+    function makeButton(title, onClick, icon = null) {
         let ctrl;
         scroller.$content.append(ctrl = controls.button({
             position: Ex(0, scroller.$content.size.y),
@@ -67,6 +84,55 @@ menus.settings = (openMenu, closeMenu) => {
             align: "left",
             text: title,
         }), "title")
+
+        if (icon) {
+            ctrl.append(controls.icon({
+                position: Ex(-40, 40, 1, 0),
+                scale: 40,
+                icon
+            }), "icon")
+        }
+
+        scroller.$content.size.y += 90;
+        return ctrl;
+    }
+
+    function makeCheckbox(title, getValue, onChange) {
+        let ctrl;
+        scroller.$content.append(ctrl = controls.rect({
+            position: Ex(0, scroller.$content.size.y),
+            size: Ex(0, 80, 1, 0),
+            fill: "#1f1f1f",
+            radius: 20,
+        }))
+
+        ctrl.append(controls.label({
+            position: Ex(25, 42, 0, 0),
+            scale: 28,
+            align: "left",
+            text: title,
+        }), "title")
+
+        ctrl.append(controls.button({
+            position: Ex(-70, 10, 1, 0),
+            size: Ex(60, 60),
+            fill: "#3f3f3f",
+            radius: 10,
+            onClick() {
+                onChange(!ctrl.$check.$icon, update());
+                update
+            }
+        }), "check")
+        ctrl.$check.append(controls.icon({
+            position: Ex(0, 0, .5, .5),
+            scale: 40,
+            icon: "check",
+        }), "icon")
+
+        function update() {
+            ctrl.$check.$icon.opacity = getValue() ? 1 : 0;
+        }
+        update();
 
         scroller.$content.size.y += 90;
         return ctrl;
@@ -105,8 +171,8 @@ menus.settings = (openMenu, closeMenu) => {
             fill: "#3f3f3f",
             radius: 10,
             onClick() {
-                onChange(1);
-                ctrl.$value.text = getValue();
+                onChange(1, update);
+                update();
             }
         }), "plus")
         ctrl.$plus.append(controls.icon({
@@ -121,8 +187,8 @@ menus.settings = (openMenu, closeMenu) => {
             fill: "#3f3f3f",
             radius: 10,
             onClick() {
-                onChange(-1);
-                ctrl.$value.text = getValue();
+                onChange(-1, update);
+                update();
             }
         }), "minus")
         ctrl.$minus.append(controls.icon({
@@ -130,6 +196,10 @@ menus.settings = (openMenu, closeMenu) => {
             scale: 40,
             icon: "minus",
         }), "icon")
+
+        function update() {
+            ctrl.$value.text = getValue();
+        }
 
         scroller.$content.size.y += 90;
         return ctrl;
@@ -143,7 +213,6 @@ menus.settings = (openMenu, closeMenu) => {
         const bestRes = Math.max(innerWidth, innerHeight);
         const currentRes = gameData.prefs.maxRes || bestRes;
         let resIndex = resList.findIndex(x => x >= currentRes);
-        console.log(dir, bestRes, currentRes, resIndex);
         if (dir > 0) {
             resIndex += 1;
             if (gameData.prefs.maxRes && resIndex < resList.length && resList[resIndex] < bestRes) 
@@ -157,12 +226,33 @@ menus.settings = (openMenu, closeMenu) => {
     });
 
     makeHeader("Storage");
-    makeButton("Download Save", () => {
-        downloadSave();
+    let persistent = makeCheckbox("Persistent Storage", () => {}, (x) => {
+        if (x) {
+            navigator.storage?.persist?.().then((x) => {
+                if (x) persistent.$check.$icon.opacity = 1;
+            }) 
+        } else {
+            callPopup("prompt", 
+                "Persistent Storage",
+                "Persistent storage can not be disabled without deleting all data from this website.\n\n" +
+                    "To disable persistent storage, use your browser's storage manager to delete this website's data.",
+                [ 
+                    { icon: "arrow-left" },
+                ],
+            );
+        }
     });
-    makeButton("Upload Save", () => {
+    navigator.storage?.persisted?.().then(x => persistent.$check.$icon.opacity = x ? 1 : 0);
+    makeText("Request persistent storage to prevent your browser from deleting your save.", 2)
+
+    scroller.$content.size.y += 10;
+    makeButton("Download Save File", () => {
+        downloadSave();
+    }, "download");
+    makeButton("Upload Save File", () => {
         uploadSave();
-    }).fill = "#5f2f2f";
+    }, "upload").fill = "#5f2f2f";
+
     scroller.$content.size.y += 10;
     makeButton("Reset All Data", () => {
         callPopup("prompt", 
@@ -177,7 +267,7 @@ menus.settings = (openMenu, closeMenu) => {
                 if (item == "check") totalDestruction();
             }
         );
-    }).fill = "#5f2f2f";
+    }, "trash").fill = "#5f2f2f";
 
 
     let lerpItems = [
