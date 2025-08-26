@@ -40,14 +40,14 @@ menus.settings = (openMenu, closeMenu) => {
     function makeHeader(title) {
         let ctrl;
         scroller.$content.append(ctrl = controls.label({
-            position: Ex(1, scroller.$content.size.y + 45, 0, 0),
+            position: Ex(1, scroller.$content.size.y + 55, 0, 0),
             scale: 32,
             style: "700",
             align: "left",
             text: title,
         }));
 
-        scroller.$content.size.y += 75;
+        scroller.$content.size.y += 90;
         return ctrl;
     }
 
@@ -119,8 +119,8 @@ menus.settings = (openMenu, closeMenu) => {
             fill: "#3f3f3f",
             radius: 10,
             onClick() {
-                onChange(!ctrl.$check.$icon, update());
-                update
+                onChange(!ctrl.$check.$icon, update);
+                update(); save();
             }
         }), "check")
         ctrl.$check.append(controls.icon({
@@ -172,7 +172,7 @@ menus.settings = (openMenu, closeMenu) => {
             radius: 10,
             onClick() {
                 onChange(1, update);
-                update();
+                update(); save();
             }
         }), "plus")
         ctrl.$plus.append(controls.icon({
@@ -188,7 +188,7 @@ menus.settings = (openMenu, closeMenu) => {
             radius: 10,
             onClick() {
                 onChange(-1, update);
-                update();
+                update(); save();
             }
         }), "minus")
         ctrl.$minus.append(controls.icon({
@@ -243,7 +243,7 @@ menus.settings = (openMenu, closeMenu) => {
         }
     });
     navigator.storage?.persisted?.().then(x => persistent.$check.$icon.opacity = x ? 1 : 0);
-    makeText("Request persistent storage to prevent your browser from deleting your save.", 2)
+    makeText("Request persistent storage to prevent your save from being cleaned up automatically by your browser or other tools.", 3)
 
     scroller.$content.size.y += 10;
     makeButton("Download Save File", () => {
@@ -252,6 +252,7 @@ menus.settings = (openMenu, closeMenu) => {
     makeButton("Upload Save File", () => {
         uploadSave();
     }, "upload").fill = "#5f2f2f";
+    makeText("Make sure to back up your save in case you delete your browser's data by accident (that happens more often than you think!)", 3)
 
     scroller.$content.size.y += 10;
     makeButton("Reset All Data", () => {
