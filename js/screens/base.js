@@ -75,7 +75,7 @@ screens.base = () => {
             popCursor();
         }
         button.onUpdate = () => {
-            if (!buttonDown) pop.position.y += (-popValue - pop.position.y) * 0.978 ** delta;
+            if (!buttonDown) pop.position.y += (-popValue - pop.position.y) * (1 - 0.978 ** delta);
         }
         button.onPointerDown = (e) => {
             if (!buttonDown) {

@@ -21,6 +21,8 @@ function getStartGame() {
 
         prefs: {
             maxRes: 0,
+            targetFps: 0,
+            showFps: false,
         }
     }
     return data;

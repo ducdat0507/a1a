@@ -40,14 +40,14 @@ menus.settings = (openMenu, closeMenu) => {
     function makeHeader(title) {
         let ctrl;
         scroller.$content.append(ctrl = controls.label({
-            position: Ex(1, scroller.$content.size.y + 55, 0, 0),
+            position: Ex(1, scroller.$content.size.y + 70, 0, 0),
             scale: 32,
             style: "700",
             align: "left",
             text: title,
         }));
 
-        scroller.$content.size.y += 90;
+        scroller.$content.size.y += 100;
         return ctrl;
     }
 
@@ -119,7 +119,7 @@ menus.settings = (openMenu, closeMenu) => {
             fill: "#3f3f3f",
             radius: 10,
             onClick() {
-                onChange(!ctrl.$check.$icon, update);
+                onChange(!ctrl.$check.$icon.alpha, update);
                 update(); save();
             }
         }), "check")
@@ -130,7 +130,7 @@ menus.settings = (openMenu, closeMenu) => {
         }), "icon")
 
         function update() {
-            ctrl.$check.$icon.opacity = getValue() ? 1 : 0;
+            ctrl.$check.$icon.alpha = getValue() ? 1 : 0;
         }
         update();
 
@@ -206,7 +206,7 @@ menus.settings = (openMenu, closeMenu) => {
     }
 
     makeHeader("Graphics");
-    makePlusMinus("Max Resolution", () => {
+    makePlusMinus("Resolution", () => {
         return gameData.prefs.maxRes ? gameData.prefs.maxRes + "p" : "Full"
     }, (dir) => {
         const resList = [360, 480, 640, 800, 1024, 1280, 1520, 1800, 2400, 3200, 4800, 6400];
@@ -224,13 +224,58 @@ menus.settings = (openMenu, closeMenu) => {
             if (resIndex >= 0) gameData.prefs.maxRes = resList[resIndex];
         }
     });
+    makePlusMinus("Frame Rate", () => {
+        return gameData.prefs.targetFps ? gameData.prefs.targetFps + "fps" : "Auto"
+    }, (dir) => {
+        const list = [15, 30, 60, 0];
+        let index = list.findIndex(x => x == gameData.prefs.targetFps);
+        if (dir > 0) {
+            index = Math.min(index + 1, list.length - 1);
+        } else {
+            index = Math.max(index - 1, 0);
+        }
+        gameData.prefs.targetFps = list[index];
+        fps = [];
+    });
 
     makeHeader("Storage");
-    let persistent = makeCheckbox("Persistent Storage", () => {}, (x) => {
+    let persisted = false;
+    let persistent = makeCheckbox("Persistent Storage", () => persisted, (x) => {
         if (x) {
-            navigator.storage?.persist?.().then((x) => {
-                if (x) persistent.$check.$icon.opacity = 1;
-            }) 
+            callPopup("prompt", 
+                "Persistent Storage",
+                "Would you like to enable persistent storage?\n\n" +
+                    "You will not be able to disabled persistent storage without deleting all data from this website.",
+                [ 
+                    { icon: "x" },
+                    { icon: "check", right: true },
+                ],
+                (x) => {
+                    if (x == "check") {
+                        navigator.storage?.persist?.().then((x) => {
+                            persisted = x;
+                            if (x) {
+                                persistent.$check.$icon.alpha = 1;
+                                callPopup("prompt", 
+                                    "Persistent Storage",
+                                    "Successfully enabled persistent storage.",
+                                    [ 
+                                        { icon: "arrow-left" },
+                                    ],
+                                )
+                            } else {
+                                callPopup("prompt", 
+                                    "Persistent Storage",
+                                    "Failed to enable persistent storage. Browsers may refuse to grant persistent storage unless you play on this website for long enough.",
+                                    [ 
+                                        { icon: "arrow-left" },
+                                    ],
+                                )
+                            }
+                        }) 
+                    }
+                }
+            );
         } else {
             callPopup("prompt", 
                 "Persistent Storage",
@@ -242,7 +287,7 @@ menus.settings = (openMenu, closeMenu) => {
             );
         }
     });
-    navigator.storage?.persisted?.().then(x => persistent.$check.$icon.opacity = x ? 1 : 0);
+    navigator.storage?.persisted?.().then(x => persistent.$check.$icon.alpha = (persisted = x) ? 1 : 0);
     makeText("Request persistent storage to prevent your save from being cleaned up automatically by your browser or other tools.", 3)
 
     scroller.$content.size.y += 10;
@@ -269,6 +314,9 @@ menus.settings = (openMenu, closeMenu) => {
             }
         );
     }, "trash").fill = "#5f2f2f";
+
+    makeHeader("Debug");
+    makeCheckbox("Show Performance Stats", () => gameData.prefs.showFps, (x) => gameData.prefs.showFps = x);
 
     scroller.$content.size.y -= 10;
 

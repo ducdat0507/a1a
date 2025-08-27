@@ -228,7 +228,7 @@ let controls = {
             text: "",
             scale: 16,
             style: "normal",
-            font: "SF Pro, Inter, Arial, tabler icons, sans-serif",
+            font: fontFamily,
             align: "center",
             baseline: "middle",
             wrap: false,
@@ -322,23 +322,39 @@ let controls = {
                     this.scrollPos += this.scrollSpd * delta / 1000;
                     this.scrollSpd *= 0.1 ** (delta / 1000);
                     if (this.scrollPos > 0) {
-                        this.scrollSpd *= 1e-3 ** (delta / 1000);
-                        this.scrollPos *= 1e-3 ** (delta / 1000);
+                        this.scrollSpd *= 0.99 ** delta;
+                        this.scrollPos *= 0.99 ** delta;
                     } else if (this.scrollPos < -max) {
                         let p = this.scrollPos + max;
-                        this.scrollSpd *= 1e-3 ** (delta / 1000);
-                        this.scrollPos = -max + p * 1e-3 ** (delta / 1000);
+                        this.scrollSpd *= 0.99 ** delta;
+                        this.scrollPos = -max + p * 0.99 ** delta;
                     }
                 }
 
                 this.$content.position.y = this.scrollPos;
 
                 if (this.$content.position.y > 0) {
-                    this.$content.position.y -= this.scrollPos * (1 - 1 / (1 + this.scrollPos / 150));
+                    this.$content.position.y -= this.scrollPos * (1 - 1 / (1 + this.scrollPos / 500));
                 } else if (this.$content.position.y < -max) {
                     let p = this.scrollPos + max;
-                    this.$content.position.y -= p * (1 - 1 / (1 - p / 150));
+                    this.$content.position.y -= p * (1 - 1 / (1 - p / 500));
                 }
+            },
+
+            render() {
+                // let fraction = this.$content.rect.height / this.rect.height;
+                // if (fraction <= 1) return;
+                // if (!this.__mouseActive) ctx.globalAlpha *= Math.min(Math.abs(this.scrollSpd * 10), 1);
+                // if (ctx.globalAlpha > 0) {
+                //     ctx.fillStyle = "#aaa";
+                //     let offset = (this.rect.y - this.$content.rect.y);
+                //     ctx.fillRect(
+                //         this.rect.x + this.rect.width - 5 * scale, 
+                //         this.rect.y + this.rect.height * offset / this.rect.height / fraction, 
+                //         5 * scale, 
+                //         this.rect.height / fraction
+                //     );
+                // }
             },
 
             onPointerDown(pos, args) {
@@ -374,22 +390,6 @@ let controls = {
 
             onMouseWheel(pos, args) {
                 this.scrollPos -= Math.sign(args.deltaY) * 50;
-            },
-
-            render() {
-                // ctx.fillStyle = this.fill;
-                // ctx.fillRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
-                // let fraction = this.$content.rect.height / this.rect.height;
-                // if (fraction > 1) {
-                //     ctx.fillStyle = "#aaa";
-                //     let offset = (this.rect.y - this.$content.rect.y);
-                //     ctx.fillRect(
-                //         this.rect.x + this.rect.width - 5 * scale, 
-                //         this.rect.y + this.rect.height * offset / this.rect.height / fraction, 
-                //         5 * scale, 
-                //         this.rect.height / fraction
-                //     );
-                // } 
             },
 
             ...args

@@ -1,6 +1,8 @@
 let mainCanvas
 let ctx;
 
+let fontFamily = "SF Pro, Inter, Arial, tabler icons, sans-serif";
+
 let version = "1.0";
 let versionIndex = 5;
 
@@ -40,7 +42,7 @@ function loop(timestamp) {
     delta = (timestamp ?? performance.now()) - time;
     time += delta;
     fps.push(delta);
-    if (fps.length > 60) fps.shift();
+    if (fps.length > 1000) fps.shift();
     delta = Math.max(Math.min(delta, 1000), 0);
 
     resScale = window.devicePixelRatio;
@@ -51,6 +53,8 @@ function loop(timestamp) {
         let scaleMult = Math.min(gameData.prefs.maxRes / Math.max(width, height), 1);
         resScale *= scaleMult; width *= scaleMult; height *= scaleMult; scale *= scaleMult;
     }
+    width = Math.ceil(width);
+    height = Math.ceil(height);
     mainCanvas.width = width;
     mainCanvas.height = height;
 
@@ -59,10 +63,43 @@ function loop(timestamp) {
     updateAnimations();
     updateInMouseState(scene.controls);
     renderControls(scene.controls, { x: 0, y: 0, width, height });
-
+    
     strain.push(performance.now() - time);
-    if (strain.length > 10) strain.shift();
-    window.requestAnimationFrame(loop);
+    if (strain.length > 100) strain.shift();
+
+    if (gameData.prefs.showFps) {
+        let fpsSorted = [...fps];
+        fpsSorted.sort((x, y) => y - x);
+
+        let strainSorted = [...strain];
+        strainSorted.sort((x, y) => y - x);
+        
+        ctx.fillStyle = "#fff";
+        ctx.globalAlpha = 1;
+        ctx.font = (12 * scale) + "px Arial, Helvetica, sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(
+            `${width}x${height}`,
+            15 * scale, height - 50 * scale
+        )
+        ctx.fillText(
+            (1000 / fps[fps.length - 1]).toFixed(2) + "fps ("
+                + "avg " + (1000 / fps.reduce((x, y) => x + y, 0) * fps.length).toFixed(2) + " | "
+                + "1% " + (1000 / fpsSorted[Math.floor(fps.length / 100)]).toFixed(2) + " | "
+                + "0.1% " + (1000 / fpsSorted[Math.floor(fps.length / 1000)]).toFixed(2) + ")",
+            15 * scale, height - 35 * scale
+        )
+        ctx.fillText(
+            "strain: " + strain[strain.length - 1].toFixed(2) + "ms ("
+                + "avg " + (strain.reduce((x, y) => x + y, 0) / strain.length).toFixed(2) + " | "
+                + "peak " + strainSorted[0].toFixed(2) + ")",
+            15 * scale, height - 20 * scale
+        )
+    }
+
+    if (gameData.prefs.targetFps) window.setTimeout(loop, 1000 / gameData.prefs.targetFps);
+    else window.requestAnimationFrame(loop);
 }
 
 function renderControls(cts, rect, alpha = 1) {
