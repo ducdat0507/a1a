@@ -270,6 +270,8 @@ menus.settings = (openMenu, closeMenu) => {
         );
     }, "trash").fill = "#5f2f2f";
 
+    scroller.$content.size.y -= 10;
+
 
     let lerpItems = [
         [backBtn, 40],

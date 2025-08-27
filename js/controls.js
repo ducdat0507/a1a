@@ -441,29 +441,17 @@ let controls = {
                         if (this.currentAlpha[a] > 1) this.currentAlpha[a] = 1;
                     }
 
+                    ctx.setTransform(
+                        unit, 0, 0, unit,
+                        offset + this.rect.x + this.rect.width / 2, 
+                        this.rect.y - (this.design.height * unit  + this.rect.height) / 2
+                    );
+
                     for (let s in this.design.segments) {
                         let seg = this.design.segments[s];
-                        ctx.beginPath();
-                        for (let ins of seg) {
-                            let cmd = ins[0];
-                            let args = [];
-                            for (let i = 1; i < ins.length; i++) {
-                                let code = ins[i][ins[i].length - 1];
-                                if (code == "x") {
-                                    args.push(ins[i].slice(0, ins[i].length - 1) * unit + offset + this.rect.x + this.rect.width / 2);
-                                } else if (code == "y") {
-                                    args.push(((ins[i].slice(0, ins[i].length - 1)) - this.design.height / 2) * unit + this.rect.y + this.rect.height / 2);
-                                } else if (code == " ") {
-                                    args.push(ins[i].slice(0, ins[i].length - 1));
-                                } else {
-                                    args.push(ins[i]);
-                                }
-                            }
-                            ctx[cmd](...args);
-                        }
                         if (!this.design.digits[this.currentDigits[a]]?.[s] || this.currentAlpha[a] < 1) {
                             ctx.fillStyle = this.fillSub;
-                            ctx.fill();
+                            ctx.fill(seg);
                         }
                         if (this.design.digits[this.currentDigits[a]]?.[s]) {
                             let lastAlpha = ctx.globalAlpha;
@@ -471,7 +459,7 @@ let controls = {
                             ctx.globalAlpha *= this.currentAlpha[a];
                             ctx.shadowBlur = 0.1 * this.scale * scale * this.currentAlpha[a] ** 0.5;
                             ctx.shadowColor = ctx.fillStyle;
-                            ctx.fill();
+                            ctx.fill(seg);
                             ctx.globalAlpha = lastAlpha;
                             ctx.shadowBlur = 0;
                             ctx.shadowColor = "";
@@ -479,6 +467,8 @@ let controls = {
                     }
                     offset -= (this.design.width + this.design.charSpace) * unit;
                 }
+
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
             },
             ...args
         }

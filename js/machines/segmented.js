@@ -30,12 +30,20 @@ machines.segmented = {
                         fill: "#3f3f3f",
                         radius: 15,
                         mask: true,
+                        onClick() {
+                            getCurrentMachine().prefs.design = id;
+                            try {
+                                scene.$machine.$body.$value.design = item;
+                            } catch (e) {
+
+                            }
+                        }
                     });
                     button.append(controls.counter({
                         position: Ex(0, 0, 0.6, 0.4),
                         scale: 80,
                         fillSub: "#fff3",
-                        design: items[id],
+                        design: item,
                         value: 42,
                     }));
                     body.append(button);
