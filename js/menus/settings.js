@@ -239,56 +239,58 @@ menus.settings = (openMenu, closeMenu) => {
     });
 
     makeHeader("Storage");
-    let persisted = false;
-    let persistent = makeCheckbox("Persistent Storage", () => persisted, (x) => {
-        if (x) {
-            callPopup("prompt", 
-                "Persistent Storage",
-                "Would you like to enable persistent storage?\n\n" +
-                    "You will not be able to disable persistent storage without deleting all data from this website.",
-                [ 
-                    { icon: "x" },
-                    { icon: "check", right: true },
-                ],
-                (x) => {
-                    if (x == "check") {
-                        navigator.storage?.persist?.().then((x) => {
-                            persisted = x;
-                            if (x) {
-                                persistent.$check.$icon.alpha = 1;
-                                callPopup("prompt", 
-                                    "Persistent Storage",
-                                    "Successfully enabled persistent storage.",
-                                    [ 
-                                        { icon: "arrow-left" },
-                                    ],
-                                )
-                            } else {
-                                callPopup("prompt", 
-                                    "Persistent Storage",
-                                    "Failed to enable persistent storage. Browsers may refuse to grant persistent storage unless you play on this website for long enough.",
-                                    [ 
-                                        { icon: "arrow-left" },
-                                    ],
-                                )
-                            }
-                        }) 
+    if (navigator.storage?.persist) {
+        let persisted = false;
+        let persistent = makeCheckbox("Persistent Storage", () => persisted, (x) => {
+            if (x) {
+                callPopup("prompt", 
+                    "Persistent Storage",
+                    "Would you like to enable persistent storage?\n\n" +
+                        "You will not be able to disable persistent storage without deleting all data from this website.",
+                    [ 
+                        { icon: "x" },
+                        { icon: "check", right: true },
+                    ],
+                    (item) => {
+                        if (item == "check") {
+                            navigator.storage?.persist?.().then((x) => {
+                                persisted = x;
+                                if (x) {
+                                    persistent.$check.$icon.alpha = 1;
+                                    callPopup("prompt", 
+                                        "Persistent Storage",
+                                        "Successfully enabled persistent storage.",
+                                        [ 
+                                            { icon: "arrow-left" },
+                                        ],
+                                    )
+                                } else {
+                                    callPopup("prompt", 
+                                        "Persistent Storage",
+                                        "Failed to enable persistent storage. Browsers may refuse to grant persistent storage unless you play on this website for long enough.",
+                                        [ 
+                                            { icon: "arrow-left" },
+                                        ],
+                                    )
+                                }
+                            }) 
+                        }
                     }
-                }
-            );
-        } else {
-            callPopup("prompt", 
-                "Persistent Storage",
-                "Persistent storage can not be disabled without deleting all data from this website.\n\n" +
-                    "To disable persistent storage, use your browser's storage manager to delete this website's data.",
-                [ 
-                    { icon: "arrow-left" },
-                ],
-            );
-        }
-    });
-    navigator.storage?.persisted?.().then(x => persistent.$check.$icon.alpha = (persisted = x) ? 1 : 0);
-    makeText("Request persistent storage to prevent your save from being cleaned up automatically by your browser or other tools.", 3)
+                );
+            } else {
+                callPopup("prompt", 
+                    "Persistent Storage",
+                    "Persistent storage can not be disabled without deleting all data from this website.\n\n" +
+                        "To disable persistent storage, use your browser's storage manager to delete this website's data.",
+                    [ 
+                        { icon: "arrow-left" },
+                    ],
+                );
+            }
+        });
+        navigator.storage?.persisted?.().then(x => persistent.$check.$icon.alpha = (persisted = x) ? 1 : 0);
+        makeText("Request persistent storage to prevent your save from being cleaned up automatically by your browser or other tools.", 3)
+    }
 
     scroller.$content.size.y += 10;
     makeButton("Download Save File", () => {
