@@ -46,8 +46,8 @@ function loop(timestamp) {
     delta = Math.max(Math.min(delta, 1000), 0);
 
     resScale = window.devicePixelRatio;
-    let width = window.innerWidth * resScale;
-    let height = window.innerHeight * resScale;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     scale = Math.min(width / 600, height / 800, window.devicePixelRatio * resScale);
     if (gameData.prefs.maxRes) {
         let scaleMult = Math.min(gameData.prefs.maxRes / Math.max(width, height), 1);
