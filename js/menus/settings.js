@@ -245,7 +245,7 @@ menus.settings = (openMenu, closeMenu) => {
             callPopup("prompt", 
                 "Persistent Storage",
                 "Would you like to enable persistent storage?\n\n" +
-                    "You will not be able to disabled persistent storage without deleting all data from this website.",
+                    "You will not be able to disable persistent storage without deleting all data from this website.",
                 [ 
                     { icon: "x" },
                     { icon: "check", right: true },
