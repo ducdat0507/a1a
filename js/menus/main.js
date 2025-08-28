@@ -87,7 +87,7 @@ menus.main = (openMenu, closeMenu) => {
     menu.append(footer, "footer")
 
     footer.append(controls.label({
-        position: Ex(20, 35, 0, 0),
+        position: Ex(20, 33, 0, 0),
         scale: 16,
         align: "left",
         style: "400",
@@ -96,13 +96,29 @@ menus.main = (openMenu, closeMenu) => {
     }))
 
     footer.append(controls.label({
-        position: Ex(20, 55, 0, 0),
+        position: Ex(20, 53, 0, 0),
         scale: 16,
         align: "left",
         style: "400",
         fill: "#fff4",
         text: "a thing by duducat",
     }))
+
+    let infoBtn = controls.button({
+        position: Ex(-170, 0, 1, 0),
+        size: Ex(80, 80, 0, 0),
+        fill: "#4f4f4f",
+        mask: true,
+        radius: 40,
+        onClick: () => openMenu("info"),
+    })
+    footer.append(infoBtn, "infoBtn");
+
+    infoBtn.append(controls.icon({
+        position: Ex(0, 0, .5, .5),
+        scale: 40,
+        icon: "info-circle",
+    }), "icon")
 
     let optBtn = controls.button({
         position: Ex(-80, 0, 1, 0),

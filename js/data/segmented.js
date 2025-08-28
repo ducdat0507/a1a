@@ -1,5 +1,6 @@
 data.machines.segmented = {
     designs: {
+        // ------------------------- Default
         basic7_1: {
             worth: 0,
             width: 48,
@@ -56,6 +57,7 @@ data.machines.segmented = {
                 9: [1, 1, 1, 1, 0, 1, 1],
             },
         },
+        // ------------------------- 1 <>
         fancy7_1: {
             worth: 1,
             width: 48,

@@ -1,4 +1,7 @@
 machines.segmented = {
+    unlocks: {
+        design: new Set(["basic7_1", "basic7_2"]),
+    },
     prefs: {
         design: {
             name: "Display Designs",
@@ -7,11 +10,12 @@ machines.segmented = {
             makeItems(body, items) {
                 const itemsPerRow = 4;
                 const itemGap = 10;
-                const itemHeight = 150;
+                const itemHeight = 160;
                 const startPos = body.size.y;
 
                 let index = 0;
-                for (let id in items) {
+                let itemIds = Object.keys(items).sort((x, y) => items[x].worth - items[y].worth);
+                for (const id of itemIds) {
                     let item = items[id];
 
                     let button = controls.button({
@@ -32,26 +36,68 @@ machines.segmented = {
                         mask: true,
                         onClick() {
                             getCurrentMachine().prefs.design = id;
+                            body._updateStatus();
+                            save();
                             try {
                                 scene.$machine.$body.$value.design = item;
-                            } catch (e) {
-
-                            }
+                            } catch (e) {}
                         }
                     });
                     button.append(controls.counter({
-                        position: Ex(0, 0, 0.6, 0.4),
+                        position: Ex(-15, 60, 1, 0),
                         scale: 80,
                         fillSub: "#fff3",
                         design: item,
-                        value: 42,
+                        align: 0,
+                        digits: 2,
+                        value: index + 1,
+                        bloom: false,
                     }));
+                    button.append(controls.rect({
+                        position: Ex(0, -40, 0, 1),
+                        size: Ex(0, 40, 1, 0),
+                        fill: "#0007",
+                    }), "footer");
+                    button.append(controls.label({
+                        position: Ex(10, -20, 0, 1),
+                        scale: 20,
+                        align: "left",
+                        font: "tabler icons",
+                        fill: "#0007",
+                    }), "status");
                     body.append(button);
+
+                    button._updateStatus = () => {
+                        let unlocks = gameData.unlocks.segmented;
+                        let unlocked = unlocks.design.has(id);
+                        button.alpha = unlocked ? 1 : 0.2;
+                        if (unlocked) {
+                            let equipped = getCurrentMachine().prefs.design == id;
+                            button.clickthrough = equipped;
+                            button.fill = equipped ? "#9f57" : "#3f3f3f";
+                            button.$footer.fill = equipped ? "#9f5" : "#0007";
+                            button.$status.fill = equipped ? "#000" : "#9f5";
+                            button.$status.text = equipped 
+                                ? iconsets.tabler.charmap["check"] 
+                                : iconsets.tabler.charmap["square-rotated"].repeat(item.worth);
+                        } else {
+                            button.fill = "#7f7f7f";
+                            button.clickthrough = true;
+                            button.$footer.fill = "#3f3f3f";
+                            button.$status.fill = "#9f5";
+                            button.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(item.worth);
+                        }
+                    }
+                    button._updateStatus();
                     
                     index++;
                 }
 
                 body.size.y += Math.ceil(index / itemsPerRow) * (itemHeight + itemGap) - itemGap;
+
+                body._updateStatus = () => {
+                    for (let button of body.controls) button._updateStatus();
+                }
             }
         }
     },

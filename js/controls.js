@@ -404,9 +404,11 @@ let controls = {
             ...controls.base(),
             fillMain: "white",
             fillSub: "#ffffff0c",
+            align: 0.5,
             value: 0,
             scale: 16,
             digits: 0,
+            bloom: true,
 
             currentDigits: [],
             currentAlpha: [],
@@ -419,7 +421,7 @@ let controls = {
                     + (str.length - 1) * this.design.charSpace
                     + Math.floor((str.length - 1) / 3) * this.design.sepSpace
                 ) * unit;
-                let offset = width / 2 - (this.design.width - this.design.sepSpace) * unit;
+                let offset = width * this.align - (this.design.width - this.design.sepSpace) * unit;
 
                 for (let a = 0; a < str.length; a++) {
                     let digit = str[str.length - 1 - a];
@@ -457,8 +459,10 @@ let controls = {
                             let lastAlpha = ctx.globalAlpha;
                             ctx.fillStyle = this.fillMain;
                             ctx.globalAlpha *= this.currentAlpha[a];
-                            ctx.shadowBlur = 0.1 * this.scale * scale * this.currentAlpha[a] ** 0.5;
-                            ctx.shadowColor = ctx.fillStyle;
+                            if (this.bloom) {
+                                ctx.shadowBlur = 0.1 * this.scale * scale * this.currentAlpha[a] ** 0.5;
+                                ctx.shadowColor = ctx.fillStyle;
+                            }
                             ctx.fill(seg);
                             ctx.globalAlpha = lastAlpha;
                             ctx.shadowBlur = 0;
