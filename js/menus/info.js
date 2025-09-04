@@ -1,5 +1,9 @@
 menus.info = (openMenu, closeMenu) => {
 
+    let currentView = "";
+    let currentViewBox = null;
+    let currentViewScroller = null;
+
     let menu = controls.base({
         size: Ex(0, 0, 1, 1),
         menuTitle: "Information",
@@ -11,7 +15,7 @@ menus.info = (openMenu, closeMenu) => {
         fill: "#4f4f4f",
         mask: true,
         radius: 40,
-        onClick: () => closeMenu(),
+        onClick: () => currentView ? unsetView() : closeMenu(),
     })
     menu.append(backBtn, "backBtn");
 
@@ -39,18 +43,76 @@ menus.info = (openMenu, closeMenu) => {
 
     forms.beginForms(scroller);
 
-    scroller.$content.append(controls.label({
-        position: Ex(0, scroller.$content.size.y + 50, 0.5, 0),
-        scale: 72,
-        style: "700",
-        label: "A+1→A"
-    }))
-
-    scroller.$content.size.y += 100;
-
-    forms.makeText("a fidget clicker thingy");
+    forms.makeButton("Credits", () => setView("credits"), "chevron-right");
 
     forms.doneForms();
+    
+
+    function setView(view) {
+        if (currentView) return;
+        currentView = view;
+        if (currentViewBox) menu.remove(currentViewBox);
+        
+        currentViewBox = controls.rect({
+            position: Ex(0, 80, 1, 0),
+            size: Ex(0, -180, 1, 1),
+            fill: "#0000",
+            radius: 20,
+            mask: true,
+        })
+        menu.prepend(currentViewBox);
+
+        currentViewScroller = controls.scroller({
+            position: Ex(0, 0),
+            size: Ex(0, 0, 1, 1),
+        });
+        currentViewBox.append(currentViewScroller);
+
+        forms.beginForms(currentViewScroller);
+        infos[view](currentViewScroller);
+        forms.doneForms();
+
+        tween(500, (t) => {
+            if (!currentView) return true;
+
+            let value = ease.back.out(t) ** .3;
+            currentViewBox.position.x = 
+                (currentViewBox.position.ex = 1 - value) * 40;
+            currentViewBox.alpha = value;
+            box.position.x = 
+                (box.position.ex = -value) * 40;
+            box.alpha = 1 - value;
+        })
+        let lerpItems = []
+        for (let ctrl of currentViewScroller.$content.controls) {
+            let delay = (mainCanvas.height / scale - ctrl.position.y + ctrl.position.ex * 500) * .35 + 20;
+            if (delay > 40) lerpItems.push([ctrl, delay]);
+            else break;
+        }
+        doItemReveal(lerpItems);
+    }
+
+    function unsetView(view) {
+        if (!currentView) return;
+        currentView = "";
+
+        tween(500, (t) => {
+            if (currentView) return true;
+
+            let value = ease.back.out(t) ** .3;
+            currentViewBox.position.x = 
+                (currentViewBox.position.ex = value) * 40;
+            currentViewBox.alpha = 1 - value;
+            box.position.x = 
+                (box.position.ex = -1 + value) * 40;
+            box.alpha = value;
+        }).then(() => {
+            if (currentView) return;
+            menu.remove(currentViewBox);
+            currentViewBox = currentViewScroller = null;
+        })
+    }
+
 
 
     let lerpItems = [

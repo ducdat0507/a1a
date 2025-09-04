@@ -250,6 +250,7 @@ let controls = {
                     lines = this.lines;
                 } else if (!this.wrap) {
                     lines = this.text.split("\n");
+                    this.onTextReflow();
                 } else {
                     let newLines = [];
                     for (let line of this.text.split("\n")) {
@@ -266,6 +267,7 @@ let controls = {
                         newLines.push(newLine);
                     }
                     lines = newLines;
+                    this.onTextReflow();
                 }
 
                 this.oldArgs = {
@@ -283,6 +285,9 @@ let controls = {
 
                 this.lines = lines;
             },
+
+            onTextReflow() {},
+            
             ...args
         }
     },

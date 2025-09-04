@@ -70,6 +70,39 @@ let forms = {
         return ctrl;
     },
 
+    makeSideButton(title, onClick, icon = null) {
+        let ctrl;
+        this.__scroller.$content.append(ctrl = controls.rect({
+            position: Ex(0, this.__scroller.$content.size.y),
+            size: Ex(0, 80, 1, 0),
+            fill: "#1f1f1f",
+            radius: 20,
+        }))
+
+        ctrl.append(controls.label({
+            position: Ex(25, 42, 0, 0),
+            scale: 28,
+            align: "left",
+            text: title,
+        }), "title")
+
+        ctrl.append(controls.button({
+            position: Ex(-70, 10, 1, 0),
+            size: Ex(60, 60),
+            fill: "#3f3f3f",
+            radius: 10,
+            onClick,
+        }), "button")
+        ctrl.$button.append(controls.icon({
+            position: Ex(0, 0, .5, .5),
+            scale: 40,
+            icon,
+        }), "icon")
+
+        this.__scroller.$content.size.y += 90;
+        return ctrl;
+    },
+
     makeCheckbox(title, getValue, onChange) {
         let ctrl;
         this.__scroller.$content.append(ctrl = controls.rect({
@@ -128,8 +161,9 @@ let forms = {
         }), "title")
 
         ctrl.append(controls.rect({
-            position: Ex(-250, 10, 1, 0),
-            size: Ex(220, 60),
+            position: Ex(-270, 10, 1, 0),
+            size: Ex(260, 60),
+            radius: 10,
             fill: "#000",
         }))
         ctrl.append(controls.label({
