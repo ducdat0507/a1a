@@ -43,6 +43,7 @@ menus.info = (openMenu, closeMenu) => {
 
     forms.beginForms(scroller);
 
+    forms.makeButton("About", () => setView("about"), "chevron-right");
     forms.makeButton("Credits", () => setView("credits"), "chevron-right");
 
     forms.doneForms();
@@ -57,7 +58,7 @@ menus.info = (openMenu, closeMenu) => {
             position: Ex(0, 80, 1, 0),
             size: Ex(0, -180, 1, 1),
             fill: "#0000",
-            radius: 20,
+            radius: 40,
             mask: true,
         })
         menu.prepend(currentViewBox);
@@ -71,6 +72,8 @@ menus.info = (openMenu, closeMenu) => {
         forms.beginForms(currentViewScroller);
         infos[view](currentViewScroller);
         forms.doneForms();
+
+        renderControls(currentViewScroller.$content.controls, box.rect, 0.001);
 
         tween(500, (t) => {
             if (!currentView) return true;

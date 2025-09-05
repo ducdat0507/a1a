@@ -4,7 +4,6 @@ menus.customize = (openMenu, closeMenu) => {
     let currentViewBox = null;
     let currentViewScroller = null;
 
-
     // Menu
 
     let menu = controls.base({
@@ -137,7 +136,7 @@ menus.customize = (openMenu, closeMenu) => {
             position: Ex(0, 80, 1, 0),
             size: Ex(0, -180, 1, 1),
             fill: "#0000",
-            radius: 20,
+            radius: 40,
             mask: true,
         })
         menu.prepend(currentViewBox);

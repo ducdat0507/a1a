@@ -16,6 +16,8 @@ popups.prompt = {
                 wrap: true,
             }))
             popup.$body.append(box);
+        } else {
+            popup.$body.append(body);
         }
 
         const itemWidth = 80;

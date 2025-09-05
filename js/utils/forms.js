@@ -12,8 +12,12 @@ let forms = {
 
     makeHeader(title) {
         let ctrl;
-        this.__scroller.$content.append(ctrl = controls.label({
-            position: Ex(1, this.__scroller.$content.size.y + 70, 0, 0),
+        this.__scroller.$content.append(ctrl = controls.base({
+            position: Ex(0, this.__scroller.$content.size.y, 0, 0),
+            size: Ex(0, 100, 0, 0),
+        }));
+        ctrl.append(controls.label({
+            position: Ex(1, 70, 0, 0),
             scale: 32,
             style: "700",
             align: "left",
@@ -24,7 +28,7 @@ let forms = {
         return ctrl;
     },
 
-    makeText(content, lines) {
+    makeText(content, lines = 1) {
         let ctrl;
 
         this.__scroller.$content.append(ctrl = controls.label({
@@ -38,6 +42,18 @@ let forms = {
         }))
 
         this.__scroller.$content.size.y += 24 * 1.3 * lines + 20;
+        return ctrl;
+    },
+
+    makeSpace(height) {
+        let ctrl;
+
+        this.__scroller.$content.append(ctrl = controls.base({
+            position: Ex(0, this.__scroller.$content.size.y, 0, 0),
+            size: Ex(0, height, 0, 0),
+        }))
+
+        this.__scroller.$content.size.y += height;
         return ctrl;
     },
 
@@ -211,4 +227,23 @@ let forms = {
         this.__scroller.$content.size.y += 90;
         return ctrl;
     },
+
+    registerDynamicFlow(baseY = 0) {
+        let control = this.__scroller.$content;
+        control.append(ctrl = controls.label({
+            onTextReflow() {
+                let y = baseY;
+                for (let ctrl of control.controls) {
+                    if (ctrl.lines) {
+                        ctrl.position.y = y + ctrl.scale * 0.5;
+                        y += ctrl.lines.length * ctrl.scale * 1.3;
+                    } else {
+                        ctrl.position.y = y;
+                        y += ctrl.size.y;
+                    }
+                    y += 10;
+                }
+            }
+        }))
+    }
 }

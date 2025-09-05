@@ -135,9 +135,9 @@ function renderControls(cts, rect, alpha = 1) {
         }
         if (debugWireframe) {
             ctx.fillStyle = ctx.strokeStyle = ct.__mouseIn ? "lime" : "white";
-            ctx.strokeWidth = 2 * scale;
+            ctx.strokeWidth = 1 * scale;
             ctx.strokeRect(ct.rect.x, ct.rect.y, ct.rect.width, ct.rect.height);
-            ctx.font = 10 * scale + "px SF Pro, Inter, sans-serif";
+            ctx.font = 16 * scale + "px SF Pro, Inter, sans-serif";
             ctx.textAlign = "left"; ctx.textBaseline = "bottom";
             ctx.fillText(ct.id, ct.rect.x, ct.rect.y);
         }
