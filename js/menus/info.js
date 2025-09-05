@@ -73,6 +73,7 @@ menus.info = (openMenu, closeMenu) => {
         infos[view](currentViewScroller);
         forms.doneForms();
 
+        // Refresh controls
         renderControls(currentViewScroller.$content.controls, box.rect, 0.001);
 
         tween(500, (t) => {
