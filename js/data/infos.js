@@ -54,8 +54,8 @@ let infos = {
         
 
         forms.makeHeader("Library licenses");
-        forms.makeSideButton("Inter", () => callPopup("text", "/res/fonts/InterVariable.LICENSE", "License"), "license");
-        forms.makeSideButton("lz-string", () => callPopup("text", "/js/lib/lz-string.LICENSE", "License"), "license");
-        forms.makeSideButton("Tabler Icons", () => callPopup("text", "/res/fonts/tabler-icons.LICENSE", "License"), "license");
+        forms.makeSideButton("Inter", () => callPopup("text", "res/fonts/InterVariable.LICENSE", "License"), "license");
+        forms.makeSideButton("lz-string", () => callPopup("text", "js/lib/lz-string.LICENSE", "License"), "license");
+        forms.makeSideButton("Tabler Icons", () => callPopup("text", "res/fonts/tabler-icons.LICENSE", "License"), "license");
     }
 }
