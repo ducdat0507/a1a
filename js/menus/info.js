@@ -43,8 +43,11 @@ menus.info = (openMenu, closeMenu) => {
 
     forms.beginForms(scroller);
 
-    forms.makeButton("About", () => setView("about"), "chevron-right");
-    forms.makeButton("Credits", () => setView("credits"), "chevron-right");
+    forms.makeHeader("Help");
+    forms.makeButton("Basic", () => setView("help"), "chevron-right");
+    forms.makeButton("Customization", () => setView("customize"), "chevron-right");
+    scroller.$content.size.y += 40;
+    forms.makeButton("Credits & Acknowledgements", () => setView("credits"), "chevron-right");
 
     forms.doneForms();
     

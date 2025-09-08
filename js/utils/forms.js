@@ -14,17 +14,17 @@ let forms = {
         let ctrl;
         this.__scroller.$content.append(ctrl = controls.base({
             position: Ex(0, this.__scroller.$content.size.y, 0, 0),
-            size: Ex(0, 100, 0, 0),
+            size: Ex(0, 80, 0, 0),
         }));
         ctrl.append(controls.label({
-            position: Ex(1, 70, 0, 0),
+            position: Ex(1, 50, 0, 0),
             scale: 32,
             style: "700",
             align: "left",
             text: title,
         }));
 
-        this.__scroller.$content.size.y += 100;
+        this.__scroller.$content.size.y += 80;
         return ctrl;
     },
 
@@ -243,6 +243,7 @@ let forms = {
                     }
                     y += 10;
                 }
+                control.size.y = y - 10;
             }
         }))
     }

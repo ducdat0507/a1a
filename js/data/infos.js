@@ -1,16 +1,45 @@
 let infos = {
-    about(scroller) {
-        forms.makeHeader("what?");
+    help(scroller) {
+        let icons = iconsets.tabler.charmap;
+        forms.makeHeader("What?");
         forms.makeText(
-            "A+1→A is a fidget clicker thing base on the developer's old habit of inputting \"A+1→A\" on a Casio calculator"
-            + " and pressing the \"=\" button to increment a memory counter by one over and over."
+            `A+1→A is a fidget clicker thing based on the developer's old habit of inputting "A+1→A" on a Casio calculator`
+            + ` and pressing the "=" button to increment a counter by one over and over.`
         ).fill = "#fff";
 
-        forms.makeHeader("what's the point?");
+        forms.makeHeader("How?");
         forms.makeText(
-            "The point is to act like a fidget toy rather than an incremental game."
+            `The gist is to press the "${icons["exposure-plus-1"]}" button at the bottom of the screen to`
+            + ` increment the counter at the center by one.`
+        ).fill = "#fff";
+        forms.makeText(
+            `(note that this amount may not be upgraded as the counter's main purpose is to`
+            + ` keep track of how many times the "${icons["exposure-plus-1"]}" button is pressed.)`
+        );
+        forms.makeText(
+            `Progression in A+1→A is handled through the various currencies which are granted when the counter reaches certain milestones.`
         ).fill = "#fff";
 
+        forms.makeHeader("Currencies");
+        forms.makeText(
+            `${icons["square-rotated"]} is awarded every time the counter reaches a multiple of 1,000.`
+            + ` ${icons["square-rotated"]} is used to obtain cosmetics for your counter.`
+        ).fill = "#fff";
+
+        forms.makeSpace(30);
+        forms.registerDynamicFlow(0);
+    },
+    customize(scroller) {
+        let icons = iconsets.tabler.charmap;
+        forms.makeHeader("About");
+        forms.makeText(
+            `The "Customization" menu allows you to customize the appearance of the counter.`
+        ).fill = "#fff";
+        forms.makeText(
+            `Cosmetic items are obtaining by spending ${icons["square-rotated"]} for a random cosmetic of a specific category.`
+        ).fill = "#fff";
+
+        forms.makeSpace(30);
         forms.registerDynamicFlow(0);
     },
     credits(scroller) {
