@@ -7,6 +7,10 @@ machines.segmented = {
             name: "Display Designs",
             icon: "numbers",
             items: () => data.machines.segmented.designs,
+
+            gachaCost: [50, 2],
+            circleFactor: 1,
+
             makeItems(body, items) {
                 const itemsPerRow = 4;
                 const itemGap = 10;
@@ -17,78 +21,23 @@ machines.segmented = {
                 let itemIds = Object.keys(items).sort((x, y) => items[x].worth - items[y].worth);
                 for (const id of itemIds) {
                     let item = items[id];
+                    items[id].index = index;
 
-                    let button = controls.button({
-                        position: Ex(
-                            itemGap * (index % itemsPerRow) / itemsPerRow,
-                            startPos + Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
-                            (index % itemsPerRow) / itemsPerRow,
-                            0
-                        ),
-                        size: Ex(
-                            -itemGap * (itemsPerRow - 1) / itemsPerRow,
-                            itemHeight,
-                            1 / itemsPerRow,
-                            0,
-                        ),
-                        fill: "#3f3f3f",
-                        radius: 15,
-                        mask: true,
-                        onClick() {
-                            getCurrentMachine().prefs.design = id;
-                            body._updateStatus();
-                            save();
-                            try {
-                                scene.$machine.$body.$value.design = item;
-                            } catch (e) {}
-                        }
-                    });
-                    button.append(controls.counter({
-                        position: Ex(-15, 60, 1, 0),
-                        scale: 80,
-                        fillSub: "#fff3",
-                        design: item,
-                        align: 0,
-                        digits: 2,
-                        value: index + 1,
-                        bloom: false,
-                    }));
-                    button.append(controls.rect({
-                        position: Ex(0, -40, 0, 1),
-                        size: Ex(0, 40, 1, 0),
-                        fill: "#0007",
-                    }), "footer");
-                    button.append(controls.label({
-                        position: Ex(10, -20, 0, 1),
-                        scale: 20,
-                        align: "left",
-                        font: "tabler icons",
-                        fill: "#0007",
-                    }), "status");
-                    body.append(button);
-
-                    button._updateStatus = () => {
-                        let unlocks = gameData.unlocks.segmented;
-                        let unlocked = unlocks.design.has(id);
-                        button.alpha = unlocked ? 1 : 0.2;
-                        if (unlocked) {
-                            let equipped = getCurrentMachine().prefs.design == id;
-                            button.clickthrough = equipped;
-                            button.fill = equipped ? "#9f57" : "#3f3f3f";
-                            button.$footer.fill = equipped ? "#9f5" : "#0007";
-                            button.$status.fill = equipped ? "#000" : "#9f5";
-                            button.$status.text = equipped 
-                                ? iconsets.tabler.charmap["check"] 
-                                : iconsets.tabler.charmap["square-rotated"].repeat(item.worth);
-                        } else {
-                            button.fill = "#7f7f7f";
-                            button.clickthrough = true;
-                            button.$footer.fill = "#3f3f3f";
-                            button.$status.fill = "#9f5";
-                            button.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(item.worth);
-                        }
-                    }
+                    let button = this.makeItem(id, item);
+                    button.position = Ex(
+                        itemGap * (index % itemsPerRow) / itemsPerRow,
+                        startPos + Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
+                        (index % itemsPerRow) / itemsPerRow,
+                        0
+                    ),
+                    button.size = Ex(
+                        -itemGap * (itemsPerRow - 1) / itemsPerRow,
+                        itemHeight,
+                        1 / itemsPerRow,
+                        0,
+                    ),
                     button._updateStatus();
+                    body.append(button);
                     
                     index++;
                 }
@@ -98,6 +47,68 @@ machines.segmented = {
                 body._updateStatus = () => {
                     for (let button of body.controls) button._updateStatus();
                 }
+            },
+
+            makeItem(id, item) {
+                let button = controls.button({
+                    fill: "#3f3f3f",
+                    radius: 15,
+                    mask: true,
+                    onClick() {
+                        getCurrentMachine().prefs.design = id;
+                        body._updateStatus();
+                        save();
+                        try {
+                            scene.$machine.$body.$value.design = item;
+                        } catch (e) {}
+                    }
+                });
+                button.append(controls.counter({
+                    position: Ex(-15, 60, 1, 0),
+                    scale: 80,
+                    fillSub: "#fff3",
+                    design: item,
+                    align: 0,
+                    digits: 2,
+                    value: item.index + 1,
+                    bloom: false,
+                }));
+                button.append(controls.rect({
+                    position: Ex(0, -40, 0, 1),
+                    size: Ex(0, 40, 1, 0),
+                    fill: "#0007",
+                }), "footer");
+                button.append(controls.label({
+                    position: Ex(10, -20, 0, 1),
+                    scale: 20,
+                    align: "left",
+                    font: "tabler icons",
+                    fill: "#0007",
+                }), "status");
+
+                button._updateStatus = () => {
+                    let unlocks = gameData.unlocks.segmented;
+                    let unlocked = unlocks.design.has(id);
+                    button.alpha = unlocked ? 1 : 0.2;
+                    if (unlocked) {
+                        let equipped = getCurrentMachine().prefs.design == id;
+                        button.clickthrough = equipped;
+                        button.fill = equipped ? "#9f57" : "#3f3f3f";
+                        button.$footer.fill = equipped ? "#9f5" : "#0007";
+                        button.$status.fill = equipped ? "#000" : "#9f5";
+                        button.$status.text = equipped 
+                            ? iconsets.tabler.charmap["check"] 
+                            : iconsets.tabler.charmap["square-rotated"].repeat(item.worth);
+                    } else {
+                        button.fill = "#7f7f7f";
+                        button.clickthrough = true;
+                        button.$footer.fill = "#3f3f3f";
+                        button.$status.fill = "#9f5";
+                        button.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(item.worth);
+                    }
+                }
+
+                return button;
             }
         }
     },

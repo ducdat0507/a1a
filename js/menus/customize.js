@@ -3,6 +3,7 @@ menus.customize = (openMenu, closeMenu) => {
     let currentView = "";
     let currentViewBox = null;
     let currentViewScroller = null;
+    let currentViewButton = null;
 
     // Menu
 
@@ -149,10 +150,51 @@ menus.customize = (openMenu, closeMenu) => {
         currentViewBox.append(currentViewScroller);
 
         let machInfo = getCurrentMachine();
-        machines[machInfo.type].prefs[view].makeItems(
+        let machData = machines[machInfo.type];
+        machData.prefs[view].makeItems(
             currentViewScroller.$content, 
-            machines[machInfo.type].prefs[view].items()
+            machData.prefs[view].items()
         );
+
+        if (machData.prefs[view].gachaCost) {
+            let gachaCost = getGachaCost(machInfo.type, view);
+
+            let gachaButton = currentViewButton = controls.button({
+                position: Ex(0, -80, 1, 1),
+                size: Ex(320, 80),
+                fill: "#3f3f3f",
+                radius: 40,
+            })
+            menu.append(gachaButton);
+
+            gachaButton.append(controls.icon({
+                position: Ex(-40, 0, 1, .5),
+                scale: 40,
+                icon: "plus",
+            }), "icon")
+
+            gachaButton.append(controls.label({
+                position: Ex(-80, -15, 1, .5),
+                scale: 24,
+                align: "right",
+                fill: "white",
+                style: "700",
+                text: "Get random",
+            }), "label")
+            gachaButton.append(controls.label({
+                position: Ex(-106, 17, 1, .5),
+                scale: 24,
+                align: "right",
+                fill: "white",
+                text: gachaCost.toLocaleString("en-US"),
+            }), "squareAmount")
+            gachaButton.append(controls.icon({
+                position: Ex(-90, 15, 1, .5),
+                scale: 28,
+                icon: "square-rotated-filled",
+                fill: "#9f5",
+            }), "squareIcon");
+        }
 
         tween(500, (t) => {
             if (!currentView) return true;
@@ -164,6 +206,12 @@ menus.customize = (openMenu, closeMenu) => {
             box.position.x = 
                 (box.position.ex = -value) * 40;
             box.alpha = 1 - value;
+
+            if (currentViewButton) {
+                currentViewButton.position.x = 
+                    (-10 - currentViewButton.size.x) * value
+                currentViewButton.alpha = Math.min(value, 1);
+            }
         })
         let lerpItems = []
         for (let ctrl of currentViewScroller.$content.controls) {
@@ -188,10 +236,16 @@ menus.customize = (openMenu, closeMenu) => {
             box.position.x = 
                 (box.position.ex = -1 + value) * 40;
             box.alpha = value;
+
+            if (currentViewButton) {
+                currentViewButton.position.x = 
+                    (-10 - currentViewButton.size.x) * (1 - value)
+                currentViewButton.alpha = 1 - value;
+            }
         }).then(() => {
             if (currentView) return;
             menu.remove(currentViewBox);
-            currentViewBox = currentViewScroller = null;
+            currentViewBox = currentViewScroller = currentViewButton = null;
         })
     }
 

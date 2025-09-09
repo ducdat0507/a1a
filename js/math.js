@@ -15,3 +15,9 @@ function lerp(from, to, x) {
 function getSquareGain() {
     return 20;
 }
+
+function getGachaCost(machine, pref) {
+    let costOffset = 0;
+    let gachaCost = machines[machine].prefs[pref].gachaCost;
+    return gachaCost[0] + gachaCost[1] * costOffset;
+}
