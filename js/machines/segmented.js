@@ -24,6 +24,14 @@ machines.segmented = {
                     items[id].index = index;
 
                     let button = this.makeItem(id, item);
+                    button.onClick = () => {
+                        getCurrentMachine().prefs.design = id;
+                        body._updateStatus();
+                        save();
+                        try {
+                            scene.$machine.$body.$value.design = item;
+                        } catch (e) {}
+                    }
                     button.position = Ex(
                         itemGap * (index % itemsPerRow) / itemsPerRow,
                         startPos + Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
@@ -54,14 +62,6 @@ machines.segmented = {
                     fill: "#3f3f3f",
                     radius: 15,
                     mask: true,
-                    onClick() {
-                        getCurrentMachine().prefs.design = id;
-                        body._updateStatus();
-                        save();
-                        try {
-                            scene.$machine.$body.$value.design = item;
-                        } catch (e) {}
-                    }
                 });
                 button.append(controls.counter({
                     position: Ex(-15, 60, 1, 0),

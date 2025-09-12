@@ -174,7 +174,7 @@ menus.customize = (openMenu, closeMenu) => {
             }), "icon")
 
             gachaButton.append(controls.label({
-                position: Ex(-80, -15, 1, .5),
+                position: Ex(-75, -16, 1, .5),
                 scale: 24,
                 align: "right",
                 fill: "white",
@@ -182,14 +182,14 @@ menus.customize = (openMenu, closeMenu) => {
                 text: "Get random",
             }), "label")
             gachaButton.append(controls.label({
-                position: Ex(-106, 17, 1, .5),
+                position: Ex(-105, 17, 1, .5),
                 scale: 24,
                 align: "right",
                 fill: "white",
                 text: gachaCost.toLocaleString("en-US"),
             }), "squareAmount")
             gachaButton.append(controls.icon({
-                position: Ex(-90, 15, 1, .5),
+                position: Ex(-87, 15, 1, .5),
                 scale: 28,
                 icon: "square-rotated-filled",
                 fill: "#9f5",
@@ -209,7 +209,7 @@ menus.customize = (openMenu, closeMenu) => {
 
             if (currentViewButton) {
                 currentViewButton.position.x = 
-                    (-10 - currentViewButton.size.x) * value
+                    (-currentViewButton.size.x) * value
                 currentViewButton.alpha = Math.min(value, 1);
             }
         })
@@ -239,7 +239,7 @@ menus.customize = (openMenu, closeMenu) => {
 
             if (currentViewButton) {
                 currentViewButton.position.x = 
-                    (-10 - currentViewButton.size.x) * (1 - value)
+                    (-currentViewButton.size.x) * (1 - value)
                 currentViewButton.alpha = 1 - value;
             }
         }).then(() => {
