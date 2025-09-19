@@ -164,6 +164,9 @@ menus.customize = (openMenu, closeMenu) => {
                 size: Ex(320, 80),
                 fill: "#3f3f3f",
                 radius: 40,
+                onClick: () => {
+                    doGachaAnimation(machInfo.type, view)
+                }
             })
             menu.append(gachaButton);
 
