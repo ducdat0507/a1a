@@ -13,7 +13,18 @@ function lerp(from, to, x) {
 
 
 function getSquareGain() {
-    return 20;
+    let gain = 20;
+    for (let machine in gameData.unlocks) {
+        let unlocks = gameData.unlocks[machine];
+        let data = machines[machine];
+        for (let pref in unlocks) {
+            let prefItems = data.prefs[pref].items();
+            for (let item of unlocks[pref]) {
+                gain += prefItems[item].worth || 0;
+            }
+        }
+    }
+    return gain;
 }
 
 function getGachaCost(machine, pref) {

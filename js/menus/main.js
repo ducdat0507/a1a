@@ -61,6 +61,7 @@ menus.main = (openMenu, closeMenu) => {
         mask: true,
         fill: "#7c6aff",
         radius: 20,
+        onClick: () => openMenu("shop"),
     })
     menu.append(storeBtn, "storeBtn");
 

@@ -101,7 +101,6 @@ menus.customize = (openMenu, closeMenu) => {
         position: Ex(-274, 60, 1, 0),
         scale: 24,
         align: "right",
-        text: formatFixed(gameData.res.square),
     }), "squareAmount");
     resBox.append(controls.icon({
         position: Ex(-250, 58, 1, 0),
@@ -114,8 +113,13 @@ menus.customize = (openMenu, closeMenu) => {
         scale: 24,
         align: "right",
         fill: "#fffa",
-        text: `(+${formatFixed(getSquareGain())} / 1k)`,
     }), "squareSpeed");
+
+    function updateResBox() {
+        resBox.$squareAmount.text = formatFixed(gameData.res.square);
+        resBox.$squareSpeed.text = `(+${formatFixed(getSquareGain())} / 1k)`;
+    }
+    updateResBox();
 
     let lerpItems = [
         [backBtn, 40],
@@ -159,41 +163,57 @@ menus.customize = (openMenu, closeMenu) => {
         if (machData.prefs[view].gachaCost) {
             let gachaCost = getGachaCost(machInfo.type, view);
 
-            let gachaButton = currentViewButton = controls.button({
-                position: Ex(0, -80, 1, 1),
-                size: Ex(320, 80),
+            let gachaButton = controls.button({
+                size: Ex(0, 0, 1, 1),
                 fill: "#3f3f3f",
                 radius: 40,
                 onClick: () => {
-                    doGachaAnimation(machInfo.type, view)
+                    if (gameData.res.square >= gachaCost) {
+                        gameData.res.square -= gachaCost;
+                        doGachaAnimation(machInfo.type, view, currentViewScroller.$content, () => {
+                            updateResBox();
+                        })
+                        save();
+                        updateGachaButton();
+                    }
                 }
             })
-            menu.append(gachaButton);
+            currentViewButton = controls.base({
+                position: Ex(0, -80, 1, 1),
+                size: Ex(320, 80),
+            })
+            menu.append(currentViewButton);
+            currentViewButton.append(gachaButton);
+
+            function updateGachaButton() {
+                let canBuy = gameData.res.square >= gachaCost;
+                gachaButton.clickthrough = !canBuy;
+                gachaButton.alpha = canBuy ? 1 : 0.5;
+            }
+            updateGachaButton();
 
             gachaButton.append(controls.icon({
                 position: Ex(-40, 0, 1, .5),
                 scale: 40,
-                icon: "plus",
+                icon: "circle-half-vertical",
             }), "icon")
 
+            gachaButton.append(controls.icon({
+                position: Ex(-86, 0, 1, .5),
+                scale: 32,
+                icon: "arrow-right",
+            }), "arrow")
+
             gachaButton.append(controls.label({
-                position: Ex(-75, -16, 1, .5),
-                scale: 24,
-                align: "right",
-                fill: "white",
-                style: "700",
-                text: "Get random",
-            }), "label")
-            gachaButton.append(controls.label({
-                position: Ex(-105, 17, 1, .5),
-                scale: 24,
+                position: Ex(-152, 2, 1, .5),
+                scale: 28,
                 align: "right",
                 fill: "white",
                 text: gachaCost.toLocaleString("en-US"),
             }), "squareAmount")
             gachaButton.append(controls.icon({
-                position: Ex(-87, 15, 1, .5),
-                scale: 28,
+                position: Ex(-128, 0, 1, .5),
+                scale: 32,
                 icon: "square-rotated-filled",
                 fill: "#9f5",
             }), "squareIcon");

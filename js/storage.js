@@ -7,6 +7,7 @@ function getStartGame() {
             square: 0,
             pent: 0,
             hex: 0,
+            circle: {}
         },
 
         machine: 0,
@@ -46,11 +47,11 @@ function load() {
 }
 
 function save() {
-    localStorage.setItem("a1a", LZString.compressToUTF16(JSON.stringify(gameData)))
+    localStorage.setItem("a1a", LZString.compressToUTF16(JSON.stringify(gameData, itemReplacer)))
 }
 
 function downloadSave() {
-    let text = LZString.compressToUTF16(JSON.stringify(gameData))
+    let text = LZString.compressToUTF16(JSON.stringify(gameData, itemReplacer))
     
     var element = document.createElement("a");
     element.href = "data:application/octet-stream;charset=utf-8," + encodeURIComponent(text);
@@ -79,8 +80,12 @@ function totalDestruction() {
 function deepCopy(target, source) {
     for (item in source) {
         if (target[item] === undefined) target[item] = source[item];
-        else if (source[item] instanceof Set) target[item] = new Set(source[item]);
+        else if (source[item] instanceof Set) target[item] = new Set(target[item]);
         else if (typeof source[item] == "object") target[item] = deepCopy(target[item], source[item]);
     }
     return target;
+}
+function itemReplacer(key, value) {
+    if (value instanceof Set) return [...value];
+    return value;
 }
