@@ -79,9 +79,16 @@ function totalDestruction() {
 
 function deepCopy(target, source) {
     for (item in source) {
-        if (target[item] === undefined) target[item] = source[item];
-        else if (source[item] instanceof Set) target[item] = new Set(target[item]);
-        else if (typeof source[item] == "object") target[item] = deepCopy(target[item], source[item]);
+        if (target[item] === undefined) {
+            target[item] = source[item];
+        } else if (source[item] instanceof Set) {
+            if (target[item]?.[Symbol.iterator]) {
+                target[item] = new Set(target[item]);
+            }
+        }
+        else if (typeof source[item] == "object") {
+            target[item] = deepCopy(target[item], source[item]);
+        }
     }
     return target;
 }
