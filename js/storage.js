@@ -84,6 +84,8 @@ function deepCopy(target, source) {
         } else if (source[item] instanceof Set) {
             if (target[item]?.[Symbol.iterator]) {
                 target[item] = new Set(target[item]);
+            } else {
+                target[item] = source[item];
             }
         }
         else if (typeof source[item] == "object") {
