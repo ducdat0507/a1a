@@ -2,6 +2,8 @@ let gameData = {}
 
 function getStartGame() {
     let data = {
+        version: 1,
+
         number: 0,
         res: {
             square: 0,
@@ -37,9 +39,15 @@ function load() {
         if (!data) {
             gameData = getStartGame()
         } else if (data.startsWith("J")) {
-            gameData = deepCopy(JSON.parse(decodeURIComponent(atob(data))), getStartGame())
+            let oldData = JSON.parse(decodeURIComponent(atob(data)));
+            oldData.version ||= 0;
+            fixSave(oldData);
+            gameData = deepCopy(oldData, getStartGame())
         } else {
-            gameData = deepCopy(JSON.parse(LZString.decompressFromUTF16(data)), getStartGame())
+            let oldData = JSON.parse(LZString.decompressFromUTF16(data));
+            oldData.version ||= 0;
+            fixSave(oldData);
+            gameData = deepCopy(oldData, getStartGame())
         }
     } catch (e) {
         console.warn("Save loading encountered an error: \n", e);
@@ -97,4 +105,13 @@ function deepCopy(target, source) {
 function itemReplacer(key, value) {
     if (value instanceof Set) return [...value];
     return value;
+}
+
+function fixSave(oldData) {
+    if (oldData.version <= 0 && oldData.unlocks) {
+        for (let machine in oldData.unlocks) {
+            oldData.unlocks[machine] = { prefs: oldData.unlocks[machine] }
+        }
+    }
+    oldData.version = 1;
 }

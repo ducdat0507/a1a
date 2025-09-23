@@ -75,7 +75,7 @@ menus.customize = (openMenu, closeMenu) => {
             position: Ex(-40, 40, 1, 0),
             scale: 40,
             icon: "chevron-right",
-        }), "title")
+        }), "titleIcon")
 
 
         scroller.$content.size.y += 150;

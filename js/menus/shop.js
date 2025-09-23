@@ -44,14 +44,15 @@ menus.shop = (openMenu, closeMenu) => {
     box.append(scroller);
     scroller.$content.size.y = 60;
 
-    function makeViewButton(item, onClick) {
+    function makeShopButton(machine, item) {
+        let data = machines[machine].shop.items[item];
+
         let ctrl;
-        scroller.$content.append(ctrl = controls.button({
+        scroller.$content.append(ctrl = controls.rect({
             position: Ex(0, scroller.$content.size.y),
-            size: Ex(0, 140, 1, 0),
-            fill: "#3f3f3f",
-            radius: 20,
-            onClick
+            size: Ex(0, 190, 1, 0),
+            fill: "#2f2f2f",
+            radius: 20
         }))
 
         ctrl.append(controls.icon({
@@ -60,21 +61,58 @@ menus.shop = (openMenu, closeMenu) => {
             icon: item.icon,
             fill: "#0003",
         }), "icon")
-
         ctrl.append(controls.label({
             position: Ex(25, 42, 0, 0),
             scale: 32,
             align: "left",
-            text: item.name,
+            text: data.name,
         }), "title")
+
+        ctrl.append(controls.label({
+            position: Ex(-140, -37, 1, 1),
+            scale: 28,
+            align: "right",
+            text: "",
+        }), "costLabel")
         ctrl.append(controls.icon({
-            position: Ex(-40, 40, 1, 0),
+            position: Ex(-110, -40, 1, 1),
+            scale: 32,
+            icon: {
+                square: "square-rotated-filled",
+                pent: "pentagon-filled",
+                hex: "hexagon-filled",
+                circle: "circle-filled",
+            }[data.costType],
+            fill: {
+                square: "#9f5",
+                pent: "#bbf",
+                hex: "#fbb",
+                circle: "#fff",
+            }[data.costType]
+        }), "costIcon")
+
+
+        ctrl.append(controls.button({
+            position: Ex(-70, -70, 1, 1),
+            size: Ex(60, 60),
+            fill: "#3f5f3f",
+            radius: 10,
+            onClick: () => buyItem(machine, item, update)
+        }), "buyBtn")
+        ctrl.$buyBtn.append(controls.icon({
+            position: Ex(0, 0, 0.5, 0.5),
             scale: 40,
-            icon: "chevron-right",
-        }), "title")
+            icon: "shopping-cart",
+        }), "icon")
 
+        function update() {
+            let amount = gameData.unlocks[machine].items[item] ?? 0;
+            let cost = data.costs[amount];
+            ctrl.$costLabel.text = formatFixed(cost);
+        }
+        update();
 
-        scroller.$content.size.y += 150;
+        scroller.$content.size.y += 200;
     }
 
     // Currency display
@@ -98,7 +136,7 @@ menus.shop = (openMenu, closeMenu) => {
         position: Ex(-16, 58, 0.5, 0),
         scale: 32,
         icon: "pentagon-filled",
-        fill: "#cbf",
+        fill: "#bbf",
     }), "pentIcon");
     
     resBox.append(controls.label({
@@ -113,12 +151,18 @@ menus.shop = (openMenu, closeMenu) => {
         fill: "#fff",
     }), "circleIcon");
 
-
     function updateResBox() {
         resBox.$pentAmount.text = formatFixed(gameData.res.pent);
         resBox.$circleAmount.text = formatFixed(gameData.res.circle[machine.type] ?? 0);
     }
     updateResBox();
+
+    for (let item in machines[machine.type].shop?.items) 
+    {
+        makeShopButton(machine.type, item);
+    }
+
+
 
     let lerpItems = [
         [backBtn, 40],
