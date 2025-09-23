@@ -3,7 +3,7 @@ function getCurrency(type) {
         case "square": return gameData.res.square;
         case "pent": return gameData.res.pent;
         case "hex": return gameData.res.hex;
-        case "circle": return gameData.res.circle[getCurrentmachine().type];
+        case "circle": return gameData.res.circle[getCurrentMachine().type];
     }
 }
 function addCurrency(type, amount) {
@@ -11,7 +11,7 @@ function addCurrency(type, amount) {
         case "square": gameData.res.square += amount;
         case "pent": gameData.res.pent += amount;
         case "hex": gameData.res.hex += amount;
-        case "circle": gameData.res.circle[getCurrentmachine().type] += amount;
+        case "circle": gameData.res.circle[getCurrentMachine().type] += amount;
     }
 }
 
