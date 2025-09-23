@@ -38,8 +38,8 @@ function doGachaAnimation(machine, pref, body, onDecide) {
     let target = gachaPref(weights);
 
 
-    let unlocks = gameData.unlocks[machine][pref];
-    let unlocksOld = new Set(gameData.unlocks[machine][pref]);
+    let unlocks = gameData.unlocks[machine].prefs[pref];
+    let unlocksOld = new Set(gameData.unlocks[machine].prefs[pref]);
 
     if (unlocks.has(target)) {
         gameData.res.circle[machine] ||= 0;
