@@ -19,7 +19,7 @@ function getSquareGain() {
         let data = machines[machine];
         for (let pref in unlocks) {
             let prefItems = data.prefs[pref].items();
-            for (let item of unlocks[pref]) {
+            for (let item of unlocks.prefs[pref]) {
                 gain += prefItems[item].worth || 0;
             }
         }
