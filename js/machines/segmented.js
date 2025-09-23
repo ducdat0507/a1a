@@ -119,9 +119,10 @@ machines.segmented = {
         items: {
             squareBoost: {
                 name: "Gain more " + iconsets.tabler.charmap["square-rotated"],
-                effects: [0, 1, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30],
-                effectDisplay(x) { return this.effects[x] + " " + iconsets.tabler.charmap["square-rotated"]; },
-                costs: [1, 2, 3, 5, 7, 10, 15, 21, 30, 42],
+                icon: "square-rotated-filled",
+                effects: [0, 1, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30, 36, 42, 50, 60, 72],
+                effectDisplay(x) { return `+${this.effects[x]} ${iconsets.tabler.charmap["square-rotated"]}`; },
+                costs: [1, 2, 4, 7, 10, 16, 25, 36, 50, 72, 100, 140, 200, 300, 500, 800],
                 costType: "circle",
             },
         }

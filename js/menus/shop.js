@@ -58,24 +58,31 @@ menus.shop = (openMenu, closeMenu) => {
         ctrl.append(controls.icon({
             position: Ex(-50, -50, 1, 1),
             scale: 250,
-            icon: item.icon,
+            icon: data.icon,
             fill: "#0003",
         }), "icon")
         ctrl.append(controls.label({
-            position: Ex(25, 42, 0, 0),
-            scale: 32,
+            position: Ex(25, 41, 0, 0),
+            scale: 26,
+            style: "700",
             align: "left",
             text: data.name,
         }), "title")
+        ctrl.append(controls.label({
+            position: Ex(25, 78, 0, 0),
+            scale: 24,
+            align: "left",
+            text: "",
+        }), "effect")
 
         ctrl.append(controls.label({
-            position: Ex(-140, -37, 1, 1),
-            scale: 28,
+            position: Ex(-134, -52, 1, 1),
+            scale: 24,
             align: "right",
             text: "",
         }), "costLabel")
         ctrl.append(controls.icon({
-            position: Ex(-110, -40, 1, 1),
+            position: Ex(-110, -54, 1, 1),
             scale: 32,
             icon: {
                 square: "square-rotated-filled",
@@ -93,11 +100,14 @@ menus.shop = (openMenu, closeMenu) => {
 
 
         ctrl.append(controls.button({
-            position: Ex(-70, -70, 1, 1),
-            size: Ex(60, 60),
+            position: Ex(-80, -80, 1, 1),
+            size: Ex(70, 70),
             fill: "#3f5f3f",
             radius: 10,
-            onClick: () => buyItem(machine, item, update)
+            onClick: () => buyItem(machine, item, () => {
+                update();
+                updateResBox();
+            })
         }), "buyBtn")
         ctrl.$buyBtn.append(controls.icon({
             position: Ex(0, 0, 0.5, 0.5),
@@ -105,10 +115,38 @@ menus.shop = (openMenu, closeMenu) => {
             icon: "shopping-cart",
         }), "icon")
 
+        if (data.costs.length > 1) {
+            ctrl.append(controls.base({
+                position: Ex(-117, -22, 1, 1),
+            }), "ticks")
+            for (let a = 0; a < data.costs.length; a++) {
+                ctrl.$ticks.prepend(controls.rect({
+                    position: Ex(-23 * a, -8, 0, 0),
+                    size: Ex(20, 10),
+                    radius: 2,
+                    fill: "#fff"
+                }), "ticks")
+            }
+        }
+
         function update() {
             let amount = gameData.unlocks[machine].items[item] ?? 0;
             let cost = data.costs[amount];
-            ctrl.$costLabel.text = formatFixed(cost);
+            let canAfford = getCurrency(data.costType) >= cost;
+            if (amount < data.costs.length) {
+                ctrl.$effect.text = data.effectDisplay(amount) + " -> " + data.effectDisplay(amount + 1);
+                ctrl.$buyBtn.alpha = canAfford ? 1 : 0.5;
+                ctrl.$buyBtn.clickthrough = !canAfford;
+                ctrl.$costLabel.text = formatFixed(cost);
+            } else {
+                ctrl.$effect.text = data.effectDisplay(amount);
+                ctrl.$buyBtn.alpha = 0.5;
+                ctrl.$buyBtn.clickthrough = true;
+                ctrl.$costLabel.text = "MAX";
+            }
+            if (ctrl.$ticks) for (let a = 0; a < ctrl.$ticks.controls.length; a++) {
+                ctrl.$ticks.controls[a].fill = a < amount ? "#fff" : "#0f0f0f";
+            }
         }
         update();
 

@@ -21,7 +21,8 @@ function buyItem(machine, item, update) {
     let cost = data.costs[amount];
     if (getCurrency(data.costType) >= cost) {
         addCurrency(data.costType, -cost);
-        unlocks[machine].items[item] = amount + 1;
+        gameData.unlocks[machine].items[item] = amount + 1;
+        save();
         update();
     }
 }
