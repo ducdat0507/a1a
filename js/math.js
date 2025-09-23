@@ -24,6 +24,7 @@ function getSquareGain() {
             }
         }
     }
+    gain += getShopItemEffect("segmented", "squareBoost");
     return gain;
 }
 

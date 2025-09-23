@@ -26,3 +26,9 @@ function buyItem(machine, item, update) {
         update();
     }
 }
+
+function getShopItemEffect(machine, item) {
+    let data = machines[machine].shop.items[item];
+    let amount = gameData.unlocks[machine].items[item] ?? 0;
+    return data.effects[amount];
+}
