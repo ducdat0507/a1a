@@ -1,6 +1,9 @@
 machines.segmented = {
     unlocks: {
-        design: new Set(["basic7_1", "basic7_2"]),
+        prefs: {
+            design: new Set(["basic7_1", "basic7_2"]),
+        },
+        items: {},
     },
     prefs: {
         design: {
@@ -88,7 +91,7 @@ machines.segmented = {
 
                 button._updateStatus = () => {
                     let unlocks = gameData.unlocks.segmented;
-                    let unlocked = unlocks.design.has(id);
+                    let unlocked = unlocks.prefs.design.has(id);
                     button.alpha = unlocked ? 1 : 0.2;
                     if (unlocked) {
                         let equipped = getCurrentMachine().prefs.design == id;
@@ -110,6 +113,17 @@ machines.segmented = {
 
                 return button;
             }
+        }
+    },
+    shop: {
+        items: {
+            squareBoost: {
+                name: "Gain more " + iconsets.tabler.charmap["square-rotated"],
+                effects: [0, 1, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30],
+                effectDisplay(x) { return this.effects[x] + " " + iconsets.tabler.charmap["square-rotated"]; },
+                costs: [1, 2, 3, 5, 7, 10, 15, 21, 30, 42],
+                costType: "circle",
+            },
         }
     },
     setup(body, machine) {

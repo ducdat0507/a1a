@@ -6,8 +6,9 @@ function getGachaWeights(machine, pref) {
 
     for (let item in data) {
         if (!data[item].worth) continue;
-        total += data[item].worth;
-        items.push([item, data[item].worth]);
+        let rarity = 1 / data[item].worth ** 2;
+        total += rarity;
+        items.push([item, rarity]);
     }
 
     return { total, items }

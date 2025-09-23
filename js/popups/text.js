@@ -33,9 +33,9 @@ popups.text = {
             ]
         );
 
-        let request = fetch(path).then(x => x.text()).then(
-            x => label.text = x.replaceAll(/([^\n])\n([^\n])/gm, "$1 $2").replaceAll("\n", "\n\n").trim()
-        )
+        let request = fetch(path).then(x => x.text()).then(x => {
+            label.text = x.replaceAll(/([^ \r\n])\r?\n([^\r\n])/gm, "$1 $2").trim()
+        })
 
         return popup;
     }

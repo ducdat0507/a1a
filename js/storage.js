@@ -2,6 +2,8 @@ let gameData = {}
 
 function getStartGame() {
     let data = {
+        version: 1,
+
         number: 0,
         res: {
             square: 0,
@@ -37,9 +39,15 @@ function load() {
         if (!data) {
             gameData = getStartGame()
         } else if (data.startsWith("J")) {
-            gameData = deepCopy(JSON.parse(decodeURIComponent(atob(data))), getStartGame())
+            let oldData = JSON.parse(decodeURIComponent(atob(data)));
+            oldData.version ||= 0;
+            fixSave(oldData);
+            gameData = deepCopy(oldData, getStartGame())
         } else {
-            gameData = deepCopy(JSON.parse(LZString.decompressFromUTF16(data)), getStartGame())
+            let oldData = JSON.parse(LZString.decompressFromUTF16(data));
+            oldData.version ||= 0;
+            fixSave(oldData);
+            gameData = deepCopy(oldData, getStartGame())
         }
     } catch (e) {
         console.warn("Save loading encountered an error: \n", e);
@@ -79,13 +87,31 @@ function totalDestruction() {
 
 function deepCopy(target, source) {
     for (item in source) {
-        if (target[item] === undefined) target[item] = source[item];
-        else if (source[item] instanceof Set) target[item] = new Set(target[item]);
-        else if (typeof source[item] == "object") target[item] = deepCopy(target[item], source[item]);
+        if (target[item] === undefined) {
+            target[item] = source[item];
+        } else if (source[item] instanceof Set) {
+            if (target[item]?.[Symbol.iterator]) {
+                target[item] = new Set(target[item]);
+            } else {
+                target[item] = source[item];
+            }
+        }
+        else if (typeof source[item] == "object") {
+            target[item] = deepCopy(target[item], source[item]);
+        }
     }
     return target;
 }
 function itemReplacer(key, value) {
     if (value instanceof Set) return [...value];
     return value;
+}
+
+function fixSave(oldData) {
+    if (oldData.version <= 0 && oldData.unlocks) {
+        for (let machine in oldData.unlocks) {
+            oldData.unlocks[machine] = { prefs: oldData.unlocks[machine] }
+        }
+    }
+    oldData.version = 1;
 }
