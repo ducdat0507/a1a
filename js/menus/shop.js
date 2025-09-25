@@ -62,9 +62,8 @@ menus.shop = (openMenu, closeMenu) => {
             fill: "#0003",
         }), "icon")
         ctrl.append(controls.label({
-            position: Ex(25, 41, 0, 0),
-            scale: 26,
-            style: "700",
+            position: Ex(25, 40, 0, 0),
+            scale: 28,
             align: "left",
             text: data.name,
         }), "title")
@@ -72,6 +71,7 @@ menus.shop = (openMenu, closeMenu) => {
             position: Ex(25, 78, 0, 0),
             scale: 24,
             align: "left",
+            fill: "#bbb",
             text: "",
         }), "effect")
 
@@ -117,12 +117,12 @@ menus.shop = (openMenu, closeMenu) => {
 
         if (data.costs.length > 1) {
             ctrl.append(controls.base({
-                position: Ex(-117, -22, 1, 1),
+                position: Ex(-115, -22, 1, 1),
             }), "ticks")
             for (let a = 0; a < data.costs.length; a++) {
                 ctrl.$ticks.prepend(controls.rect({
-                    position: Ex(-23 * a, -8, 0, 0),
-                    size: Ex(20, 10),
+                    position: Ex(-20 * a, -8, 0, 0),
+                    size: Ex(18, 10),
                     radius: 2,
                     fill: "#fff"
                 }), "ticks")
@@ -134,7 +134,7 @@ menus.shop = (openMenu, closeMenu) => {
             let cost = data.costs[amount];
             let canAfford = getCurrency(data.costType) >= cost;
             if (amount < data.costs.length) {
-                ctrl.$effect.text = data.effectDisplay(amount) + " -> " + data.effectDisplay(amount + 1);
+                ctrl.$effect.text = data.effectDisplay(amount) + "  =>  " + data.effectDisplay(amount + 1);
                 ctrl.$buyBtn.alpha = canAfford ? 1 : 0.5;
                 ctrl.$buyBtn.clickthrough = !canAfford;
                 ctrl.$costLabel.text = formatFixed(cost);

@@ -33,8 +33,10 @@ let infos = {
         let icons = iconsets.tabler.charmap;
         forms.makeHeader("About");
         forms.makeText(
-            `The "Customization" menu allows you to customize the appearance of the counter.`
+            `The "Customization" menu allows you to customize the appearance of the current counter.`
         ).fill = "#fff";
+
+        forms.makeHeader("Obtaining");
         forms.makeText(
             `Cosmetic items are obtaining by spending ${icons["square-rotated"]} for a random cosmetic of a specific category.`
         ).fill = "#fff";
