@@ -25,3 +25,25 @@ function setupElements() {
 function $(query) {
     return document.querySelector(query);
 }
+
+const $make = Object.freeze(new Proxy({
+    /**
+     * 
+     * @param {string} type 
+     * @param {object} params 
+     * @param  {...any} children 
+     * @returns 
+     */
+    run(type, params, ...children) {
+        let elm = document.createElement(type);
+
+        for (let param in params) elm[param] = params[param];
+        elm.append(...children);
+    
+        return elm;
+    }
+}, {
+    get(target, prop, receiver) {
+        return (params, ...children) => target.run(prop, params, ...children)
+    }
+}))
