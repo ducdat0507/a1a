@@ -1,6 +1,6 @@
 /** @type {Record<string, () => Pane>} */
 const panes = {};
-/** @type {Record<string, HTMLButtonElement[]>} */
+/** @type {Record<string, Record<string, HTMLButtonElement>>} */
 const paneButtons = {};
 /** @type {Record<string, Pane>} */
 const currentPanes = {};
@@ -18,8 +18,8 @@ function makePaneButton(pane, name, target) {
         onclick: () => setPane(pane, target)
     }, name);
 
-    if (!paneButtons[target]) paneButtons[target] = [];
-    paneButtons[target].push(btn);
+    if (!paneButtons[target]) paneButtons[target] = {};
+    paneButtons[target][pane] = btn;
 
     return btn;
 }
