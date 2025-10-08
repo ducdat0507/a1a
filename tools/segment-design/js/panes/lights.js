@@ -1,11 +1,11 @@
-panes.design = class extends Pane {
+panes.lights = class extends Pane {
 
     /** @type {HTMLElement} */
     holder;
 
     constructor(elm) {
         super(elm);
-        this.holder = $make.section({className: "design-pane__holder hierarchy-holder"});
+        this.holder = $make.section({className: "design-pane__holder"});
         elm.append(this.holder);
 
         events.on("selection-update", this.onUpdate, this);
@@ -20,16 +20,7 @@ panes.design = class extends Pane {
         let elm = this.holder;
         elm.innerHTML = "";
 
-        for (let item of currentDesign.design) {
-            elm.append($make.button({
-                ariaSelected: activeObjects.has(item),
-                "on:click": () => {
-                    activeObjects.clear();
-                    activeObjects.add(item);
-                    events.emit("selection-update");
-                }
-            }, item.toString()))
-        }
+        // TODO add lights
     }
 
     cleanup(elm) {

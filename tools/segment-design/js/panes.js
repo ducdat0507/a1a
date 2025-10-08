@@ -10,7 +10,11 @@ function setupPanes() {
     tabs.append(makePaneButton("design", "Design", "pane-holder-top"));
     tabs.append(makePaneButton("lights", "Lights", "pane-holder-top"));
 
+    tabs = $("#pane-tabs-bottom");
+    tabs.append(makePaneButton("properties", "Properties", "pane-holder-bottom"));
+
     setPane("design", "pane-holder-top");
+    setPane("properties", "pane-holder-bottom");
 }
 
 function makePaneButton(pane, name, target) {
@@ -33,8 +37,7 @@ function setPane(pane, target) {
 
     currentPanes[target]?.cleanup(targetElm);
     targetElm.innerText = "";
-    currentPanes[target] = new panes[pane]();
-    currentPanes[target].populate(targetElm);
+    currentPanes[target] = new panes[pane](targetElm);
 
     for (let btn in paneButtons[target]) {
         paneButtons[target][btn].ariaSelected = btn == pane;
@@ -43,11 +46,11 @@ function setPane(pane, target) {
 
 class Pane {
 
-    constructor() {}
-
-    /** @abstract */
-    populate(element) {}
+    constructor(element) {}
     
-    /** @abstract */
+    /**
+     * @abstract
+     * @param {HTMLElement} element 
+     */
     cleanup(element) {}
 }

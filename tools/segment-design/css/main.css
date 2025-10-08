@@ -5,7 +5,52 @@
 body {
     font-family: Arial, Helvetica, FreeSans, sans-serif;
     font-size: 13px;
+    line-height: 1.4;
     background: black;
+    color: white;
+}
+
+button {
+    font: inherit;
+    background: #fff3;
+    border: 1px solid #777;
+    color: white;
+    padding: 0.25em 0.5em;
+
+    &:hover {
+        background: #fff4;
+        vertical-align: -1px;
+    }
+
+    &:active {
+        background: #fff1;
+        transform: none;
+    }
+}
+
+input {
+    font: inherit;
+    background: #0007;
+    border: 1px solid #777;
+    padding: 0.25em 0.5em;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+} 
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+#preloader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 2100000000;
 }
 
 #main-container {
@@ -100,6 +145,8 @@ body {
 }
 
 .pane-holder {
+    display: flex;
+    flex-flow: column;
     flex: 1;
 }
 
@@ -117,7 +164,7 @@ body {
         font: inherit;
         color: #fff;
         background: #777;
-        padding: 0.6em 1.8em 0.6em 0.9em;
+        padding: 0.6em 1.8em 0.5em 0.9em;
         line-height: 1em;
         clip-path: polygon(0% 0%, calc(100% - 1.1em) 0%, 100% 100%, 0 100%);
         border-top-left-radius: 3px;

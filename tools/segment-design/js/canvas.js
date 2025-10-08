@@ -5,14 +5,14 @@ let gridLeft = -12.5, gridTop = -12.5, gridZoom = 10;
 function setupCanvas() {
     elements.mainCanvas.addEventListener("wheel", (e) => {
         e.preventDefault();
-        let factor = 0.9 ** Math.sign(e.deltaY);
+        let factor = 1.1 ** Math.sign(e.deltaY);
         let center = Vector2(
-            gridLeft - e.offsetX / gridZoom,
+            gridLeft - e.clientX / gridZoom,
             gridTop - e.offsetY / gridZoom
         )
-        gridLeft += (center.x - gridLeft) * (1 - factor);
-        gridTop += (center.y - gridTop) * (1 - factor);
-        gridZoom *= factor;
+        gridLeft += (center.x - gridLeft) * (factor - 1);
+        gridTop += (center.y - gridTop) * (factor - 1);
+        gridZoom /= factor;
         updateCanvas();
     });
     elements.mainCanvas.addEventListener("pointerdown", (e) => {
@@ -27,8 +27,13 @@ function setupCanvas() {
             }, () => {
                 elements.mainCanvas.style.cursor = "";
             })
+        } else {
+            currentTool?.onPointerDown(e);
         }
     });
+
+    events.on("selection-update", updateCanvas);
+    events.on("property-update", updateCanvas);
 }
 
 /** 
@@ -57,6 +62,7 @@ function updateCanvas() {
 
     drawGrid();
     drawItems();
+    currentTool?.drawGizmos();
 }
 
 function drawGrid() 
@@ -81,7 +87,7 @@ function drawGrid()
     elements.canvasCtx.textBaseline = "top";
 
     for (let x = gridBeginX; x < gridEndX; x += gridInterval) {
-        let screenX = Math.floor((x - gridLeft) * gridZoom * canvasScale) + 0.5;
+        let screenX = Math.round((x - gridLeft) * gridZoom * canvasScale) + 0.5;
         elements.canvasCtx.strokeStyle = getColor(x);
         elements.canvasCtx.beginPath();
         elements.canvasCtx.moveTo(screenX, 0);
@@ -100,7 +106,7 @@ function drawGrid()
     elements.canvasCtx.textBaseline = "middle";
 
     for (let y = gridBeginY; y < gridEndY; y += gridInterval) {
-        let screenY = Math.floor((y - gridTop) * gridZoom * canvasScale) + 0.5;
+        let screenY = Math.round((y - gridTop) * gridZoom * canvasScale) + 0.5;
         elements.canvasCtx.strokeStyle = getColor(y);
         elements.canvasCtx.beginPath();
         elements.canvasCtx.moveTo(0, screenY);
@@ -114,33 +120,29 @@ function drawGrid()
 
 function drawItems() {
     let scale = gridZoom * canvasScale;
-    elements.canvasCtx.lineWidth = canvasScale * 2;
     elements.canvasCtx.lineCap = "round";
     elements.canvasCtx.lineJoin = "round";
 
-    for (let elm of currentDesign.design) {
-        elements.canvasCtx.fillStyle = "#7f73";
-        elements.canvasCtx.strokeStyle = "#7f7";
-        let path = elm.toPath();
-        path.transform(
-            scale, 0,     -gridLeft * scale,
-            0,     scale, -gridTop * scale,
-            0, 0, 1
-        );
-        let path2D = new Path2D(path.toSVGString());
+    let totalPathBuilder = new PathKit.SkOpBuilder();
 
-        elements.canvasCtx.fill(path2D, "evenodd");
+    for (let elm of currentDesign.design) {
+        elements.canvasCtx.strokeStyle = elm.operation == DesignElementOperation.SUBTRACT ? "#f88" : "#7f7";
+        let path = elm.toPath();
+        totalPathBuilder.add(path, elm.operation == DesignElementOperation.SUBTRACT ? PathKit.PathOp.DIFFERENCE : PathKit.PathOp.UNION)
+        transformPathToCanvas(path, scale);
+        let path2D = path.toPath2D();
+
+        let active = activeObjects.has(elm)
+
+        elements.canvasCtx.lineWidth = canvasScale * (1 + active * !elm.stroke.thickness);
         elements.canvasCtx.stroke(path2D);
         path.delete();
 
         if (elm.stroke.thickness) {
             let path = elm.toPath(true);
-            path.transform(
-                scale, 0,     -gridLeft * scale,
-                0,     scale, -gridTop * scale,
-                0, 0, 1
-            );
-            let path2D = new Path2D(path.toSVGString());
+            transformPathToCanvas(path, scale);
+            let path2D = path.toPath2D();
+            elements.canvasCtx.lineWidth = canvasScale * (1 + active);
             elements.canvasCtx.globalAlpha = 0.3;
             elements.canvasCtx.stroke(path2D);
             elements.canvasCtx.globalAlpha = 1;
@@ -150,4 +152,23 @@ function drawItems() {
             path.delete();
         }
     }
+
+    elements.canvasCtx.fillStyle = "#7f73";
+    let totalPath = totalPathBuilder.make();
+    console.log(totalPath.toSVGString());
+    transformPathToCanvas(totalPath, scale);
+    let totalPath2D = totalPath.toPath2D();
+    elements.canvasCtx.fill(totalPath2D);
+
+    totalPathBuilder.delete();
+    totalPath.delete();
+}
+
+function transformPathToCanvas(path, scale = null) {
+    scale = gridZoom * canvasScale;
+    path.transform(
+        scale, 0,     -gridLeft * scale,
+        0,     scale, -gridTop * scale,
+        0, 0, 1
+    );
 }

@@ -18,6 +18,11 @@ function setupElements() {
     elements.canvasCtx = elements.mainCanvas.getContext("2d");
 }
 
+
+
+
+
+
 /**
  * @param {string} query 
  * @returns {HTMLElement | null}
@@ -26,18 +31,23 @@ function $(query) {
     return document.querySelector(query);
 }
 
+/** @type {Record<string, (params: Partial<HTMLElement>, ...children: any[]) => HTMLElement} */
 const $make = Object.freeze(new Proxy({
     /**
      * 
      * @param {string} type 
-     * @param {object} params 
+     * @param {Partial<HTMLElement>} params 
      * @param  {...any} children 
      * @returns 
      */
     run(type, params, ...children) {
         let elm = document.createElement(type);
 
-        for (let param in params) elm[param] = params[param];
+        if (params) for (let param in params) {
+            if (param.includes("-")) elm.setAttribute(param, params[param]);
+            if (param.startsWith("on:")) elm.addEventListener(param.substring(3), params[param]);
+            else elm[param] = params[param];
+        }
         elm.append(...children);
     
         return elm;

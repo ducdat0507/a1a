@@ -22,15 +22,37 @@ function newDesign() {
 
                 stroke: { thickness: 2, cap: PathStrokeCap.ROUND, join: PathStrokeJoin.ROUND },
                 mayClose: true,
+            }),
+
+            new PathDesignElement({
+                /** @type {PathDesignNode[]} */
+                nodes: [
+                    { center: Vector2(22, 0) },
+                    { center: Vector2(42, 0) },
+                    { center: Vector2(42, 10) },
+                    { center: Vector2(32, 20) },
+                    { center: Vector2(22, 20) },
+                ],
+
+                mayClose: true,
             })
         ],
     }
 }
 
 function save() {
-    localStorage.setItem("a1a-design", LZString.compressToUTF16(JSON.stringify(currentDesign, itemReplacer)))
+    localStorage.setItem("a1a-design", LZString.compressToUTF16(JSON.stringify(currentDesign)))
 }
 
 function load() {
-    currentDesign = newDesign();
+    try {
+        let tmpObj = JSON.parse(LZString.decompressFromUTF16(localStorage.getItem("a1a-design")));
+        for (let elm in tmpObj.design) {
+            tmpObj.design[elm] = new PathDesignElement(tmpObj.design[elm]);
+        }
+        currentDesign = tmpObj;
+    } catch (e) {
+        console.log(e);
+        currentDesign = newDesign();
+    }
 }

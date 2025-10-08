@@ -1,0 +1,81 @@
+panes.properties = class extends Pane {
+
+    /** @type {HTMLElement} */
+    holder;
+
+    constructor(elm) {
+        super(elm);
+        this.holder = $make.section({className: "properties-pane__holder form-holder"});
+        elm.append(this.holder);
+
+        events.on("selection-update", this.onUpdate, this);
+        events.on("property-update", this.onUpdate, this);
+
+        this.onUpdate();
+    }
+
+    onUpdate(source, freq = 0) {
+        if (source == "properties" || freq < 0) return;
+
+        let elm = this.holder;
+        elm.innerHTML = "";
+
+        if (activeObjects.size == 0) {
+            elm.append(
+                $make.h2(null, "No object selected"),
+                $make.p(null, "Select an object to view its properties."),
+            );
+        }
+        if (activeObjects.size == 1) {
+            let obj = activeObjects.values().next().value;
+            
+            if (obj instanceof DesignElement) {
+                elm.append(
+                    form.prop("Operation", 
+                        form.select(
+                            { 
+                                [DesignElementOperation.ADD]: "Add",
+                                [DesignElementOperation.SUBTRACT]: "Subtract"
+                            },
+                            () => obj.operation,
+                            (x) => { obj.operation = x; events.emit("property-update", "properties") }
+                        ),
+                    )
+                );
+                elm.append(
+                    form.prop("Stroke", 
+                        form.number(
+                            "u",
+                            { min: 0 },
+                            () => obj.stroke.thickness,
+                            (x) => { obj.stroke.thickness = x; events.emit("property-update", "properties") }
+                        ),
+                        form.select(
+                            { 
+                                [PathStrokeJoin.MITER]: "Mit",
+                                [PathStrokeJoin.ROUND]: "Rnd",
+                                [PathStrokeJoin.BEVEL]: "Bev",
+                            },
+                            () => obj.stroke.join,
+                            (x) => { obj.stroke.join = x; events.emit("property-update", "properties") }
+                        ),
+                        form.select(
+                            { 
+                                [PathStrokeCap.BUTT]:   "Btt",
+                                [PathStrokeCap.ROUND]:  "Rnd",
+                                [PathStrokeCap.SQUARE]: "Sqr",
+                            },
+                            () => obj.stroke.cap,
+                            (x) => { obj.stroke.cap = x; events.emit("property-update", "properties") }
+                        ),
+                    )
+                );
+            }
+        }
+    }
+
+    cleanup(elm) {
+        events.off("selection-update", this.onUpdate);
+        events.off("property-update", this.onUpdate);
+    }
+}

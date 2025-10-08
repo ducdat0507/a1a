@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Segmented display designer</title>
 
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/forms.css">
+    
+    <link rel="stylesheet" href="css/panes/design.css">
+    <link rel="stylesheet" href="css/panes/properties.css">
+</head>
+<body>
+    <div id="preloader">
+        <div>Loading...</div>
+    </div>
+
+
+
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/pathkit-wasm@1.0.0/bin/pathkit.js"></script>
     <script>
         PathKitInit({
@@ -15,28 +31,35 @@
         });
     </script>
 
-    <link rel="stylesheet" href="css/main.css" />
+    <script src="../../js/lib/lz-string.min.js"></script>
 
     <script src="js/panes.js"></script>
     <script src="js/panes/design.js"></script>
+    <script src="js/panes/lights.js"></script>
+    <script src="js/panes/properties.js"></script>
+
+    <script src="js/tools.js"></script>
+    <script src="js/tools/cursor.js"></script>
+    <script src="js/tools/pen.js"></script>
 
     <script src="js/objects.js"></script>
 
     <script src="js/canvas.js"></script>
     <script src="js/elements.js"></script>
+    <script src="js/forms.js"></script>
+    <script src="js/events.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/main.js"></script>
-</head>
-<body>
+
+
+
+
+    
     <div id="main-container">
         <div id="main-holder">
             <canvas id="main-canvas"></canvas>
             <div id="tool-holder">
-                <div class="tool-strip">
-                    <button aria-selected="true">Cursor</button>
-                    <hr>
-                    <button>Pen</button>
-                    <button>Arc</button>
+                <div id="main-tool-strip" class="tool-strip">
                 </div>
             </div>
         </div>

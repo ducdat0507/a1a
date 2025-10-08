@@ -1,4 +1,5 @@
-/** @import PathKit from "../lib/pathKit.tmp" */
+/** @type {Set<Object>} */
+let activeObjects = new Set();
 
 /** @abstract */
 class DesignElement {
@@ -41,23 +42,23 @@ class PathDesignElement extends DesignElement {
     constructor(params) {
         super();
         if (params) for (let param in params) this[param] = params[param];
+        if (!this.nodes?.length) throw new Error("Object must have at least 1 node");
     }
 
     /** @type {PathDesignNode[]} */
-    #nodes = [];
-    get nodes() { return this.#nodes; }
-    set nodes(value) { this.#nodes = value; }
 
     toPathInternal() {
         let path = PathKit.NewPath();
+        
+        path.moveTo(this.nodes[0].center.x, this.nodes[0].center.y);
 
-        path.moveTo(this.#nodes[0].center.x, this.#nodes[0].center.y);
-
-        for (let a = 1; a < this.#nodes.length; a++) {
-            let node = this.#nodes[a];
+        for (let a = 1; a < this.nodes.length; a++) {
+            let node = this.nodes[a];
             if (node.bezierP1 || node.bezierP2) {
-                let p1 = node.bezierP1 ?? this.#nodes[a - 1].center;
-                let p2 = node.bezierP2 ?? this.#nodes[a].center;
+                let beginNode = this.nodes[a - 1];
+                let endNode = this.nodes[a];
+                let p1 = node.bezierP1 ?? Vector2((beginNode.x * 2 + endNode.x) / 3, (beginNode.y * 2 + endNode.y) / 3);
+                let p2 = node.bezierP2 ?? Vector2((beginNode.x + endNode.x * 2) / 3, (beginNode.y + endNode.y * 2) / 3);
                 path.cubicTo(p1.x, p1.y, p2.x, p2.y, node.center.x, node.center.y);
             } else {
                 path.lineTo(node.center.x, node.center.y);
@@ -65,10 +66,12 @@ class PathDesignElement extends DesignElement {
         }
 
         if (this.mayClose) {
-            let node = this.#nodes[0];
+            let node = this.nodes[0];
             if (node.bezierP1 || node.bezierP2) {
-                let p1 = node.bezierP1 ?? this.#nodes.at(-1).center;
-                let p2 = node.bezierP2 ?? this.#nodes[0].center;
+                let beginNode = this.nodes.at(-1);
+                let endNode = this.nodes[0];
+                let p1 = node.bezierP1 ?? Vector2((beginNode.x * 2 + endNode.x) / 3, (beginNode.y * 2 + endNode.y) / 3);
+                let p2 = node.bezierP2 ?? Vector2((beginNode.x + endNode.x * 2) / 3, (beginNode.y + endNode.y * 2) / 3);
                 path.cubicTo(p1.x, p1.y, p2.x, p2.y, node.center.x, node.center.y);
             } else {
                 path.close();
@@ -77,6 +80,8 @@ class PathDesignElement extends DesignElement {
 
         return path;
     }
+
+    toString() { return `Path (${this.nodes.length} nodes)` }
 }
 
 /** @enum */
