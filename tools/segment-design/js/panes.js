@@ -8,7 +8,7 @@ const currentPanes = {};
 function setupPanes() {
     let tabs = $("#pane-tabs-top");
     tabs.append(makePaneButton("design", "Design", "pane-holder-top"));
-    tabs.append(makePaneButton("lights", "Lights", "pane-holder-top"));
+    tabs.append(makePaneButton("lights", "Lighting", "pane-holder-top"));
 
     tabs = $("#pane-tabs-bottom");
     tabs.append(makePaneButton("properties", "Properties", "pane-holder-bottom"));

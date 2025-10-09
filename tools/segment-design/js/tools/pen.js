@@ -39,7 +39,8 @@ tools.pen = class extends Tool {
         
         // Draw temp path
         if (this.nodes.length) {
-            let tempElm = new PathDesignElement({nodes: this.nodes, mayClose: this.mayClose})
+            let tempElm = new PathDesignElement({nodes: [...this.nodes], mayClose: this.mayClose})
+            tempElm.nodes.push({center: this.mousePos});
             let tempPath = tempElm.toPath();
             transformPathToCanvas(tempPath);
             ctx.beginPath();

@@ -11,6 +11,9 @@ panes.design = class extends Pane {
         events.on("selection-update", this.onUpdate, this);
         events.on("property-update", this.onUpdate, this);
 
+        activeObjects.clear();
+        setTimeout(() => events.emit("selection-update"));
+
         this.onUpdate();
     }
 

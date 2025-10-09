@@ -8,6 +8,9 @@ function init() {
 
     $("#preloader").style.display = "none";
 
+    events.on("selection-update", save);
+    events.on("property-update", save);
+
     window.addEventListener("resize", () => {
         updateCanvas();
         paneButtons();

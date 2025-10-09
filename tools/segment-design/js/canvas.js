@@ -124,6 +124,7 @@ function drawItems() {
     elements.canvasCtx.lineJoin = "round";
 
     let totalPathBuilder = new PathKit.SkOpBuilder();
+    let totalPath;
 
     for (let elm of currentDesign.design) {
         elements.canvasCtx.strokeStyle = elm.operation == DesignElementOperation.SUBTRACT ? "#f88" : "#7f7";
@@ -134,34 +135,47 @@ function drawItems() {
 
         let active = activeObjects.has(elm)
 
-        elements.canvasCtx.lineWidth = canvasScale * (1 + active * !elm.stroke.thickness);
-        elements.canvasCtx.stroke(path2D);
-        path.delete();
+        if (currentPanes["pane-holder-top"] instanceof panes.design) {
+            
+            elements.canvasCtx.lineWidth = canvasScale * (1 + active * !elm.stroke.thickness);
+            elements.canvasCtx.stroke(path2D);
 
-        if (elm.stroke.thickness) {
-            let path = elm.toPath(true);
-            transformPathToCanvas(path, scale);
-            let path2D = path.toPath2D();
-            elements.canvasCtx.lineWidth = canvasScale * (1 + active);
-            elements.canvasCtx.globalAlpha = 0.3;
-            elements.canvasCtx.stroke(path2D);
-            elements.canvasCtx.globalAlpha = 1;
-            elements.canvasCtx.setLineDash([10 * canvasScale, 5 * canvasScale]);
-            elements.canvasCtx.stroke(path2D);
-            elements.canvasCtx.setLineDash([]);
-            path.delete();
+            if (elm.stroke.thickness) {
+                let path = elm.toPath(true);
+                transformPathToCanvas(path, scale);
+                let path2D = path.toPath2D();
+                elements.canvasCtx.lineWidth = canvasScale * (1 + active);
+                elements.canvasCtx.globalAlpha = 0.3;
+                elements.canvasCtx.stroke(path2D);
+                elements.canvasCtx.globalAlpha = 1;
+                elements.canvasCtx.setLineDash([10 * canvasScale, 5 * canvasScale]);
+                elements.canvasCtx.stroke(path2D);
+                elements.canvasCtx.setLineDash([]);
+                path.delete();
+            }
         }
+
+        path.delete();
     }
 
-    elements.canvasCtx.fillStyle = "#7f73";
-    let totalPath = totalPathBuilder.make();
-    console.log(totalPath.toSVGString());
-    transformPathToCanvas(totalPath, scale);
-    let totalPath2D = totalPath.toPath2D();
-    elements.canvasCtx.fill(totalPath2D);
+    if (currentPanes["pane-holder-top"] instanceof panes.design) {
+        elements.canvasCtx.fillStyle = "#7f73";
+        totalPath = totalPathBuilder.make();
+        console.log(totalPath.toSVGString());
+        transformPathToCanvas(totalPath, scale);
+        let totalPath2D = totalPath.toPath2D();
+        elements.canvasCtx.fill(totalPath2D);
+    } else if (currentPanes["pane-holder-top"] instanceof panes.lights) {
+        elements.canvasCtx.fillStyle = "#fff3";
+        totalPath = totalPathBuilder.make();
+        console.log(totalPath.toSVGString());
+        transformPathToCanvas(totalPath, scale);
+        let totalPath2D = totalPath.toPath2D();
+        elements.canvasCtx.fill(totalPath2D);
+    }
 
     totalPathBuilder.delete();
-    totalPath.delete();
+    totalPath?.delete();
 }
 
 function transformPathToCanvas(path, scale = null) {

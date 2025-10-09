@@ -81,7 +81,7 @@ class PathDesignElement extends DesignElement {
         return path;
     }
 
-    toString() { return `Path (${this.nodes.length} nodes)` }
+    toString() { return `${this.mayClose ? "Shape" : "Line"} (${this.nodes.length} nodes)` }
 }
 
 /** @enum */
