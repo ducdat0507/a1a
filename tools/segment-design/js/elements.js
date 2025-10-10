@@ -57,3 +57,7 @@ const $make = Object.freeze(new Proxy({
         return (params, ...children) => target.run(prop, params, ...children)
     }
 }))
+
+function $icon(icon, params) {
+    return $make["iconify-icon"]({icon, ...params});
+}

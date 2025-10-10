@@ -7,9 +7,9 @@ let currentTool = null;
 
 function setupTools() {
     let tabs = $("#main-tool-strip");
-    tabs.append(makeToolButton("cursor", "Cursor"));
+    tabs.append(makeToolButton("cursor", $icon("tabler:pointer")));
     tabs.append($make.hr());
-    tabs.append(makeToolButton("pen", "Pen"));
+    tabs.append(makeToolButton("pen", $icon("tabler:ballpen")));
 
     setTool("cursor");
 }

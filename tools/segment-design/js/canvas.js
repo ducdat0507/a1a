@@ -167,11 +167,15 @@ function drawItems() {
         elements.canvasCtx.fill(totalPath2D);
     } else if (currentPanes["pane-holder-top"] instanceof panes.lights) {
         elements.canvasCtx.fillStyle = "#fff3";
-        totalPath = totalPathBuilder.make();
-        console.log(totalPath.toSVGString());
+        elements.canvasCtx.strokeStyle = "#fff";
+        totalPath = totalPathBuilder.make();;
         transformPathToCanvas(totalPath, scale);
-        let totalPath2D = totalPath.toPath2D();
-        elements.canvasCtx.fill(totalPath2D);
+        let totalPaths = [...totalPath.toSVGString().matchAll(/M[^Z]*Z?/gi)].map(x => x[0])
+        let totalPaths2D = totalPaths.map(x => new Path2D(x));
+        for (let path of totalPaths2D) {
+            elements.canvasCtx.stroke(path);
+            elements.canvasCtx.fill(path);
+        }
     }
 
     totalPathBuilder.delete();
@@ -185,4 +189,19 @@ function transformPathToCanvas(path, scale = null) {
         0,     scale, -gridTop * scale,
         0, 0, 1
     );
+}
+
+function getAllSegments() {
+    let totalPathBuilder = new PathKit.SkOpBuilder();
+    for (let elm of currentDesign.design) {
+        let path = elm.toPath();
+        totalPathBuilder.add(path, elm.operation == DesignElementOperation.SUBTRACT ? PathKit.PathOp.DIFFERENCE : PathKit.PathOp.UNION);
+        path.delete();
+    }
+
+    let totalPath = totalPathBuilder.make();
+    let totalPaths = [...totalPath.toSVGString().matchAll(/M[^Z]*Z?/gi)].map(x => x[0]);
+    totalPath.delete();
+
+    return totalPaths;
 }
