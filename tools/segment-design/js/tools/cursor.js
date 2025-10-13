@@ -8,7 +8,7 @@ tools.cursor = class extends Tool {
 
     updateGizmos() {
         this.gizmos = [];
-
+        
         for (let item of activeObjects) {
             if (item instanceof PathDesignElement) {
                 for (let node of item.nodes) {
@@ -20,7 +20,16 @@ tools.cursor = class extends Tool {
                 }
             }
         }
-
+        if (currentPanes["pane-holder-top"] instanceof panes.lights) {
+            for (let wire of currentDesign.wires) {
+                this.gizmos.push({
+                    type: "wire",
+                    target: wire,
+                    gridPos: wire.position,
+                })
+            }
+        }
+ 
         let scale = gridZoom * canvasScale;
         for (let gizmo of this.gizmos) {
             gizmo.canvasPos = Vector2(
@@ -51,6 +60,30 @@ tools.cursor = class extends Tool {
                         2 * gizmoScale
                     );
                     ctx.fill();
+                    ctx.stroke();
+                    break;
+                case "wire":
+                    let selected = activeObjects.has(gizmo.target);
+                    ctx.fillStyle = selected ? "#7f7a" : "#fff7";
+                    ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.arc(
+                        Math.round(gizmo.canvasPos.x),
+                        Math.round(gizmo.canvasPos.y),
+                        1.5 * gizmoScale,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(
+                        Math.round(gizmo.canvasPos.x),
+                        Math.round(gizmo.canvasPos.y),
+                        0.5 * gizmoScale,
+                        0,
+                        Math.PI * 2
+                    );
                     ctx.stroke();
                     break;
             }
@@ -90,6 +123,25 @@ tools.cursor = class extends Tool {
                                 events.emit("property-update");
                             })
                             break;
+                        case "wire":
+                            doCanvasMouseDrag(e, e2 => {
+                                let newPos = Vector2 (
+                                    Math.round(e2.clientX / gridZoom + gridLeft),
+                                    Math.round(e2.clientY / gridZoom + gridTop)
+                                )
+                                let offset = Vector2 (
+                                    newPos.x - gizmo.target.position.x,
+                                    newPos.y - gizmo.target.position.y
+                                )
+                                gizmo.target.position.x += offset.x;
+                                gizmo.target.position.y += offset.y;
+                                events.emit("property-update");
+                            })
+
+                            activeObjects.clear();
+                            activeObjects.add(gizmo.target);
+                            events.emit("selection-update");
+                            break;
                     }
                     return;
                 }
@@ -97,56 +149,60 @@ tools.cursor = class extends Tool {
 
 
             // Check for object clicks
-            for (let elm of currentDesign.design.toReversed()) {
-                let path = elm.toPath();
-                transformPathToCanvas(path);
-                if (!elm.stroke.thickness) {
-                    let s = path.copy().stroke({
-                        width: 2 * canvasScale,
-                        join: PathStrokeJoin.ROUND,
-                        cap: PathStrokeCap.ROUND,
-                    });
-                    s.simplify();
-                    path.op(s, PathKit.PathOp.UNION);
-                    s.delete();
-                }
-                let path2D = path.toPath2D();
-                if (elements.canvasCtx.isPointInPath(
-                    path2D, 
-                    e.clientX * canvasScale,
-                    e.clientY * canvasScale,
-                )) {
-                    activeObjects.clear();
-                    activeObjects.add(elm);
-                    
-                    let oldPos = Vector2 (
-                        Math.round(e.clientX / gridZoom + gridLeft),
-                        Math.round(e.clientY / gridZoom + gridTop)
-                    )
-                    doCanvasMouseDrag(e, e2 => {
-                        let newPos = Vector2 (
-                            Math.round(e2.clientX / gridZoom + gridLeft),
-                            Math.round(e2.clientY / gridZoom + gridTop)
+            if (currentPanes["pane-holder-top"] instanceof panes.design) {
+                for (let elm of currentDesign.design.toReversed()) {
+                    let path = elm.toPath();
+                    transformPathToCanvas(path);
+                    if (!elm.stroke.thickness) {
+                        let s = path.copy().stroke({
+                            width: 2 * canvasScale,
+                            join: PathStrokeJoin.ROUND,
+                            cap: PathStrokeCap.ROUND,
+                        });
+                        s.simplify();
+                        path.op(s, PathKit.PathOp.UNION);
+                        s.delete();
+                    }
+                    let path2D = path.toPath2D();
+                    if (elements.canvasCtx.isPointInPath(
+                        path2D, 
+                        e.clientX * canvasScale,
+                        e.clientY * canvasScale,
+                    )) {
+                        activeObjects.clear();
+                        activeObjects.add(elm);
+                        
+                        let oldPos = Vector2 (
+                            Math.round(e.clientX / gridZoom + gridLeft),
+                            Math.round(e.clientY / gridZoom + gridTop)
                         )
-                        let offset = Vector2 (
-                            newPos.x - oldPos.x,
-                            newPos.y - oldPos.y
-                        )
-                        for (let elm of activeObjects) {
-                            if (elm instanceof PathDesignElement) for (let node of elm.nodes) {
-                                node.center.x += offset.x;
-                                node.center.y += offset.y;
+                        doCanvasMouseDrag(e, e2 => {
+                            let newPos = Vector2 (
+                                Math.round(e2.clientX / gridZoom + gridLeft),
+                                Math.round(e2.clientY / gridZoom + gridTop)
+                            )
+                            let offset = Vector2 (
+                                newPos.x - oldPos.x,
+                                newPos.y - oldPos.y
+                            )
+                            for (let elm of activeObjects) {
+                                if (elm instanceof PathDesignElement) for (let node of elm.nodes) {
+                                    node.center.x += offset.x;
+                                    node.center.y += offset.y;
+                                }
                             }
-                        }
-                        oldPos = newPos;
-                        events.emit("property-update");
-                    })
-                    
+                            oldPos = newPos;
+                            events.emit("property-update");
+                        })
+                        
+                        path.delete();
+                        events.emit("selection-update");
+                        return;
+                    }
                     path.delete();
-                    events.emit("selection-update");
-                    return;
                 }
-                path.delete();
+            } else if (currentPanes["pane-holder-top"] instanceof panes.lights) {
+
             }
 
             // Clicked on nothing 

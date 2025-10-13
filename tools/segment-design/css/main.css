@@ -20,6 +20,7 @@ button {
     &:hover {
         background: #fff4;
         vertical-align: -1px;
+        margin-bottom: -1px;
     }
 
     &:active {

@@ -44,4 +44,28 @@ const form = {
             $make.span({}, unit)
         )
     },
+    toggle(child, get, set) {
+        let value = get();
+        let button = $make.button({ 
+            type: "number", 
+            "on:click": () => doToggle(),
+        }, child)
+        function update() {
+            const currentValue = get();
+            button.ariaChecked = value = currentValue;
+        }   
+        update();
+        function doToggle() {
+            set(value = !value);
+            update();
+        }
+        return $make.div({className: "form-toggle"}, 
+            button
+        )
+    },
+    toggleField(toggles) {
+        return $make.div({className: "form-toggle-field"}, 
+            ...toggles
+        )
+    },
 }

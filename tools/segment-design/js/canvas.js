@@ -1,6 +1,7 @@
 let canvasScale = 1, canvasWidth = 0, canvasHeight = 0;
 
 let gridLeft = -12.5, gridTop = -12.5, gridZoom = 10;
+let previewNumber = 0;
 
 function setupCanvas() {
     elements.mainCanvas.addEventListener("wheel", (e) => {
@@ -166,13 +167,41 @@ function drawItems() {
         let totalPath2D = totalPath.toPath2D();
         elements.canvasCtx.fill(totalPath2D);
     } else if (currentPanes["pane-holder-top"] instanceof panes.lights) {
-        elements.canvasCtx.fillStyle = "#fff3";
-        elements.canvasCtx.strokeStyle = "#fff";
         totalPath = totalPathBuilder.make();;
         transformPathToCanvas(totalPath, scale);
+
         let totalPaths = [...totalPath.toSVGString().matchAll(/M[^Z]*Z?/gi)].map(x => x[0])
         let totalPaths2D = totalPaths.map(x => new Path2D(x));
-        for (let path of totalPaths2D) {
+
+        let wiring = new Array(totalPaths2D.length).fill("").map(x => []);
+
+        for (let wire of currentDesign.wires) {
+            let canvasPos = Vector2(
+                (wire.position.x - gridLeft) * gridZoom,
+                (wire.position.y - gridTop) * gridZoom
+            );
+
+            for (let index in totalPaths2D) {
+                let path = totalPaths2D[index];
+                if (elements.canvasCtx.isPointInPath(path, canvasPos.x, canvasPos.y, "nonzero")) 
+                {
+                    wiring[index].push(wire);
+                    break;
+                }
+            }
+        }
+
+        console.log(wiring);
+        
+        for (let index in totalPaths2D) {
+            let path = totalPaths2D[index];
+            if (wiring[index].length == 1) {
+                elements.canvasCtx.fillStyle = wiring[index][0].digits[previewNumber] ? "#fffa" : "#fff3";
+                elements.canvasCtx.strokeStyle = "#fff";
+            } else {
+                elements.canvasCtx.fillStyle = "#f773";
+                elements.canvasCtx.strokeStyle = "#f77";
+            }
             elements.canvasCtx.stroke(path);
             elements.canvasCtx.fill(path);
         }

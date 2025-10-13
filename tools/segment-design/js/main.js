@@ -13,7 +13,6 @@ function init() {
 
     window.addEventListener("resize", () => {
         updateCanvas();
-        paneButtons();
     }, { passive: true })
     window.addEventListener("contextmenu", (e) => {
         e.preventDefault();

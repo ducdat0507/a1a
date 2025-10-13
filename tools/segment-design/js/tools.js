@@ -8,10 +8,23 @@ let currentTool = null;
 function setupTools() {
     let tabs = $("#main-tool-strip");
     tabs.append(makeToolButton("cursor", $icon("tabler:pointer")));
+
     tabs.append($make.hr());
+
     tabs.append(makeToolButton("pen", $icon("tabler:ballpen")));
 
+    tabs.append(makeToolButton("wire", $icon("tabler:wire")));
+
     setTool("cursor");
+    updateTools();
+}
+
+function updateTools() {
+    console.log(toolButtons);
+    if (toolButtons.pen) {
+        toolButtons["pen"].style.display = currentPanes["pane-holder-top"] instanceof panes.design ? "" : "none";
+        toolButtons["wire"].style.display = currentPanes["pane-holder-top"] instanceof panes.lights ? "" : "none";
+    }
 }
 
 function makeToolButton(tool, name) {

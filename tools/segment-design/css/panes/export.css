@@ -1,0 +1,8 @@
+
+
+.export-pane__output {
+    display: block;
+    margin: 0;
+    padding: 1em;
+    overflow: auto;
+}

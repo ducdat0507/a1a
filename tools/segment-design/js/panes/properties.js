@@ -70,6 +70,18 @@ panes.properties = class extends Pane {
                         ),
                     )
                 );
+            } else if (obj instanceof SegmentWire) {
+                elm.append(
+                    form.prop("Lights", 
+                        form.toggleField(
+                            new Array(10).fill("").map((x, i) => form.toggle(
+                                i,
+                                () => obj.digits[i],
+                                (x) => { obj.digits[i] = x; events.emit("property-update", "properties") }
+                            )),
+                        ),
+                    )
+                );
             }
         }
     }

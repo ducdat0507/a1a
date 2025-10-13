@@ -1,12 +1,21 @@
 panes.lights = class extends Pane {
 
     /** @type {HTMLElement} */
+    controls;
+    /** @type {HTMLElement} */
     holder;
 
     constructor(elm) {
         super(elm);
-        this.holder = $make.section({className: "design-pane__holder"});
-        elm.append(this.holder);
+        this.controls = $make.div({className: "design-pane__controls"},
+            form.select(
+                Object.fromEntries(new Array(10).fill("").map((x, i) => [i, i])),
+                () => previewNumber,
+                (x) => { previewNumber = x; updateCanvas(); }
+            )
+        )
+        this.holder = $make.section({className: "design-pane__holder hierarchy-holder"});
+        elm.append(this.controls, this.holder);
 
         events.on("selection-update", this.onUpdate, this);
         events.on("property-update", this.onUpdate, this);
@@ -23,7 +32,20 @@ panes.lights = class extends Pane {
         let elm = this.holder;
         elm.innerHTML = "";
 
-        // TODO add lights
+        for (let item of currentDesign.wires) {
+            elm.append($make.button({
+                ariaSelected: activeObjects.has(item),
+                "on:click": () => {
+                    activeObjects.clear();
+                    activeObjects.add(item);
+                    events.emit("selection-update");
+                }
+            },
+                "Wire (",
+                $make.code({}, item.digits.map((x, i) => x ? i : ".").join("")),
+                ")"
+            ))
+        }
     }
 
     cleanup(elm) {

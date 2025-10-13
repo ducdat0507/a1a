@@ -126,3 +126,18 @@ function Vector2(x, y) {
  * @property {Vector2} [bezierP1]
  * @property {Vector2} [bezierP2]
  */
+
+
+class SegmentWire {
+    constructor(params) {
+        if (params) for (let param in params) this[param] = params[param];
+    }
+
+    /** @type {Vector2} */
+    position = Vector2(0, 0);
+
+    /** @type {boolean[]} */
+    digits = new Array(10).fill(false);
+
+    toString() { return `Wire (${this.digits.map((x, i) => x ? i : "_").join("")})` }
+}

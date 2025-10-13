@@ -1,5 +1,11 @@
 
 
+.design-pane__controls {
+    display: flex;
+    padding: 0.5em;
+    gap: 0.25em;
+}
+
 .design-pane__holder {
     background: #0003;
     border-block: 1px solid #444;

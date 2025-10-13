@@ -12,6 +12,8 @@ function setupPanes() {
 
     tabs = $("#pane-tabs-bottom");
     tabs.append(makePaneButton("properties", "Properties", "pane-holder-bottom"));
+    tabs.append($make.div({style: "flex: 1"}));
+    tabs.append(makePaneButton("export", "Export", "pane-holder-bottom"));
 
     setPane("design", "pane-holder-top");
     setPane("properties", "pane-holder-bottom");
@@ -41,6 +43,10 @@ function setPane(pane, target) {
 
     for (let btn in paneButtons[target]) {
         paneButtons[target][btn].ariaSelected = btn == pane;
+    }
+    if (target == "pane-holder-top") {
+        setTool("cursor");
+        updateTools();
     }
 }
 
