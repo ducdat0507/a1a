@@ -207,7 +207,7 @@ data.machines.segmented = {
     },
 }
 
-for (let design in data.machines.segmented.designs) {
-    let data = data.machines.segmented.designs[design];
-    data.segments = data.segments.map(x => new Path2D(x));
+for (let id in data.machines.segmented.designs) {
+    let design = data.machines.segmented.designs[id];
+    design.segments = design.segments.map(x => new Path2D(x));
 }

@@ -3,6 +3,12 @@ let currentDesign = {}
 
 function newDesign() {
     return {
+        spec: {
+            width: 48,
+            height: 120,
+            charSpace: 10,
+            sepSpace: 20,
+        },
         /** @type {DesignElement[]} */
         design: [],
         /** @type {SegmentWire[]} */

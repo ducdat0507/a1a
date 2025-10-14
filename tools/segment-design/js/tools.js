@@ -7,13 +7,12 @@ let currentTool = null;
 
 function setupTools() {
     let tabs = $("#main-tool-strip");
-    tabs.append(makeToolButton("cursor", $icon("tabler:pointer")));
+    tabs.append(makeToolButton("cursor", $icon("tabler:pointer"), "Cursor"));
 
     tabs.append($make.hr());
 
-    tabs.append(makeToolButton("pen", $icon("tabler:ballpen")));
-
-    tabs.append(makeToolButton("wire", $icon("tabler:wire")));
+    tabs.append(makeToolButton("pen", $icon("tabler:ballpen"), "Pen"));
+    tabs.append(makeToolButton("wire", $icon("lucide:lightbulb"), "Wire"));
 
     setTool("cursor");
     updateTools();
@@ -27,10 +26,14 @@ function updateTools() {
     }
 }
 
-function makeToolButton(tool, name) {
+function makeToolButton(tool, child, title) {
     let btn = $make.button({
         onclick: () => setTool(tool)
-    }, name);
+    }, child);
+
+    tippy(btn, { 
+        content: title,
+    });
 
     toolButtons[tool] = btn;
 

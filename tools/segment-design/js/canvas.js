@@ -196,7 +196,7 @@ function drawItems() {
         for (let index in totalPaths2D) {
             let path = totalPaths2D[index];
             if (wiring[index].length == 1) {
-                elements.canvasCtx.fillStyle = wiring[index][0].digits[previewNumber] ? "#fffa" : "#fff3";
+                elements.canvasCtx.fillStyle = wiring[index][0].digits[previewNumber] ? "#fffc" : "#fff3";
                 elements.canvasCtx.strokeStyle = "#fff";
             } else {
                 elements.canvasCtx.fillStyle = "#f773";

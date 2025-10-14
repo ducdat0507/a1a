@@ -121,7 +121,7 @@ input[type=number] {
         }
 
         & > iconify-icon {
-            font-size: 24px;
+            font-size: 2em;
             display: block;
         }
     }
@@ -130,6 +130,7 @@ input[type=number] {
 
 #controls-holder {
     flex: 0 0 40em;
+    width: 40em;
     background: #222327;
     border-left: 1px solid #aaa;
     box-shadow: -0.25em 0 #0007;
@@ -145,6 +146,7 @@ input[type=number] {
 
 .pane-group {
     display: flex;
+    width: 100%;
     flex: 1;
     flex-flow: column;
     align-items: stretch;
@@ -216,5 +218,37 @@ input[type=number] {
                 box-shadow: none;
             }
         }
+    }
+}
+
+.tooltip > div {
+    background: #444c;
+    color: white;
+    padding: 0.25em 0.5em;
+    border-radius: 0.25em;
+    border: 1px solid #777;
+}
+.tooltip[data-popper-placement="top"] > div {
+    transform-origin: bottom;
+}
+
+.tooltip > div {
+    animation: tooltip-show 0.3s forwards cubic-bezier(0, 1, 0.1, 1);
+}
+.tooltip.hidden > div {
+    animation: tooltip-hide 0.3s forwards cubic-bezier(0, 1, 0.1, 1);
+}
+
+@keyframes tooltip-show {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes tooltip-hide {
+    to {
+        opacity: 0;
+        transform: scale(0.8);
     }
 }

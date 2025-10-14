@@ -61,3 +61,40 @@ const $make = Object.freeze(new Proxy({
 function $icon(icon, params) {
     return $make["iconify-icon"]({icon, ...params});
 }
+
+
+
+
+
+tippy.setDefaultProps({
+    animation: true,
+    render(instance) {
+        if (instance._timeout) clearTimeout(instance._timeout);
+
+        const popper = $make.div({className: "tooltip"});
+        const box = $make.div();
+        popper.appendChild(box);
+
+        box.append(instance.props.content);
+
+        function onUpdate(prevProps, nextProps) {
+            if (prevProps.content !== nextProps.content) {
+                box.innerText = "";
+                box.append(nextProps.content);
+            }
+        }
+
+        return {
+            popper,
+            onUpdate,
+        };
+    },
+    onShow(instance) {
+        instance.popper.classList.remove("hidden");
+        if (instance._timeout) clearTimeout(instance._timeout);
+    },
+    onHide(instance) {
+        instance.popper.classList.add("hidden");
+        instance._timeout = setTimeout(instance.unmount, 1000);
+    }
+});

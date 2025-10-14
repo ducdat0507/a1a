@@ -1,12 +1,16 @@
 panes.export = class extends Pane {
 
     /** @type {HTMLElement} */
+    holder;
+    /** @type {HTMLElement} */
     output;
 
     constructor(elm) {
         super(elm);
-        this.output = $make.pre({className: "export-pane__output"});
-        elm.append(this.output);
+        this.holder = $make.pre({className: "export-pane__output"});
+        elm.append(this.holder);
+        this.output = $make.code();
+        this.holder.append(this.output);
 
         events.on("selection-update", this.onUpdate, this);
         events.on("property-update", this.onUpdate, this);
