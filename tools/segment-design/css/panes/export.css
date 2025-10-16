@@ -1,8 +1,25 @@
 
 
+
+.export-pane__controls {
+    display: flex;
+    padding: 0.5em;
+    gap: 0.25em;
+}
+
 .export-pane__output {
+    background: #0003;
+    border-block: 1px solid #444;
     display: block;
     margin: 0;
-    padding: 1em;
-    overflow: auto;
+    flex: 0 1 100%;
+    position: relative;
+
+    & > code {
+        display: block;
+        position: absolute;
+        inset: 0;
+        padding: 1em;
+        overflow: auto;
+    }
 }

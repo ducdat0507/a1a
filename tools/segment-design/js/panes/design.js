@@ -23,6 +23,15 @@ panes.design = class extends Pane {
         let elm = this.holder;
         elm.innerHTML = "";
 
+        elm.append($make.button({
+            ariaSelected: activeObjects.has(currentDesign),
+            "on:click": () => {
+                activeObjects.clear();
+                activeObjects.add(currentDesign);
+                events.emit("selection-update");
+            }
+        }, $icon("lucide:map"), "Specs"))
+
         for (let item of currentDesign.design) {
             elm.append($make.button({
                 ariaSelected: activeObjects.has(item),
@@ -31,7 +40,7 @@ panes.design = class extends Pane {
                     activeObjects.add(item);
                     events.emit("selection-update");
                 }
-            }, item.toString()))
+            }, $icon(["tabler:minus", "", "tabler:plus"][+item.operation + 1]), item.toString()))
         }
     }
 

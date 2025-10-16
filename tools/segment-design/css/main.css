@@ -11,16 +11,17 @@ body {
 }
 
 button {
+    --block-offset: 0px;
+
     font: inherit;
     background: #fff3;
     border: 1px solid #777;
     color: white;
     padding: 0.25em 0.5em;
+    margin-block: var(--block-offset) calc(var(--block-offset) * -1);
 
     &:hover {
         background: #fff4;
-        vertical-align: -1px;
-        margin-bottom: -1px;
     }
 
     &:active {
@@ -147,7 +148,7 @@ input[type=number] {
 .pane-group {
     display: flex;
     width: 100%;
-    flex: 1;
+    flex: 0 1 100%;
     flex-flow: column;
     align-items: stretch;
 }
@@ -155,7 +156,7 @@ input[type=number] {
 .pane-holder {
     display: flex;
     flex-flow: column;
-    flex: 1;
+    flex: 0 1 100%;
 }
 
 .pane-tabs {
@@ -163,7 +164,8 @@ input[type=number] {
     box-shadow: inset 0 -1px #777;
     display: flex;
     padding: 0.5em 0.8em 0 0.8em;
-    overflow: auto;
+    overflow: auto hidden;
+    flex: 0 0 calc(2.5em + 2px);
 
     & button {
         --block-offset: 1px;
@@ -172,12 +174,11 @@ input[type=number] {
         font: inherit;
         color: #fff;
         background: #777;
-        padding: 0.6em 1.8em 0.5em 0.9em;
+        padding: 0.7em 1.8em 0.5em 0.9em;
         line-height: 1em;
         clip-path: polygon(0% 0%, calc(100% - 1.1em) 0%, 100% 100%, 0 100%);
         border-top-left-radius: 3px;
         position: relative;
-        margin-block: var(--block-offset) calc(var(--block-offset) * -1);
         margin-inline: -0.3em;
 
         & + button {

@@ -12,7 +12,7 @@ function setupTools() {
     tabs.append($make.hr());
 
     tabs.append(makeToolButton("pen", $icon("tabler:ballpen"), "Pen"));
-    tabs.append(makeToolButton("wire", $icon("lucide:lightbulb"), "Wire"));
+    tabs.append(makeToolButton("wire", $icon("lucide:lightbulb"), "Light"));
 
     setTool("cursor");
     updateTools();

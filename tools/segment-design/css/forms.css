@@ -21,7 +21,7 @@
     }
 }
 
-.form-select {
+.form-select, .form-button {
     display: flex;
     align-items: baseline;
     border: 1px solid #555;
@@ -52,7 +52,7 @@
     }
 }
 
-.form-number {
+.form-number, .form-field {
     display: flex;
     position: relative;
     align-items: stretch;
@@ -125,11 +125,11 @@
     align-items: stretch;
 
     & > button {
-        display: flex;
         transform: none;
         border: none;
         background: transparent;
         padding: 0.5em 0.75em;
+        text-align: start;
 
         &:hover {
             background: #fff2;
@@ -143,5 +143,13 @@
         &[aria-selected="true"] {
             background: #335;
         }
+    }
+
+    & > button > iconify-icon {
+        font-size: 16px;
+        height: 1em;
+        width: 1em;
+        vertical-align: -0.125em;
+        margin-inline-end: 0.25em;
     }
 }

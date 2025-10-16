@@ -15,7 +15,7 @@ panes.properties = class extends Pane {
     }
 
     onUpdate(source, freq = 0) {
-        if (source == "properties" || freq < 0) return;
+        if ((source == "properties" || freq < 0) && freq < 1) return;
 
         let elm = this.holder;
         elm.innerHTML = "";
@@ -29,7 +29,38 @@ panes.properties = class extends Pane {
         if (activeObjects.size == 1) {
             let obj = activeObjects.values().next().value;
             
-            if (obj instanceof DesignElement) {
+            if (obj == currentDesign) {
+                elm.append(
+                    form.prop("User-defined specs",
+                        $make.b({ style: "width: calc(12ch + 4px)" }, "Keys"),
+                        $make.b({ style: "width: calc(12ch + 4px)" }, "Values"),
+                    ),
+                    ...Object.keys(currentDesign.extraSpec).map((spec) => form.prop("", 
+                        form.field({}, () => spec, (x) => {
+                            let obj = currentDesign.extraSpec;
+                            if (!x) {
+                                delete obj[spec];
+                                events.emit("property-update", "properties", 1);
+                            } else if (spec != x) {
+                                delete Object.assign(obj, {[x]: obj[spec]})[spec];
+                                events.emit("property-update", "properties", 1);
+                            }
+                            
+                        }),
+                        form.field({}, () => currentDesign.extraSpec[spec], (x) => {
+                            let obj = currentDesign.extraSpec;
+                            Object.assign(obj, {[spec]: x});
+                        }),
+                    )),
+                    form.prop("", 
+                        form.field({}, () => "", (x) => {
+                            let obj = currentDesign.extraSpec;
+                            Object.assign(obj, {[x]: ""});
+                            events.emit("property-update", "properties", 1);
+                        }),
+                    ),
+                );
+            } else if (obj instanceof DesignElement) {
                 elm.append(
                     form.prop("Operation", 
                         form.select(

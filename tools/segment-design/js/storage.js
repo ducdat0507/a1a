@@ -9,6 +9,8 @@ function newDesign() {
             charSpace: 10,
             sepSpace: 20,
         },
+        /** @type {Record<string, string>} */
+        extraSpec: {},
         /** @type {DesignElement[]} */
         design: [],
         /** @type {SegmentWire[]} */

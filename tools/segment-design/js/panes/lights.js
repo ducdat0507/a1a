@@ -41,7 +41,8 @@ panes.lights = class extends Pane {
                     events.emit("selection-update");
                 }
             },
-                "Wire (",
+                $icon("lucide:lightbulb"),
+                "Light (",
                 $make.code({}, item.digits.map((x, i) => x ? i : ".").join("")),
                 ")"
             ))

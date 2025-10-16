@@ -18,6 +18,28 @@ tools.cursor = class extends Tool {
                         gridPos: node.center,
                     })
                 }
+            } else if (item == currentDesign) {
+                let base = Vector2(
+                    gridLeft + 20 / gridZoom,
+                    gridTop + 20 / gridZoom
+                )
+                this.gizmos.push({
+                    type: "digit-width",
+                    gridPos: Vector2(currentDesign.spec.width, base.y),
+                })
+                this.gizmos.push({
+                    type: "digit-height",
+                    gridPos: Vector2(base.x, currentDesign.spec.height),
+                })
+                this.gizmos.push({
+                    type: "char-space",
+                    gridPos: Vector2(currentDesign.spec.width + currentDesign.spec.charSpace, base.y),
+                })
+                this.gizmos.push({
+                    type: "sep-space",
+                    gridPos: Vector2(currentDesign.spec.width + currentDesign.spec.sepSpace, base.y),
+                })
+                console.log(this.gizmos);
             }
         }
         if (currentPanes["pane-holder-top"] instanceof panes.lights) {
@@ -49,6 +71,62 @@ tools.cursor = class extends Tool {
 
         for (let gizmo of this.gizmos) {
             switch (gizmo.type) {
+                case "digit-width": case "char-space": case "sep-space":
+                    ctx.fillStyle = gizmo.type == "digit-width" ? "red" : "gray";
+                    ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.moveTo(
+                        gizmo.canvasPos.x - 1 * gizmoScale,
+                        gizmo.canvasPos.y - 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 1 * gizmoScale,
+                        gizmo.canvasPos.y - 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 1 * gizmoScale,
+                        gizmo.canvasPos.y + 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x,
+                        gizmo.canvasPos.y + 2 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x - 1 * gizmoScale,
+                        gizmo.canvasPos.y + 1 * gizmoScale,
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case "digit-height":
+                    ctx.fillStyle = "red";
+                    ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.moveTo(
+                        gizmo.canvasPos.x - 1 * gizmoScale,
+                        gizmo.canvasPos.y - 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 1 * gizmoScale,
+                        gizmo.canvasPos.y - 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 2 * gizmoScale,
+                        gizmo.canvasPos.y,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 1 * gizmoScale,
+                        gizmo.canvasPos.y + 1 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x - 1 * gizmoScale,
+                        gizmo.canvasPos.y + 1 * gizmoScale,
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
                 case "node-center":
                     ctx.fillStyle = "red";
                     ctx.strokeStyle = "white";
@@ -64,8 +142,17 @@ tools.cursor = class extends Tool {
                     break;
                 case "wire":
                     let selected = activeObjects.has(gizmo.target);
-                    ctx.fillStyle = selected ? "#7f7a" : "#fff7";
                     ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.arc(
+                        Math.round(gizmo.canvasPos.x),
+                        Math.round(gizmo.canvasPos.y),
+                        2 * gizmoScale,
+                        0,
+                        Math.PI * 2
+                    );
+                    ctx.fillStyle = "#0007";
+                    ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
                         Math.round(gizmo.canvasPos.x),
@@ -74,8 +161,9 @@ tools.cursor = class extends Tool {
                         0,
                         Math.PI * 2
                     );
-                    ctx.fill();
+                    ctx.fillStyle = selected ? "#7f7a" : "#fff7";
                     ctx.stroke();
+                    ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
                         Math.round(gizmo.canvasPos.x),
@@ -108,6 +196,39 @@ tools.cursor = class extends Tool {
                     <= gizmoRange * gizmoRange
                 ) {
                     switch (gizmo.type) {
+                        case "digit-width":
+                            doCanvasMouseDrag(e, e2 => {
+                                currentDesign.spec.width = Math.round(e2.clientX / gridZoom + gridLeft);
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                        case "digit-height":
+                            doCanvasMouseDrag(e, e2 => {
+                                currentDesign.spec.height = Math.round(e2.clientY / gridZoom + gridTop);
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                        case "char-space":
+                            doCanvasMouseDrag(e, e2 => {
+                                currentDesign.spec.charSpace = Math.round(e2.clientX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                        case "sep-space":
+                            doCanvasMouseDrag(e, e2 => {
+                                currentDesign.spec.sepSpace = Math.round(e2.clientX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                currentDesign.spec.sepSpace = Math.max(currentDesign.spec.sepSpace, currentDesign.spec.charSpace);
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
                         case "node-center":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
@@ -120,7 +241,9 @@ tools.cursor = class extends Tool {
                                 )
                                 gizmo.target.center.x += offset.x;
                                 gizmo.target.center.y += offset.y;
-                                events.emit("property-update");
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
                             })
                             break;
                         case "wire":
@@ -135,7 +258,9 @@ tools.cursor = class extends Tool {
                                 )
                                 gizmo.target.position.x += offset.x;
                                 gizmo.target.position.y += offset.y;
-                                events.emit("property-update");
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                events.emit("property-update", "cursor");
                             })
 
                             activeObjects.clear();

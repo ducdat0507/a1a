@@ -6,6 +6,12 @@ const form = {
             $make.div({ "aria-labelled-by": id }, ...child),
         )
     },
+    button(child, onClick) {
+        let button = $make.button({ "on:click": onClick }, child);
+        return $make.div({className: "form-button"}, 
+            button
+        )
+    },
     select(items, get, set) {
         let buttons = Object.entries(items).map(([x, i]) => (
             $make.button({ "on:click": () => doSet(x), _key: x}, i)
@@ -22,6 +28,24 @@ const form = {
         }
         return $make.div({className: "form-select"}, 
             ...buttons
+        )
+    },
+    field(req, get, set) {
+        let input = $make.input({ 
+            "on:change": () => doSet(input.value),
+            ...req,
+        })
+        function update() {
+            const currentValue = get();
+            input.value = currentValue;
+        }   
+        update();
+        function doSet(value) {
+            set(value);
+            update();
+        }
+        return $make.div({className: "form-field"}, 
+            input,
         )
     },
     number(unit, req, get, set) {

@@ -1,12 +1,26 @@
 panes.export = class extends Pane {
 
     /** @type {HTMLElement} */
+    controls;
+    /** @type {HTMLElement} */
     holder;
     /** @type {HTMLElement} */
     output;
 
     constructor(elm) {
         super(elm);
+        this.controls = $make.div(
+            {
+                className: "export-pane__controls"
+            },
+            form.button("Copy to clipboard", () => { 
+                navigator.clipboard.writeText(this.output.innerText)
+                    .then(() => alert("Copied to clipboard"))
+                    .catch((e) => alert("There was an error trying to copy to clipboard:\n" + e)) 
+            }),
+        );
+        elm.append(this.controls);
+
         this.holder = $make.pre({className: "export-pane__output"});
         elm.append(this.holder);
         this.output = $make.code();
@@ -22,7 +36,16 @@ panes.export = class extends Pane {
 
         let elm = this.output;
 
-        let output = "{\n    segments: [\n";
+        let output = "{\n"
+
+        for (let spec in currentDesign.extraSpec) {
+            output += `    ${spec}: ${currentDesign.extraSpec[spec]},\n`;
+        }
+        for (let spec in currentDesign.spec) {
+            output += `    ${spec}: ${JSON.stringify(currentDesign.spec[spec])},\n`;
+        }
+
+        output += "    segments: [\n";
         let totalPathBuilder = new PathKit.SkOpBuilder();
         for (let elm of currentDesign.design) {
             let path = elm.toPath();
@@ -37,7 +60,7 @@ panes.export = class extends Pane {
             output += `        "${path}",\n`;
         }
 
-        output += `    ],\n    digits: [\n`;
+        output += `    ],\n    digits: {\n`;
         let wiring = new Array(totalPaths2D.length).fill("").map(x => []);
         for (let wire of currentDesign.wires) {
             for (let index in totalPaths2D) {
@@ -50,10 +73,10 @@ panes.export = class extends Pane {
             }
         }
         for (let digit = 0; digit <= 9; digit++) {
-            output += `        [${wiring.map(x => +x[0]?.digits[digit] || 0).join(", ")}],\n`;
+            output += `        ${digit}: [${wiring.map(x => +x[0]?.digits[digit] || 0).join(", ")}],\n`;
         }
 
-        output += `    ],\n}`;
+        output += `    },\n}`;
         totalPathBuilder.delete();
         totalPath.delete();
 

@@ -20,7 +20,14 @@ function init() {
     window.addEventListener("keydown", (e) => {
         if (e.key == "Delete") {
             if (activeObjects.size > 0) {
-                currentDesign.design = currentDesign.design.filter(x => !activeObjects.has(x));
+                let first = activeObjects.values().next();
+                first = first.value;
+                console.log(first);
+                if (first instanceof DesignElement) {
+                    currentDesign.design = currentDesign.design.filter(x => !activeObjects.has(x));
+                } else if (first instanceof SegmentWire) {
+                    currentDesign.wires = currentDesign.wires.filter(x => !activeObjects.has(x));
+                }
                 activeObjects.clear();
                 events.emit("selection-update");
             }

@@ -10,5 +10,5 @@
     background: #0003;
     border-block: 1px solid #444;
     overflow: auto;
-    flex: 1;
+    flex: 0 1 100%;
 }
