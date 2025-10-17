@@ -148,7 +148,8 @@ input[type=number] {
 .pane-group {
     display: flex;
     width: 100%;
-    flex: 0 1 100%;
+    flex: 1 1 0;
+    height: 0;
     flex-flow: column;
     align-items: stretch;
 }
@@ -156,7 +157,7 @@ input[type=number] {
 .pane-holder {
     display: flex;
     flex-flow: column;
-    flex: 0 1 100%;
+    flex: 1 1 0;
 }
 
 .pane-tabs {
