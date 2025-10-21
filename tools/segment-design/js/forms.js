@@ -13,9 +13,13 @@ const form = {
         )
     },
     select(items, get, set) {
-        let buttons = Object.entries(items).map(([x, i]) => (
-            $make.button({ "on:click": () => doSet(x), _key: x}, i)
-        ));
+        let buttons = Object.entries(items).map(([x, i]) => {
+            if (Array.isArray(i)) {
+                return tooltip($make.button({ "on:click": () => doSet(x), _key: x}, i[0]), i[1])
+            } else {
+                return $make.button({ "on:click": () => doSet(x), _key: x}, i)
+            }
+        });
         function update() {
             const currentValue = get();
             console.log(currentValue);

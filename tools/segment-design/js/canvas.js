@@ -75,6 +75,19 @@ function drawGrid()
         if (pos % gridIntervalMajor == 0) return "#fff3";
         return "#fff1";
     }
+    function putVerticalLine(x) {
+        let screenX = Math.round((x - gridLeft) * gridZoom * canvasScale) + 0.5;
+        elements.canvasCtx.beginPath();
+        elements.canvasCtx.moveTo(screenX, 0);
+        elements.canvasCtx.lineTo(screenX, canvasHeight);
+    }
+
+    function putHorizontalLine(y) {
+        let screenY = Math.round((y - gridTop) * gridZoom * canvasScale) + 0.5;
+        elements.canvasCtx.beginPath();
+        elements.canvasCtx.moveTo(0, screenY);
+        elements.canvasCtx.lineTo(canvasWidth, screenY);
+    }
 
     elements.canvasCtx.lineWidth = canvasScale;
     elements.canvasCtx.font = `${13 * canvasScale}px Arial`;
@@ -88,13 +101,11 @@ function drawGrid()
     elements.canvasCtx.textBaseline = "top";
 
     for (let x = gridBeginX; x < gridEndX; x += gridInterval) {
-        let screenX = Math.round((x - gridLeft) * gridZoom * canvasScale) + 0.5;
         elements.canvasCtx.strokeStyle = getColor(x);
-        elements.canvasCtx.beginPath();
-        elements.canvasCtx.moveTo(screenX, 0);
-        elements.canvasCtx.lineTo(screenX, canvasHeight);
+        putVerticalLine(x);
         elements.canvasCtx.stroke();
         if (x % gridIntervalMajor == 0) {
+            let screenX = Math.round((x - gridLeft) * gridZoom * canvasScale) + 0.5;
             elements.canvasCtx.fillText(x.toString(), screenX, 6 * canvasScale);
         }
     }
@@ -107,16 +118,30 @@ function drawGrid()
     elements.canvasCtx.textBaseline = "middle";
 
     for (let y = gridBeginY; y < gridEndY; y += gridInterval) {
-        let screenY = Math.round((y - gridTop) * gridZoom * canvasScale) + 0.5;
         elements.canvasCtx.strokeStyle = getColor(y);
-        elements.canvasCtx.beginPath();
-        elements.canvasCtx.moveTo(0, screenY);
-        elements.canvasCtx.lineTo(canvasWidth, screenY);
+        putHorizontalLine(y);
         elements.canvasCtx.stroke();
         if (y % gridIntervalMajor == 0) {
+            let screenY = Math.round((y - gridTop) * gridZoom * canvasScale) + 0.5;
             elements.canvasCtx.fillText(y.toString(), 6 * canvasScale, screenY);
         }
     }
+
+    // Judges 
+    elements.canvasCtx.setLineDash([15 * canvasScale, 5 * canvasScale, 5 * canvasScale, 5 * canvasScale]);
+    elements.canvasCtx.strokeStyle = "#8f8";
+    putHorizontalLine(currentDesign.spec.height);
+    elements.canvasCtx.stroke();
+    putVerticalLine(currentDesign.spec.width);
+    elements.canvasCtx.stroke();
+    elements.canvasCtx.setLineDash([5 * canvasScale, 5 * canvasScale]);
+    elements.canvasCtx.strokeStyle = "#fff8";
+    putVerticalLine(currentDesign.spec.width + currentDesign.spec.charSpace);
+    elements.canvasCtx.stroke();
+    putVerticalLine(currentDesign.spec.width + currentDesign.spec.sepSpace);
+    elements.canvasCtx.stroke();
+
+    elements.canvasCtx.setLineDash([]);
 }
 
 function drawItems() {

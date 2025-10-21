@@ -83,18 +83,18 @@ panes.properties = class extends Pane {
                         ),
                         form.select(
                             { 
-                                [PathStrokeJoin.MITER]: "Mit",
-                                [PathStrokeJoin.ROUND]: "Rnd",
-                                [PathStrokeJoin.BEVEL]: "Bev",
+                                [PathStrokeJoin.MITER]: [$icon("lsicon:linejoin-miter-outline", { style: "font-size:16px;vertical-align:-3px" }), "Miter"],
+                                [PathStrokeJoin.ROUND]: [$icon("lsicon:linejoin-round-outline", { style: "font-size:16px;vertical-align:-3px" }), "Round"],
+                                [PathStrokeJoin.BEVEL]: [$icon("lsicon:linejoin-bevel-outline", { style: "font-size:16px;vertical-align:-3px" }), "Bevel"],
                             },
                             () => obj.stroke.join,
                             (x) => { obj.stroke.join = x; events.emit("property-update", "properties") }
                         ),
                         form.select(
                             { 
-                                [PathStrokeCap.BUTT]:   "Btt",
-                                [PathStrokeCap.ROUND]:  "Rnd",
-                                [PathStrokeCap.SQUARE]: "Sqr",
+                                [PathStrokeCap.BUTT]:   [$icon("lsicon:linecap-butt-outline", { style: "font-size:16px;vertical-align:-3px" }), "Butt"],
+                                [PathStrokeCap.ROUND]:  [$icon("lsicon:linecap-round-outline", { style: "font-size:16px;vertical-align:-3px" }), "Round"],
+                                [PathStrokeCap.SQUARE]: [$icon("lsicon:linecap-square-outline", { style: "font-size:16px;vertical-align:-3px" }), "Square"],
                             },
                             () => obj.stroke.cap,
                             (x) => { obj.stroke.cap = x; events.emit("property-update", "properties") }

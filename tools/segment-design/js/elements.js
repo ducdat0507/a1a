@@ -98,3 +98,8 @@ tippy.setDefaultProps({
         instance._timeout = setTimeout(instance.unmount, 1000);
     }
 });
+
+function tooltip(elm, content) {
+    tippy(elm, { content });
+    return elm;
+}

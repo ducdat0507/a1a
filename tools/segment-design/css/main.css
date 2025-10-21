@@ -56,20 +56,42 @@ input[type=number] {
 }
 
 #main-container {
-    display: flex;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "main-holder controls-holder"
+        "footer footer";
+    grid-template-columns: 1fr 40em;
+    grid-template-rows: auto 1fr auto;
     position: fixed;
     inset: 0;
 }
 
 #main-holder {
-    flex: 1 1;
+    grid-area: main-holder;
     position: relative;
 }
 
 #main-canvas {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    box-shadow: inset 0.15em 0.15em #0007;
 }
+
+#header {
+    background: #323337;
+    grid-area: header;
+    border-bottom: 1px solid #777;
+}
+
+#footer {
+    background: #323337;
+    grid-area: footer;
+    border-top: 1px solid #777;
+}
+
 
 #tool-holder {
     position: absolute;
@@ -86,7 +108,6 @@ input[type=number] {
         border-radius: 0.75em;
         padding: 0.25em;
         height: calc(4.5em + 2px);
-        box-shadow: 0 0.15em #0007;
         pointer-events: all;
     }
 }
@@ -130,8 +151,7 @@ input[type=number] {
 
 
 #controls-holder {
-    flex: 0 0 40em;
-    width: 40em;
+    grid-area: controls-holder;
     background: #222327;
     border-left: 1px solid #aaa;
     box-shadow: -0.25em 0 #0007;
@@ -223,6 +243,9 @@ input[type=number] {
     }
 }
 
+.tooltip {
+    padding: 0.125em;
+}
 .tooltip > div {
     background: #444c;
     color: white;
@@ -232,6 +255,15 @@ input[type=number] {
 }
 .tooltip[data-popper-placement="top"] > div {
     transform-origin: bottom;
+}
+.tooltip[data-popper-placement="bottom"] > div {
+    transform-origin: top;
+}
+.tooltip[data-popper-placement="left"] > div {
+    transform-origin: right;
+}
+.tooltip[data-popper-placement="right"] > div {
+    transform-origin: left;
 }
 
 .tooltip > div {

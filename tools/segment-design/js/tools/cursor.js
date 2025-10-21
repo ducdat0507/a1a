@@ -72,7 +72,7 @@ tools.cursor = class extends Tool {
         for (let gizmo of this.gizmos) {
             switch (gizmo.type) {
                 case "digit-width": case "char-space": case "sep-space":
-                    ctx.fillStyle = gizmo.type == "digit-width" ? "red" : "gray";
+                    ctx.fillStyle = gizmo.type == "digit-width" ? "lime" : "gray";
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
                     ctx.moveTo(
@@ -100,7 +100,7 @@ tools.cursor = class extends Tool {
                     ctx.stroke();
                     break;
                 case "digit-height":
-                    ctx.fillStyle = "red";
+                    ctx.fillStyle = "lime";
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
                     ctx.moveTo(

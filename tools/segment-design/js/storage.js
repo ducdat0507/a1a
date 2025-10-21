@@ -1,5 +1,20 @@
+
+/** @type {ReturnType<typeof newData>} */
+let currentData = {}
 /** @type {ReturnType<typeof newDesign>} */
 let currentDesign = {}
+
+function newData() {
+    let design = {
+        id: crypto.randomUUID(),
+        name: "New design",
+        design: newDesign()
+    }
+    return {
+        designs: [design],
+        currentDesign: design.id
+    }
+}
 
 function newDesign() {
     return {
@@ -19,24 +34,25 @@ function newDesign() {
 }
 
 function save() {
-    localStorage.setItem("a1a-design", LZString.compressToUTF16(JSON.stringify(currentDesign)))
+    localStorage.setItem("a1a-design", LZString.compressToUTF16(JSON.stringify(currentData)))
 }
 
 function load() {
     try {
         let tmpObj = JSON.parse(LZString.decompressFromUTF16(localStorage.getItem("a1a-design")));
-        tmpObj = deepCopy(tmpObj, newDesign());
-        for (let elm in tmpObj.design) {
-            tmpObj.design[elm] = new PathDesignElement(tmpObj.design[elm]);
-        }
-        for (let elm in tmpObj.wires) {
-            tmpObj.wires[elm] = new SegmentWire(tmpObj.wires[elm]);
-        }
-        currentDesign = tmpObj;
+        tmpObj = deepCopy(tmpObj, newData());
+        currentData = tmpObj;
+        setDesign(currentData.currentDesign);
     } catch (e) {
         console.log(e);
         currentDesign = newDesign();
     }
+}
+
+function setDesign(id) {
+    currentDesign = currentData.designs.find(x => x.id == id);
+    fixDesign(currentDesign);
+    currentData.currentDesign = id;
 }
 
 function deepCopy(target, source) {
@@ -55,4 +71,13 @@ function deepCopy(target, source) {
         }
     }
     return target;
+}
+
+function fixDesign(design) {
+    for (let elm in design.design) {
+        design.design[elm] = new PathDesignElement(design.design[elm]);
+    }
+    for (let elm in design.wires) {
+        design.wires[elm] = new SegmentWire(design.wires[elm]);
+    }
 }
