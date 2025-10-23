@@ -1,6 +1,7 @@
 function init() {
     load();
     setupElements();
+    setupHeader();
     setupPanes();
     setupTools();
     setupCanvas();
