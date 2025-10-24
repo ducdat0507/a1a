@@ -152,4 +152,9 @@
         vertical-align: -0.125em;
         margin-inline-end: 0.25em;
     }
+
+    & > .file {
+        display: flex;
+        flex-direction: column;
+    }
 }

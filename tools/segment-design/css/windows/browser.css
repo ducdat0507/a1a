@@ -1,0 +1,23 @@
+.window[data-window="browser"] {
+    & h4 {
+        margin: 0;
+    }
+
+    & .content {
+        padding: 0.75em;
+        gap: 0.5em;
+    }
+} 
+
+.browser-window__list {
+    background: #0003;
+    overflow: hidden;
+    border-radius: 0.25em;
+    border: 1px solid #555;
+    flex: 1;
+}
+
+.browser-window__actions {
+    display: flex;
+    gap: 0.25em;
+}

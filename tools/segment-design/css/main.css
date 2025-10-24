@@ -3,7 +3,7 @@
 } 
 
 body {
-    font-family: Arial, Helvetica, FreeSans, sans-serif;
+    font-family: Barlow, Arial, Helvetica, FreeSans, sans-serif;
     font-size: 13px;
     line-height: 1.4;
     background: black;
@@ -14,19 +14,24 @@ button {
     --block-offset: 0px;
 
     font: inherit;
-    background: #fff3;
+    background: linear-gradient(#fff4, #fff2) center / calc(100% + 2px) calc(100% + 2px);
     border: 1px solid #777;
     color: white;
     padding: 0.25em 0.5em;
     margin-block: var(--block-offset) calc(var(--block-offset) * -1);
 
     &:hover {
-        background: #fff4;
+        background: linear-gradient(#fff6, #fff4) center / calc(100% + 2px) calc(100% + 2px);
     }
 
     &:active {
-        background: #fff1;
+        background: linear-gradient(#0002, #0001) center / calc(100% + 2px) calc(100% + 2px);
         transform: none;
+    }
+
+    &:disabled {
+        background: linear-gradient(#fff2);
+        opacity: 0.5;
     }
 }
 
@@ -269,7 +274,7 @@ input[type=number] {
 }
 .tooltip[data-popper-placement="right-start"] > div,
 .tooltip[data-popper-placement="bottom-start"] > div {
-    transform-origin: top left;
+    transform-origin: top left
 }
 
 .tooltip > div {
@@ -286,7 +291,6 @@ input[type=number] {
         filter: blur(1px);
     }
 }
-
 @keyframes tooltip-hide {
     to {
         opacity: 0;
@@ -311,6 +315,7 @@ input[type=number] {
     &:active, &.active {
         box-shadow: inset 0 0.125em 0.25em -0.125em #000;
         background-image: linear-gradient(#0005, #0002);
+        color: #fffa;
     }
 }
 

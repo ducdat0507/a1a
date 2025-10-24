@@ -39,7 +39,7 @@ function setupHeader() {
     $("#header nav").append(
         makeMenuBarItem("File", () => ([
             ["New Design...",  {}, () => null],
-            ["Open Design...", {}, () => spawnWindow("open")],
+            ["Design Browser...", {}, (e) => spawnWindow("browser", e)],
         ])),
         makeMenuBarItem("Edit", () => ([
             ["Cut",    { icon: "lucide:scissors",  shortcut: "Ctrl+X", },  () => null],
@@ -53,6 +53,7 @@ function setupHeader() {
                 ["Object to Path", {}, () => null],
                 ["Stroke to Path", {}, () => null],
                 null,
+                ["Join", {}, () => null],
                 ["Union", {}, () => null],
                 ["Subtract", {}, () => null],
                 ["Intersection", {}, () => null],
@@ -161,8 +162,8 @@ function makeMenuBarMenu(items) {
             }
 
             if (typeof content == "function") {
-                itemElm.addEventListener("click", () => {
-                    content();
+                itemElm.addEventListener("click", (e) => {
+                    content(e);
                     menuBarPopovers[0]?.hide();
                 });
             } else if (Array.isArray(content)) {
