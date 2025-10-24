@@ -3,37 +3,104 @@ function setupHeader() {
         interactive: true,
         trigger: "manual",
         placement: "bottom-start",
-        moveTransition: 'transform 0.2s ease-out',
+        moveTransition: 'transform 0.3s cubic-bezier(0.1, 1, 0, 1)',
+        offset: [-1, 5],
+        popperOptions: {
+            modifiers: [
+                {
+                    name: 'preventOverflow',
+                    options: {
+                        padding: 4,
+                    },
+                },
+            ]
+        },
+        appendTo() { 
+            return document.body;
+        },
+        onShow(instance) {
+            instance.popper.classList.remove("hidden");
+            instance.reference.classList.add("active");
+            if (instance._timeout) clearTimeout(instance._timeout);
+
+            menuBarPopovers.push(instance);
+        },
+        onHide(instance) {
+            instance.popper.classList.add("hidden");
+            instance.reference.classList.remove("active");
+            instance._timeout = setTimeout(instance.unmount, 500);
+
+            let index = menuBarPopovers.indexOf(instance);
+            if (index >= 0) menuBarPopovers.splice(index, 1);
+            menuBarActiveButton?.classList.remove("active");
+        },
     });
 
     $("#header nav").append(
         makeMenuBarItem("File", () => ([
-            ["New", () => null],
-            ["Open", () => null],
+            ["New Design...",  {}, () => null],
+            ["Open Design...", {}, () => spawnWindow("open")],
         ])),
         makeMenuBarItem("Edit", () => ([
-            ["Cut", () => null],
-            ["Copy", () => null],
-            ["Paste", () => null],
+            ["Cut",    { icon: "lucide:scissors",  shortcut: "Ctrl+X", },  () => null],
+            ["Copy",   { icon: "lucide:copy",      shortcut: "Ctrl+C", },  () => null],
+            ["Paste",  { icon: "lucide:clipboard", shortcut: "Ctrl+V", },  () => null],
             null,
-            ["Undo", () => null],
-            ["Redo", () => null],
+            ["Undo",   { icon: "lucide:undo",      shortcut: "Ctrl+Z", },  () => null],
+            ["Redo",   { icon: "lucide:redo",      shortcut: "Ctrl+Y", },  () => null],
+            null,
+            ["Path", {}, [
+                ["Object to Path", {}, () => null],
+                ["Stroke to Path", {}, () => null],
+                null,
+                ["Union", {}, () => null],
+                ["Subtract", {}, () => null],
+                ["Intersection", {}, () => null],
+                ["Exclusion", {}, () => null],
+            ]],
+            null,
+            ["Preferences...",  { icon: "lucide:cog" },  () => null],
+        ])),
+        makeMenuBarItem("View", () => ([
+            ["Panel Size", {}, [
+                ["Small", {}, () => null],
+                ["Medium", {}, () => null],
+                ["Large", {}, () => null],
+            ]],
+        ])),
+        makeMenuBarItem("Help", () => ([
+            ["About", () => null],
         ])),
     );
 
     window.addEventListener("pointerdown", (e) => {
-        console.log(menuBarPopovers.length);
-        for (let i = menuBarPopovers.length - 1; i >= 0; i++) {
-            if (!menuBarPopovers[i].hideWithInteractivity(e)) break;
+        console.log(menuBarPopovers.length, menuBarDown);
+        if (menuBarDown) {
+            menuBarDown = false;
+        } else {
+            for (let i = menuBarPopovers.length - 1; i >= 0; i++) {
+                let r = menuBarSingleton.hideWithInteractivity(e);
+                console.log("hiding", r, menuBarPopovers[i]);
+                if (!r) break;
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
         }
     })
 }
 
-/** @typedef {([string, MenuBarDef[]] | [string, () => void] | null)} MenuBarDef */
+/**
+ *  @typedef {object} MenuBarOption
+ *  @prop {string?} MenuBarOption.icon
+ *  @prop {string?} MenuBarOption.shortcut
+*/
+/** @typedef {([string, MenuBarOption, MenuBarDef[]] | [string, MenuBarOption, () => void] | null)} MenuBarDef */
 
 let menuBarInstances = [];
 let menuBarSingleton = null;
 let menuBarPopovers = [];
+let menuBarDown = false;
+let menuBarActiveButton = null;
 
 /**
  * @param {string} name 
@@ -41,31 +108,32 @@ let menuBarPopovers = [];
  */
 function makeMenuBarItem(name, items) {
     let elm = $make.button({}, name);
-    let popover = tippy(elm, {
-        trigger: "manual",
-        placement: "bottom-start",
-        onShow() {
-            menuBarPopovers.push(popover);
-            console.log("showing ", menuBarPopovers.length);
-        },
-        onHide() {
-            let index = menuBarPopovers.indexOf(popover);
-            if (index >= 0) menuBarPopovers.splice(index, 1);
-            console.log("hidden ", menuBarPopovers.length);
-        },
-    })
+    let popover = tippy(elm, {})
+    elm.addEventListener("pointerdown", (e) => {
+        if (!menuBarPopovers.length) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            menuBarSingleton.show(popover);
+            menuBarSingleton.setContent(makeMenuBarMenu(items()));
+            menuBarActiveButton?.classList.remove("active");
+            menuBarActiveButton = elm;
+            elm.classList.add("active");
+            menuBarDown = true;
+        }
+    });
+    elm.addEventListener("pointerenter", (e) => {
+        if (menuBarPopovers.length) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            menuBarSingleton.show(popover);
+            menuBarSingleton.setContent(makeMenuBarMenu(items()));
+            menuBarActiveButton?.classList.remove("active");
+            menuBarActiveButton = elm;
+            elm.classList.add("active");
+        }
+    });
     menuBarInstances.push(popover);
     menuBarSingleton.setInstances(menuBarInstances);
-    elm.addEventListener("pointerdown", () => {
-        popover.setProps({ content: makeMenuBarMenu(items()) });
-        menuBarSingleton.show(popover);
-    })
-    elm.addEventListener("pointerenter", () => {
-        if (menuBarPopovers.length) {
-            popover.setProps({ content: makeMenuBarMenu(items()) });
-            menuBarSingleton.show(popover);
-        }
-    })
     return elm;
 }
 
@@ -73,7 +141,7 @@ function makeMenuBarItem(name, items) {
  * @param {MenuBarDef[]} items 
  */
 function makeMenuBarMenu(items) {
-    let holder = $make.div({className: "menubar-menu"});
+    let holder = $make.div(".menu-bar-menu");
 
     for (let item of items) {
         let itemElm;
@@ -82,15 +150,42 @@ function makeMenuBarMenu(items) {
         } else {
             itemElm = $make.button({}, $make.span({}, item[0]));
 
-            let content = item[1];
+            let content = item[2];
+            let options = item[1];
+
+            if (options.icon) {
+                itemElm.prepend($icon(options.icon));
+            }
+            if (options.shortcut) {
+                itemElm.append($make.kbd({}, options.shortcut));
+            }
 
             if (typeof content == "function") {
-                itemElm.addEventListener("click", item[1]());
-            } else if (Array.isArray(content)) {
-                tippy(itemElm, {
-                    placement: "right-start",
-                    content: makeMenuBarMenu(item[1]),
+                itemElm.addEventListener("click", () => {
+                    content();
+                    menuBarPopovers[0]?.hide();
                 });
+            } else if (Array.isArray(content)) {
+                itemElm.append($icon("lucide:chevron-right"));
+                let popover = tippy(itemElm, {
+                    placement: "right-start",
+                    trigger: "mouseenter click focus",
+                    content: makeMenuBarMenu(content),
+                    interactive: true,
+                    offset: [-4, 8],
+                    delay: 250,
+                    onShow(instance) {
+                        instance.popper.classList.remove("hidden");
+                        instance.reference.classList.add("active");
+                        if (instance._timeout) clearTimeout(instance._timeout);
+                    },
+                    onHide(instance) {
+                        instance.popper.classList.add("hidden");
+                        instance.reference.classList.remove("active");
+                        instance._timeout = setTimeout(instance.unmount, 500);
+                    },
+                });
+                itemElm.addEventListener("click", popover.show);
             }
         }
         

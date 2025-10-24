@@ -5,7 +5,7 @@ panes.design = class extends Pane {
 
     constructor(elm) {
         super(elm);
-        this.holder = $make.section({className: "design-pane__holder hierarchy-holder"});
+        this.holder = $make.section(".design-pane__holder.hierarchy-holder");
         elm.append(this.holder);
 
         events.on("selection-update", this.onUpdate, this);

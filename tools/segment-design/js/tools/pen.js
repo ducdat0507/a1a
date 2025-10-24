@@ -113,8 +113,8 @@ tools.pen = class extends Tool {
                 let gizmo = this.gizmos[0];
                 if (
                     gizmo &&
-                    (gizmo.canvasPos.x * gizmoScale - e.clientX * canvasScale) ** 2 
-                    + (gizmo.canvasPos.y * gizmoScale - e.clientY * canvasScale) ** 2
+                    (gizmo.canvasPos.x * gizmoScale - e.offsetX * canvasScale) ** 2 
+                    + (gizmo.canvasPos.y * gizmoScale - e.offsetY * canvasScale) ** 2
                     <= gizmoRange * gizmoRange
                 ) {
                     this.mayClose = true;
@@ -146,8 +146,8 @@ tools.pen = class extends Tool {
      */
     onPointerMove(e) {
         currentTool.mousePos = Vector2(
-            Math.round(e.clientX / gridZoom + gridLeft),
-            Math.round(e.clientY / gridZoom + gridTop)
+            Math.round(e.offsetX / gridZoom + gridLeft),
+            Math.round(e.offsetY / gridZoom + gridTop)
         )
         updateCanvas();
     }

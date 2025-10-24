@@ -66,8 +66,8 @@ tools.wire = class extends Tool {
      */
     onPointerMove(e) {
         currentTool.mousePos = Vector2(
-            Math.round(e.clientX / gridZoom + gridLeft),
-            Math.round(e.clientY / gridZoom + gridTop)
+            Math.round(e.offsetX / gridZoom + gridLeft),
+            Math.round(e.offsetY / gridZoom + gridTop)
         )
         updateCanvas();
     }

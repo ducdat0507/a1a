@@ -191,14 +191,14 @@ tools.cursor = class extends Tool {
 
             for (let gizmo of this.gizmos) {
                 if (
-                    (gizmo.canvasPos.x * gizmoScale - e.clientX * canvasScale) ** 2 
-                    + (gizmo.canvasPos.y * gizmoScale - e.clientY * canvasScale) ** 2
+                    (gizmo.canvasPos.x * gizmoScale - e.offsetX * canvasScale) ** 2 
+                    + (gizmo.canvasPos.y * gizmoScale - e.offsetY * canvasScale) ** 2
                     <= gizmoRange * gizmoRange
                 ) {
                     switch (gizmo.type) {
                         case "digit-width":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.width = Math.round(e2.clientX / gridZoom + gridLeft);
+                                currentDesign.spec.width = Math.round(e2.offsetX / gridZoom + gridLeft);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -206,7 +206,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "digit-height":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.height = Math.round(e2.clientY / gridZoom + gridTop);
+                                currentDesign.spec.height = Math.round(e2.offsetY / gridZoom + gridTop);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -214,7 +214,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "char-space":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.charSpace = Math.round(e2.clientX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                currentDesign.spec.charSpace = Math.round(e2.offsetX / gridZoom + gridLeft) - currentDesign.spec.width;
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -222,7 +222,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "sep-space":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.sepSpace = Math.round(e2.clientX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                currentDesign.spec.sepSpace = Math.round(e2.offsetX / gridZoom + gridLeft) - currentDesign.spec.width;
                                 currentDesign.spec.sepSpace = Math.max(currentDesign.spec.sepSpace, currentDesign.spec.charSpace);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
@@ -232,8 +232,8 @@ tools.cursor = class extends Tool {
                         case "node-center":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.clientX / gridZoom + gridLeft),
-                                    Math.round(e2.clientY / gridZoom + gridTop)
+                                    Math.round(e2.offsetX / gridZoom + gridLeft),
+                                    Math.round(e2.offsetY / gridZoom + gridTop)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.target.center.x,
@@ -249,8 +249,8 @@ tools.cursor = class extends Tool {
                         case "wire":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.clientX / gridZoom + gridLeft),
-                                    Math.round(e2.clientY / gridZoom + gridTop)
+                                    Math.round(e2.offsetX / gridZoom + gridLeft),
+                                    Math.round(e2.offsetY / gridZoom + gridTop)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.target.position.x,
@@ -291,20 +291,20 @@ tools.cursor = class extends Tool {
                     let path2D = path.toPath2D();
                     if (elements.canvasCtx.isPointInPath(
                         path2D, 
-                        e.clientX * canvasScale,
-                        e.clientY * canvasScale,
+                        e.offsetX * canvasScale,
+                        e.offsetY * canvasScale,
                     )) {
                         activeObjects.clear();
                         activeObjects.add(elm);
                         
                         let oldPos = Vector2 (
-                            Math.round(e.clientX / gridZoom + gridLeft),
-                            Math.round(e.clientY / gridZoom + gridTop)
+                            Math.round(e.offsetX / gridZoom + gridLeft),
+                            Math.round(e.offsetY / gridZoom + gridTop)
                         )
                         doCanvasMouseDrag(e, e2 => {
                             let newPos = Vector2 (
-                                Math.round(e2.clientX / gridZoom + gridLeft),
-                                Math.round(e2.clientY / gridZoom + gridTop)
+                                Math.round(e2.offsetX / gridZoom + gridLeft),
+                                Math.round(e2.offsetY / gridZoom + gridTop)
                             )
                             let offset = Vector2 (
                                 newPos.x - oldPos.x,

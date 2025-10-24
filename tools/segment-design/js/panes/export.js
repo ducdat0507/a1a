@@ -21,7 +21,7 @@ panes.export = class extends Pane {
         );
         elm.append(this.controls);
 
-        this.holder = $make.pre({className: "export-pane__output"});
+        this.holder = $make.pre(".export-pane__output");
         elm.append(this.holder);
         this.output = $make.code();
         this.holder.append(this.output);

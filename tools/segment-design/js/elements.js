@@ -36,17 +36,25 @@ const $make = Object.freeze(new Proxy({
     /**
      * 
      * @param {string} type 
-     * @param {Partial<HTMLElement>} params 
+     * @param {String | Partial<HTMLElement>} params 
      * @param  {...any} children 
      * @returns 
      */
     run(type, params, ...children) {
         let elm = document.createElement(type);
 
-        if (params) for (let param in params) {
-            if (param.includes("-")) elm.setAttribute(param, params[param]);
-            if (param.startsWith("on:")) elm.addEventListener(param.substring(3), params[param]);
-            else elm[param] = params[param];
+        if (typeof params == "object") {
+            for (let param in params) {
+                if (param.includes("-")) elm.setAttribute(param, params[param]);
+                if (param.startsWith("on:")) elm.addEventListener(param.substring(3), params[param]);
+                else elm[param] = params[param];
+            }
+        } else if (typeof params == "string") {
+            let items = params.matchAll(/([\.\#])([^\.\#\s]+)/g);
+            for (let item of items) {
+                if (item[1] == '.') elm.classList.add(item[2]);
+                else if (item[1] == '#') elm.id = item[2];
+            }
         }
         elm.append(...children);
     
@@ -68,10 +76,11 @@ function $icon(icon, params) {
 
 tippy.setDefaultProps({
     animation: true,
+    offset: [0, 5],
     render(instance) {
         if (instance._timeout) clearTimeout(instance._timeout);
 
-        const popper = $make.div({className: "tooltip"});
+        const popper = $make.div(".tooltip");
         const box = $make.div();
         popper.appendChild(box);
 

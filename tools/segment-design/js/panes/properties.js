@@ -5,7 +5,7 @@ panes.properties = class extends Pane {
 
     constructor(elm) {
         super(elm);
-        this.holder = $make.section({className: "properties-pane__holder form-holder"});
+        this.holder = $make.section(".properties-pane__holder.form-holder");
         elm.append(this.holder);
 
         events.on("selection-update", this.onUpdate, this);

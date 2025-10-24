@@ -8,6 +8,7 @@ function newData() {
     let design = {
         id: crypto.randomUUID(),
         name: "New design",
+        lastUpdated: Date.now(),
         design: newDesign()
     }
     return {
@@ -34,6 +35,7 @@ function newDesign() {
 }
 
 function save() {
+    currentData.designs.find(x => x.id == currentData.currentDesign).lastUpdated = Date.now();
     localStorage.setItem("a1a-design", LZString.compressToUTF16(JSON.stringify(currentData)))
 }
 
@@ -50,7 +52,7 @@ function load() {
 }
 
 function setDesign(id) {
-    currentDesign = currentData.designs.find(x => x.id == id);
+    currentDesign = currentData.designs.find(x => x.id == id).design;
     fixDesign(currentDesign);
     currentData.currentDesign = id;
 }

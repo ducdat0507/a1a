@@ -1,14 +1,14 @@
 const form = {
     prop(name, ...child) {
         const id = Math.random().toString().substring(2);
-        return $make.div({className: "form-prop"}, 
+        return $make.div(".form-prop", 
             $make.label({ id }, name),
             $make.div({ "aria-labelled-by": id }, ...child),
         )
     },
     button(child, onClick) {
         let button = $make.button({ "on:click": onClick }, child);
-        return $make.div({className: "form-button"}, 
+        return $make.div(".form-button", 
             button
         )
     },
@@ -30,7 +30,7 @@ const form = {
             set(value);
             update();
         }
-        return $make.div({className: "form-select"}, 
+        return $make.div(".form-select", 
             ...buttons
         )
     },
@@ -48,7 +48,7 @@ const form = {
             set(value);
             update();
         }
-        return $make.div({className: "form-field"}, 
+        return $make.div(".form-field", 
             input,
         )
     },
@@ -67,7 +67,7 @@ const form = {
             set(+value);
             update();
         }
-        return $make.div({className: "form-number"}, 
+        return $make.div(".form-number", 
             input,
             $make.span({}, unit)
         )
@@ -87,12 +87,12 @@ const form = {
             set(value = !value);
             update();
         }
-        return $make.div({className: "form-toggle"}, 
+        return $make.div(".form-toggle", 
             button
         )
     },
     toggleField(toggles) {
-        return $make.div({className: "form-toggle-field"}, 
+        return $make.div(".form-toggle-field", 
             ...toggles
         )
     },
