@@ -70,7 +70,7 @@ function setupHeader() {
             ]],
         ])),
         makeMenuBarItem("Help", () => ([
-            ["About", () => null],
+            ["About", {}, (e) => spawnWindow("about", e)],
         ])),
     );
 

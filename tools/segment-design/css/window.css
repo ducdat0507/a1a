@@ -1,7 +1,5 @@
 .window {
     position: fixed;
-    width: 400px;
-    height: 300px;
     left: 0;
     top: 0;
     transform: translate(var(--left), var(--top));
@@ -12,15 +10,15 @@
     }
 
     & > div {
-        position: absolute;
-        inset: 0;
-        background: #222e;
+        width: 100%;
+        height: 100%;
+        background: #222327f1;
         border: 1px solid #777;
         border-radius: 0.5em;
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        box-shadow: 0 0.25em 0.5em #0007;
+        box-shadow: 0 0.25em 1em #000e;
     }
 
     & .header {
@@ -29,7 +27,7 @@
         display: flex;
         align-items: center;
         border-bottom: 1px solid #555;
-        background: #444c;
+        background: #424347cc;
     }
 
     & .header-title {
@@ -72,14 +70,12 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-
-        & > h4 {
-            
-        }
+        padding: 0.75em;
+        gap: 0.5em;
     }
 
     & {
-        animation: window-show 0.3s forwards cubic-bezier(0, 1, 0.1, 1);
+        animation: window-show 0.4s forwards cubic-bezier(0, 1.25, 0, 0.98);
     }
     & > div {
         animation: tooltip-show 0.3s forwards cubic-bezier(0, 1, 0.1, 1);
@@ -93,4 +89,12 @@
     from {
         transform: translate(-50%, -50%) translate(var(--start-left, calc(var(--left) + 50%)), var(--start-top, calc(var(--top) + 50%)));
     }
+}
+
+
+
+
+.action-holder {
+    display: flex;
+    gap: 0.25em;
 }

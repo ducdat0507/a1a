@@ -1,0 +1,28 @@
+
+.prompt-window__holder {
+    display: flex; 
+    flex: 1; 
+    flex-flow: row; 
+    gap: 1.5em;
+    padding: 1em;
+
+    & > iconify-icon {
+        font-size: 4em;
+        width: 1em;
+        height: 1em;
+    }
+}
+
+.prompt-window__content {
+    flex: 1;
+    & > div > p {
+        margin-block: 0.5em;
+        
+        &:first-child {
+            margin-top: 0;
+        }
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

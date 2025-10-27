@@ -12,6 +12,12 @@ const form = {
             button
         )
     },
+    buttonGroup(...items) {
+        let buttons = items.map(([child, onClick]) => $make.button({ "on:click": onClick }, child));
+        return $make.div(".form-button", 
+            ...buttons
+        )
+    },
     select(items, get, set) {
         let buttons = Object.entries(items).map(([x, i]) => {
             if (Array.isArray(i)) {

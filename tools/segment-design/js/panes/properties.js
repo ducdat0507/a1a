@@ -36,7 +36,7 @@ panes.properties = class extends Pane {
                         $make.b({ style: "width: calc(12ch + 4px)" }, "Values"),
                     ),
                     ...Object.keys(currentDesign.extraSpec).map((spec) => form.prop("", 
-                        form.field({}, () => spec, (x) => {
+                        form.field({ style: "width: 12ch" }, () => spec, (x) => {
                             let obj = currentDesign.extraSpec;
                             if (!x) {
                                 delete obj[spec];
@@ -45,15 +45,14 @@ panes.properties = class extends Pane {
                                 delete Object.assign(obj, {[x]: obj[spec]})[spec];
                                 events.emit("property-update", "properties", 1);
                             }
-                            
                         }),
-                        form.field({}, () => currentDesign.extraSpec[spec], (x) => {
+                        form.field({ style: "width: 12ch" }, () => currentDesign.extraSpec[spec], (x) => {
                             let obj = currentDesign.extraSpec;
                             Object.assign(obj, {[spec]: x});
                         }),
                     )),
-                    form.prop("", 
-                        form.field({}, () => "", (x) => {
+                    form.prop($make.i("", "New"), 
+                        form.field({ style: "width: 12ch" }, () => "", (x) => {
                             let obj = currentDesign.extraSpec;
                             Object.assign(obj, {[x]: ""});
                             events.emit("property-update", "properties", 1);
@@ -77,7 +76,7 @@ panes.properties = class extends Pane {
                     form.prop("Stroke", 
                         form.number(
                             "u",
-                            { min: 0 },
+                            { min: 0, style: "width: 12ch" },
                             () => obj.stroke.thickness,
                             (x) => { obj.stroke.thickness = x; events.emit("property-update", "properties") }
                         ),

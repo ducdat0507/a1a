@@ -2,11 +2,6 @@
     & h4 {
         margin: 0;
     }
-
-    & .content {
-        padding: 0.75em;
-        gap: 0.5em;
-    }
 } 
 
 .browser-window__list {
@@ -14,10 +9,15 @@
     overflow: hidden;
     border-radius: 0.25em;
     border: 1px solid #555;
-    flex: 1;
+    flex: 0 3 100%;
+    width: 100%;
 }
 
-.browser-window__actions {
-    display: flex;
-    gap: 0.25em;
+.browser-window__details {
+    background: #0003;
+    overflow: hidden;
+    border-radius: 0.25em;
+    border: 1px solid #555;
+    flex: 0 2 100%;
+    width: 100%;
 }

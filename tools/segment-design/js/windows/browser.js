@@ -5,6 +5,8 @@ windows.browser = class extends AppWindow {
     /** @type {HTMLElement} */
     holder;
     /** @type {HTMLElement} */
+    details;
+    /** @type {HTMLElement} */
     actions;
     /** @type {HTMLButtonElement[]} */
     actionButtons = [];
@@ -12,8 +14,8 @@ windows.browser = class extends AppWindow {
     selectedDesign = "";
 
     style = {
-        width: "30em",
-        height: "36em",
+        width: "52em",
+        height: "32em",
         resize: "both",
     }
     static unique = true;
@@ -24,21 +26,27 @@ windows.browser = class extends AppWindow {
 
         elm.$title.innerText = "Design Browser"
 
-        elm.$content.append($make.h4({}, "Select a Design:"));
-        this.holder = $make.section(".browser-window__list.hierarchy-holder");
-        elm.$content.append(this.holder);
+        elm.$content.append(
+            $make.h4({}, "Select a Design:"),
+            $make.div({ style: "display: flex; flex: 1; flex-flow: row; gap: 0.5em" },
+                this.holder = $make.section(".browser-window__list.hierarchy-holder"),
+                this.details = $make.section(".browser-window__details")
+            )
+        );
         
-        this.actions = $make.div(".browser-window__actions",
+        this.actions = $make.div(".action-holder",
             form.button("New Design"),
             $make.span({style: "flex: 1"}),
-            this.actionButtons[0] = form.button("Delete", () => this.deleteDesign(this.selectedDesign)),
-            this.actionButtons[1] = form.button("Open Design", () => this.openDesign(this.selectedDesign)),
+            this.actionButtons[0] = form.buttonGroup(
+                ["Rename", (e) => this.renameDesign(this.selectedDesign, e)],
+                ["Duplicate", (e) => this.duplicateDesign(this.selectedDesign, e)],
+                ["Delete", (e) => this.deleteDesign(this.selectedDesign, e)],
+            ),
+            this.actionButtons[1] = form.button("Load Design", () => this.openDesign(this.selectedDesign)),
         );
         elm.$content.append(this.actions);
 
-        console.log(this.actionButtons);
-
-        this.actionButtons.forEach(x => x.querySelectorAll("button").forEach(y => y.disabled = true));
+        this.setButtonsEnabled(false);
 
         this.onUpdate();
     }
@@ -71,7 +79,7 @@ windows.browser = class extends AppWindow {
 
     setDesign(design) {
         this.selectedDesign = design.id;
-        this.actionButtons.forEach(x => x.querySelectorAll("button").forEach(y => y.disabled = false));
+        this.setButtonsEnabled(true);
         this.onUpdate();
         console.log(this.selectedDesign);
     }
@@ -80,6 +88,82 @@ windows.browser = class extends AppWindow {
         setDesign(id);
         this.window.$close.click();
     }
+
+    deleteDesign(id, e) {
+        spawnWindow("prompt", e, {
+            title: "Delete Design?",
+            icon: "ph:warning-thin",
+            content: $make.div("", 
+                $make.p("", "Are you sure you want to delete this design?"),
+                $make.p("", "This can not be undone!")
+            ),
+            actions: [
+                ["Cancel", () => null],
+                null,
+                ["Delete", () => {
+                    currentData.designs = currentData.designs.filter(x => x.id != id);
+                    save();
+                    this.onUpdate();
+                }]
+            ]
+        })
+    }
+
+    duplicateDesign(id, e) {
+        let design = currentData.designs.find(x => x.id == id);
+        let name = design.name + " (duplicated)"
+        spawnWindow("prompt", e, {
+            title: "Duplicate Design",
+            icon: "ph:info-thin",
+            content: $make.div("", 
+                $make.p("", "Enter the name of the newly duplicated design:"),
+                form.field({}, () => name, (x) => name = x)
+            ),
+            actions: [
+                ["Cancel", () => null],
+                null,
+                ["Duplicate", () => {
+                    currentData.designs.push({
+                        id: crypto.randomUUID(),
+                        name,
+                        design: JSON.parse(JSON.stringify(design.design)),
+                        lastUpdated: Date.now(),
+                    });
+                    save();
+                    this.onUpdate();
+                }]
+            ]
+        })
+    }
+
+    renameDesign(id, e) {
+        let design = currentData.designs.find(x => x.id == id);
+        let name = design.name
+        spawnWindow("prompt", e, {
+            title: "Rename Design",
+            icon: "ph:info-thin",
+            content: $make.div("", 
+                $make.p("", "Enter the name of this design:"),
+                form.field({}, () => name, (x) => name = x)
+            ),
+            actions: [
+                ["Cancel", () => null],
+                null,
+                ["Rename", () => {
+                    design.name = name;
+                    save();
+                    this.onUpdate();
+                }]
+            ]
+        })
+    }
+
+
+    setButtonsEnabled(enabled) {
+        const disabled = !enabled;
+        this.actionButtons.forEach(x => x.querySelectorAll("button").forEach(y => y.disabled = disabled));
+    }
+
 
 
     cleanup(elm) {

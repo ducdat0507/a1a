@@ -317,7 +317,9 @@ tools.cursor = class extends Tool {
                                 }
                             }
                             oldPos = newPos;
-                            events.emit("property-update");
+                            events.emit("property-update", "cursor", -1);
+                        }, () => {
+                            events.emit("property-update", "cursor");
                         })
                         
                         path.delete();

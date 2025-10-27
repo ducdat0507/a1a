@@ -59,12 +59,13 @@
     border: 1px solid #555;
     border-radius: 6px;
     padding: 1px;
+    min-width: 12ch;
 
     & > input {
         border: transparent;
         background: #0007;
         border-radius: 4px;
-        width: 12ch;
+        width: 100%;
         color: white;
         font-weight: bold;
     }

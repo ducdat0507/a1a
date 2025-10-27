@@ -8,6 +8,7 @@ body {
     line-height: 1.4;
     background: black;
     color: white;
+    user-select: text;
 }
 
 button {
@@ -288,14 +289,14 @@ input[type=number] {
     from {
         opacity: 0;
         transform: scale(0.8);
-        filter: blur(1px);
+        filter: blur(0.125em);
     }
 }
 @keyframes tooltip-hide {
     to {
         opacity: 0;
         transform: scale(0.8);
-        filter: blur(1px);
+        filter: blur(0.125em);
     }
 }
 
