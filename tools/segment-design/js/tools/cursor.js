@@ -4,6 +4,8 @@ tools.cursor = class extends Tool {
 
     constructor() {
         super();
+        
+        elements.mainCanvas.addEventListener("pointermove", this.onPointerMove);
     }
 
     updateGizmos() {
@@ -317,7 +319,9 @@ tools.cursor = class extends Tool {
                                 }
                             }
                             oldPos = newPos;
-                            events.emit("property-update");
+                            events.emit("property-update", "cursor", -1);
+                        }, () => {
+                            events.emit("property-update", "cursor");
                         })
                         
                         path.delete();
@@ -338,8 +342,19 @@ tools.cursor = class extends Tool {
         }
     }
 
-    cleanup() {
-
+    /**
+     * @param {PointerEvent} e
+     */
+    onPointerMove(e) {
+        currentTool.mousePos = Vector2(
+            Math.round(e.offsetX / gridZoom + gridLeft),
+            Math.round(e.offsetY / gridZoom + gridTop)
+        )
+        setFooterStat("mousePos", "tabler:pointer", `${currentTool.mousePos.x} ${currentTool.mousePos.y}`);
+        updateCanvas();
     }
 
+    cleanup() {
+        elements.mainCanvas.removeEventListener("pointermove", this.onPointerMove);
+    }
 }

@@ -46,6 +46,7 @@ class PathDesignElement extends DesignElement {
     }
 
     /** @type {PathDesignNode[]} */
+    nodes;
 
     toPathInternal() {
         let path = PathKit.NewPath();
