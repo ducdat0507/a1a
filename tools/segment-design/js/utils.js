@@ -8,7 +8,7 @@ function guid() {
  * @returns 
  */
 function roundSVGString(str, digits) {
-    return str.replaceAll(/\n+\.?\n*/g, (x) => (+x).toLocaleString("en-US", {
+    return str.replaceAll(/\d+\.?\d*/g, (x) => (+x).toLocaleString("en-US", {
         maximumFractionDigits: digits,
     }));
 }

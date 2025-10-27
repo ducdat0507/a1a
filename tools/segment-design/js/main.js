@@ -2,6 +2,7 @@ function init() {
     load();
     setupElements();
     setupHeader();
+    setupFooter();
     setupPanes();
     setupTools();
     setupCanvas();

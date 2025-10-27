@@ -54,7 +54,7 @@ panes.export = class extends Pane {
         }
 
         let totalPath = totalPathBuilder.make();
-        let totalPaths = [...totalPath.toSVGString().matchAll(/M[^Z]*Z?/gi)].map(x => x[0])
+        let totalPaths = [...totalPath.toSVGString().matchAll(/M[^Z]*Z?/gi)].map(x => roundSVGString(x[0], 2))
         let totalPaths2D = totalPaths.map(x => new Path2D(x));
         for (let path of totalPaths) {
             output += `        "${path}",\n`;

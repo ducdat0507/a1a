@@ -4,6 +4,7 @@
  * @property {HTMLCanvasElement} mainCanvas
  * @property {HTMLElement} controlsHolder
  * @property {CanvasRenderingContext2D} canvasCtx
+ * @property {HTMLElement} footerStats
 */
 
 /** @type {ElementHolder} */
@@ -14,6 +15,7 @@ function setupElements() {
         mainContainer: $("#main-container"),
         mainCanvas: $("#main-canvas"),
         controlsHolder: $("#controls-holder"),
+        footerStats: $("#footer-stats"),
     }
     elements.canvasCtx = elements.mainCanvas.getContext("2d");
 }

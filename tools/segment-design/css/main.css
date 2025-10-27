@@ -51,6 +51,11 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+iconify-icon {
+    width: 1em;
+    height: 1em;
+}
+
 #preloader {
     display: flex;
     align-items: center;
@@ -90,6 +95,7 @@ input[type=number] {
     background: #323337;
     grid-area: header;
     border-bottom: 1px solid #777;
+    display: flex;
 }
 
 
@@ -97,6 +103,7 @@ input[type=number] {
     background: #323337;
     grid-area: footer;
     border-top: 1px solid #777;
+    display: flex;
 }
 
 
@@ -136,6 +143,9 @@ input[type=number] {
         color: white;
         font: inherit;
         border-radius: 0.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
         &:hover {
             background: #fff2;
@@ -374,5 +384,25 @@ input[type=number] {
     }
     &:active, &.active {
         background: #fff3;
+    }
+}
+
+#footer-stats {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+
+    & > div {
+        display: flex;
+        gap: 0.5ch;
+        align-items: center;
+        padding-inline: 0.6em;
+        margin-block: 0.3em;
+
+        &:not(:first-child) {
+            border-left: 1px solid #444;
+        }
     }
 }

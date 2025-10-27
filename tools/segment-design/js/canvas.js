@@ -68,8 +68,10 @@ function updateCanvas() {
 
 function drawGrid() 
 {
-    let gridInterval = 2;
+    let gridInterval = 2 ** Math.max(Math.floor(-Math.log2(gridZoom) + 5), 0);
     let gridIntervalMajor = gridInterval * 5;
+    if (!gridInterval) return;
+
     function getColor(pos) {
         if (pos == 0) return "#fffa";
         if (pos % gridIntervalMajor == 0) return "#fff3";

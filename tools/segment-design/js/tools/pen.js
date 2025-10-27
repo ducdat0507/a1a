@@ -149,6 +149,7 @@ tools.pen = class extends Tool {
             Math.round(e.offsetX / gridZoom + gridLeft),
             Math.round(e.offsetY / gridZoom + gridTop)
         )
+        setFooterStat("mousePos", "tabler:pointer", `${currentTool.mousePos.x} ${currentTool.mousePos.y}`);
         updateCanvas();
     }
 
