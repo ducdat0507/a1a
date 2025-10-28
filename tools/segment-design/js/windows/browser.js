@@ -35,7 +35,7 @@ windows.browser = class extends AppWindow {
         );
         
         this.actions = $make.div(".action-holder",
-            form.button("New Design"),
+            form.button("New Design", (e) => spawnWindow("new", e)),
             $make.span({style: "flex: 1"}),
             this.actionButtons[0] = form.buttonGroup(
                 ["Rename", (e) => this.renameDesign(this.selectedDesign, e)],
@@ -86,6 +86,7 @@ windows.browser = class extends AppWindow {
 
     openDesign(id) {
         setDesign(id);
+        events.emit("selection-update");
         this.window.$close.click();
     }
 

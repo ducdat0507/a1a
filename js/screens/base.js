@@ -37,7 +37,7 @@ screens.base = () => {
         let btn;
         machineBody.append(btn = controls.rect({
             ...args,
-            fill: "#1f1f1f",
+            fill: "#3f3f3f",
         }), id);
     
         btn.append(controls.rect({
@@ -97,12 +97,20 @@ screens.base = () => {
         size: Ex(160, 160, 0, 0),
         radius: 80,
     }, "exposure-plus-1", "arrow-down");
+    machineBody.$button.$pop.fill = "#777";
+    machineBody.$button.fill = "#444",
 
     pushyButtonTemplate("menuBtn", {
         position: Ex(120, 190, 0.5, 1),
         size: Ex(100, 100, 0, 0),
         radius: 50,
     }, "category", "arrow-right");
+
+    pushyButtonTemplate("milestoneBtn", {
+        position: Ex(-220, 190, 0.5, 1),
+        size: Ex(100, 100, 0, 0),
+        radius: 50,
+    }, "category", "arrow-left");
 
     // -------------------- Menu
     
@@ -126,9 +134,14 @@ screens.base = () => {
 
     let headerLerp = 0;
     function setButtonOffset(value) {
-        machineBody.$button.position.y = -180 - 20 * value - 50 * headerLerp;
-        machineBody.$menuBtn.position.x = 120 - 20 * value;
-        machineBody.$menuBtn.position.y = -150 + 250 * value - 50 * headerLerp;
+        machineBody.$button.position.y 
+            = -180 - 20 * value - 50 * headerLerp;
+        machineBody.$menuBtn.position.x 
+            = 120 - 20 * value;
+        machineBody.$milestoneBtn.position.x 
+            = - 220 +- 20 * value;
+        machineBody.$menuBtn.position.y = machineBody.$milestoneBtn.position.y 
+            = -150 + 250 * value - 50 * headerLerp;
 
         for (let btn of [machineBody.$button, machineBody.$menuBtn]) {
             btn.$pop.$icon.position.ey = 0.5 - value;
@@ -226,6 +239,47 @@ screens.base = () => {
         });
     }
 
+    // -------------------- Milestones
+    
+    {
+        let milestoneBtn = machineBody.$milestoneBtn.$pop;
+        milestoneBtn.$icon.scale = 32;
+        milestoneBtn.$icon.scale = 32;
+        milestoneBtn.$icon.append(controls.arc({
+            position: Ex(0, 0, 0.5, 0.5),
+            radius: 32,
+            thickness: 8,
+            stroke: "#0003",
+            progress: 1,
+        }), "progressHolder")
+        milestoneBtn.$icon.append(controls.arc({
+            position: Ex(0, 0, 0.5, 0.5),
+            radius: 32,
+            thickness: 8,
+            cap: "round",
+            stroke: "#999",
+        }), "progress")
+        milestoneBtn.$icon.append(controls.arc({
+            position: Ex(0, 0, 0.5, 0.5),
+            radius: 32,
+            thickness: 8,
+            progress: 0.0001,
+            cap: "round",
+            stroke: "#fff",
+        }), "progressTop")
+    }
+
+    function updateMilestoneButton() {
+        let milestoneBtn = machineBody.$milestoneBtn.$pop;
+        let next = Math.floor(gameData.number / 1000) + 1;
+        if (next % 100 == 0) milestoneBtn.$icon.icon = "hexagon-filled";
+        else if (next % 10 == 0) milestoneBtn.$icon.icon = "pentagon-filled";
+        else milestoneBtn.$icon.icon = "square-rotated-filled";
+        milestoneBtn.$icon.$progress.progress = gameData.number / 1000 % 1;
+    }
+
+    updateMilestoneButton();
+
     // -------------------- Intro
     
     isAnimating = true;
@@ -243,7 +297,8 @@ screens.base = () => {
             let value = ease.cubic.out(Math.min(t * 1.5, 1));
             machineBody.$button.position.y = 180 - 360 * value;
             let value2 = ease.cubic.out(t * 1.5 - .5);
-            machineBody.$menuBtn.position.y = 580 - 720 * value;
+            machineBody.$menuBtn.position.y = machineBody.$milestoneBtn.position.y 
+                = 580 - 720 * value;
         })
     }).then(() => {
         makePushyButton(machineBody.$button, machineBody.$button.$pop, {
@@ -253,6 +308,7 @@ screens.base = () => {
                     if (gameData.number % 1000 == 0) gameData.res.square += getSquareGain();
                     if (gameData.number % 10000 == 0) gameData.res.pent++;
                     if (gameData.number % 100000 == 0) gameData.res.hex++;
+                    updateMilestoneButton();
                     save();
                 }
             },
@@ -263,6 +319,11 @@ screens.base = () => {
         makePushyButton(machineBody.$menuBtn, machineBody.$menuBtn.$pop, {
             click() {
                 if (!menuHierarchy[0]) openMenu("main");
+            },
+        }, 8)
+        makePushyButton(machineBody.$milestoneBtn, machineBody.$milestoneBtn.$pop, {
+            click() {
+                callPopup("milestones");
             },
         }, 8)
         

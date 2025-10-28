@@ -38,7 +38,7 @@ function setupHeader() {
 
     $("#header nav").append(
         makeMenuBarItem("File", () => ([
-            ["New Design...",  {}, () => null],
+            ["New Design...",  {}, (e) => spawnWindow("new", e)],
             ["Design Browser...", {}, (e) => spawnWindow("browser", e)],
         ])),
         makeMenuBarItem("Edit", () => ([

@@ -291,6 +291,37 @@ let controls = {
             ...args
         }
     },
+    arc(args) {
+        return {
+            ...controls.base(),
+            stroke: "#ffff",
+            thickness: 4,
+            radius: 16,
+            progress: 0,
+            start: 0,
+            cap: "butt",
+            counterclockwise: false,
+
+            render() {
+                ctx.strokeStyle = this.stroke;
+                ctx.lineWidth = this.thickness * scale;
+                ctx.lineCap = this.cap;
+                
+                ctx.beginPath();
+                ctx.arc(
+                    this.rect.x + this.rect.width / 2,
+                    this.rect.y + this.rect.height / 2,
+                    this.radius * scale,
+                    Math.PI * 2 * (this.start - 0.25),
+                    Math.PI * 2 * (this.progress + this.start - 0.25),
+                    this.counterclockwise
+                );
+                ctx.stroke();
+            },
+
+            ...args
+        }
+    },
     icon(args) {
         return {
             ...controls.label(),
