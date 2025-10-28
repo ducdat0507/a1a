@@ -16,7 +16,7 @@ popups.prompt = {
                 wrap: true,
             }))
             popup.$body.append(box);
-        } else {
+        } else if (body) {
             popup.$body.append(body);
         }
 
