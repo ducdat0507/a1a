@@ -82,10 +82,11 @@ popups.milestones = {
             bar.$progress.size.y = lerp(0, -190, t);
             bar.$progress.size.ey = t;
             if (bar.$icon.$progressCircle) {
-                bar.$icon.$progressCircle.radius = 
-                bar.$icon.$progressCircle.$fill.radius = 
-                bar.$icon.$progressCircle.$top.radius = 
-                lerp(32, 200, t);
+                bar.$icon.$progressCircle.radius
+                    = bar.$icon.$progressCircle.$fill.radius
+                    = bar.$icon.$progressCircle.$top.radius
+                    = lerp(32, 124, t);
+                bar.$icon.$progressCircle.alpha = 1 - t;
             }
         }
         function lerpBarContent(bar, t) {
