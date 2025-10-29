@@ -52,6 +52,11 @@ let ease = {
     quart: makeEase(x => x ** 4),
     quint: makeEase(x => x ** 5),
     exp: makeEase(x => Math.pow(1e-4, 1 - x) - 1e-4 * (1 - x)),
-    elastic: makeEase(x => (x == 0 ? 0 : x == 1 ? 1 : Math.sin((x * 10 - 10.75) * (2 * Math.PI) / 3))),
+    elastic: makeEase(x => {
+        if (x == 0) return 0;
+        if (x == 1) return 1;
+        let t = Math.pow(1e-4, 1 - x) - 1e-4 * (1 - x);
+        return Math.sin((x * 10 - 10.75) * (2 * Math.PI) / 3) * t + t
+    }),
     back: makeEase(x => 2.70158 * x ** 3 - 1.70158 * x * x),
 }
