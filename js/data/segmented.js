@@ -296,8 +296,8 @@ data.machines.segmented = {
         body: Object.fromEntries((() => {
             let list = [];
 
-            let lumColorTable = [0.3, 0.45, 0.57, 0.71, 0.81, 0.9];
-            let lumMonoTable = [0.25, 0.4, 0.57, 0.71, 0.84, 0.98];
+            let lumColorTable = [30, 45, 56.99999999999999, 71, 81, 90];
+            let lumMonoTable = [25, 40, 56.99999999999999, 71, 84, 98];
             let hueTable = [0, 30, 75, 120, 165, 210, 255, 300, 345];
 
             for (let lum = 0; lum < lumColorTable.length; lum++) {
@@ -306,7 +306,7 @@ data.machines.segmented = {
                         `l${lum}c${chr}`,
                         {
                             worth: (lum == 0 && chr == 0) ? 0 : 1,
-                            background: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum]} ${chr ? 0.15 : 0} ${hueTable[chr]})`,
+                            background: `lch(${(chr ? lumColorTable : lumMonoTable)[lum]} ${chr ? 75 : 0} ${hueTable[chr]})`,
                             primary: lum < 3 ? "#fff" : "#000a",
                             secondary: lum < 3 ? "#fffa" : "#000a",
                         }
@@ -326,7 +326,7 @@ data.machines.segmented = {
                     {
                         worth: (chr == 0) ? 0 : 1,
                         background: "#000",
-                        primary: `oklch(${chr ? 0.95 : 1} ${chr ? 0.05 : 0} ${hueTable[chr]})`,
+                        primary: `lch(${chr ? 95 : 100} ${chr ? 25 : 0} ${hueTable[chr]})`,
                         glow: 1,
                     }
                 ])
@@ -336,8 +336,8 @@ data.machines.segmented = {
                     `l1c${chr}`,
                     {
                         worth: 1,
-                        background: `oklch(0.95 0 0)`,
-                        primary: `oklch(${chr ? 0.4 : 0.3} ${chr ? 0.1 : 0} ${hueTable[chr]})`,
+                        background: `lch(0.95 0 0)`,
+                        primary: `lch(${chr ? 40 : 30} ${chr ? 50 : 0} ${hueTable[chr]})`,
                         glow: 0,
                     }
                 ])
@@ -347,7 +347,7 @@ data.machines.segmented = {
                     `l2c${chr}`,
                     {
                         worth: 1,
-                        background: `oklch(${chr ? 0.95 : 0.9} ${chr ? 0.05 : 0} ${hueTable[chr]})`,
+                        background: `lch(${chr ? 95 : 90} ${chr ? 25 : 0} ${hueTable[chr]})`,
                         primary: "#000",
                         glow: 0,
                     }
@@ -359,8 +359,8 @@ data.machines.segmented = {
         button: Object.fromEntries((() => {
             let list = [];
 
-            let lumColorTable = [0.3, 0.45, 0.57, 0.71, 0.81, 0.9];
-            let lumMonoTable = [0.25, 0.4, 0.57, 0.73, 0.85, 1];
+            let lumColorTable = [30, 45, 57, 71, 81, 90];
+            let lumMonoTable = [25, 40, 57, 73, 85, 100];
             let hueTable = [0, 30, 75, 120, 165, 210, 255, 300, 345];
 
             for (let lum = 0; lum < lumColorTable.length - 1; lum++) {
@@ -369,8 +369,8 @@ data.machines.segmented = {
                         `l${lum}c${chr}`,
                         {
                             worth: (lum == 0 && chr == 0) ? 0 : 1,
-                            background: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum] - 0.02} ${chr ? 0.25 : 0} ${hueTable[chr]})`,
-                            popout: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum + 1]} ${chr ? 0.2 : 0} ${hueTable[chr]})`,
+                            background: `lch(${(chr ? lumColorTable : lumMonoTable)[lum] - 0.02} ${chr ? 75 : 0} ${hueTable[chr]})`,
+                            popout: `lch(${(chr ? lumColorTable : lumMonoTable)[lum + 1]} ${chr ? 50 : 0} ${hueTable[chr]})`,
                             primary: lum < 2 ? "#000" : "#000a",
                         }
                     ])
