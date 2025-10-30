@@ -293,10 +293,117 @@ data.machines.segmented = {
         },
     },
     colors: {
-        $composite: true,
+        body: Object.fromEntries((() => {
+            let list = [];
+
+            let lumColorTable = [0.3, 0.45, 0.57, 0.71, 0.81, 0.9];
+            let lumMonoTable = [0.25, 0.4, 0.57, 0.71, 0.84, 0.98];
+            let hueTable = [0, 30, 75, 120, 165, 210, 255, 300, 345];
+
+            for (let lum = 0; lum < lumColorTable.length; lum++) {
+                for (let chr = 0; chr < hueTable.length; chr++) {
+                    list.push([
+                        `l${lum}c${chr}`,
+                        {
+                            worth: (lum == 0 && chr == 0) ? 0 : 1,
+                            background: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum]} ${chr ? 0.15 : 0} ${hueTable[chr]})`,
+                            primary: lum < 3 ? "#fff" : "#000a",
+                            secondary: lum < 3 ? "#fffa" : "#000a",
+                        }
+                    ])
+                }
+            }
+            return list;
+        })()),
+        display: Object.fromEntries((() => {
+            let list = [];
+
+            let hueTable = [0, 30, 75, 120, 165, 210, 255, 300, 345];
+
+            for (let chr = 0; chr < hueTable.length; chr++) {
+                list.push([
+                    `l0c${chr}`,
+                    {
+                        worth: (chr == 0) ? 0 : 1,
+                        background: "#000",
+                        primary: `oklch(${chr ? 0.95 : 1} ${chr ? 0.05 : 0} ${hueTable[chr]})`,
+                        glow: 1,
+                    }
+                ])
+            }
+            for (let chr = 0; chr < hueTable.length; chr++) {
+                list.push([
+                    `l1c${chr}`,
+                    {
+                        worth: 1,
+                        background: `oklch(0.95 0 0)`,
+                        primary: `oklch(${chr ? 0.4 : 0.3} ${chr ? 0.1 : 0} ${hueTable[chr]})`,
+                        glow: 0,
+                    }
+                ])
+            }
+            for (let chr = 0; chr < hueTable.length; chr++) {
+                list.push([
+                    `l2c${chr}`,
+                    {
+                        worth: 1,
+                        background: `oklch(${chr ? 0.95 : 0.9} ${chr ? 0.05 : 0} ${hueTable[chr]})`,
+                        primary: "#000",
+                        glow: 0,
+                    }
+                ])
+            }
+
+            return list;
+        })()),
+        button: Object.fromEntries((() => {
+            let list = [];
+
+            let lumColorTable = [0.3, 0.45, 0.57, 0.71, 0.81, 0.9];
+            let lumMonoTable = [0.25, 0.4, 0.57, 0.73, 0.85, 1];
+            let hueTable = [0, 30, 75, 120, 165, 210, 255, 300, 345];
+
+            for (let lum = 0; lum < lumColorTable.length - 1; lum++) {
+                for (let chr = 0; chr < hueTable.length; chr++) {
+                    list.push([
+                        `l${lum}c${chr}`,
+                        {
+                            worth: (lum == 0 && chr == 0) ? 0 : 1,
+                            background: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum] - 0.02} ${chr ? 0.25 : 0} ${hueTable[chr]})`,
+                            popout: `oklch(${(chr ? lumColorTable : lumMonoTable)[lum + 1]} ${chr ? 0.2 : 0} ${hueTable[chr]})`,
+                            primary: lum < 2 ? "#000" : "#000a",
+                        }
+                    ])
+                }
+            }
+            return list;
+        })()),
     },
     specs: {
-        $composite: true,
+        contrast: Object.fromEntries(new Array(9).fill("").map((x, i) => [
+            i - 4,
+            {
+                worth: i == 4 ? 0 : 1,
+            }
+        ])),
+        switchFromTime: Object.fromEntries(new Array(9).fill("").map((x, i) => [
+            i - 4,
+            {
+                worth: i == 4 ? 0 : 1,
+            }
+        ])),
+        switchToTime: Object.fromEntries(new Array(9).fill("").map((x, i) => [
+            i - 4,
+            {
+                worth: i == 4 ? 0 : 1,
+            }
+        ])),
+        switchThreshold: Object.fromEntries(new Array(9).fill("").map((x, i) => [
+            i - 4,
+            {
+                worth: i == 4 ? 0 : 1,
+            }
+        ])),
     }
 }
 

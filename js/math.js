@@ -17,11 +17,11 @@ function getSquareGain() {
     for (let machine in gameData.unlocks) {
         let unlocks = gameData.unlocks[machine];
         let data = machines[machine];
-        for (let pref in unlocks.prefs) {
+        for (let pref in data.unlocks.prefs) {
             let prefItems = data.prefs[pref].items();
-            if (prefItems.$composite) {
-                for (let category in unlocks.prefs[pref]) {
-                    for (let item in unlocks.prefs[pref][category]) {
+            if (data.prefs[pref].categories) {
+                for (let category in data.prefs[pref].categories) {
+                    for (let item of unlocks.prefs[pref][category]) {
                         gain += prefItems[category][item].worth || 0;
                     }
                 }

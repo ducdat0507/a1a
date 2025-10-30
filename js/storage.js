@@ -17,7 +17,11 @@ function getStartGame() {
             {
                 type: "segmented",
                 prefs: {
-                    design: "basic7_1"
+                    design: "basic7_1",
+                    color: {
+                        body: "l0c0",
+                        display: "l0c0",
+                    }
                 }
             }
         ],
@@ -92,6 +96,7 @@ function deepCopy(target, source) {
         } else if (source[item] instanceof Set) {
             if (target[item]?.[Symbol.iterator]) {
                 target[item] = new Set(target[item]);
+                for (let newItem of source[item]) target[item].add(newItem);
             } else {
                 target[item] = source[item];
             }

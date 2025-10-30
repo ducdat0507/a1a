@@ -2,13 +2,12 @@ machines.segmented = {
     unlocks: {
         prefs: {
             design: new Set(["basic7_1", "basic7_2"]),
-            colors: {
-                body: new Set(),
-                display: new Set(),
-                button1st: new Set(),
-                button2nd: new Set(),
+            color: {
+                body: new Set(["l0c0"]),
+                display: new Set(["l0c0"]),
+                button: new Set(["l0c0"]),
             },
-            specs: {
+            spec: {
                 contrast: new Set([0]),
                 switchFromTime: new Set([0]),
                 switchToTime: new Set([0]),
@@ -24,7 +23,10 @@ machines.segmented = {
             items: () => data.machines.segmented.designs,
 
             gachaCost: [50, 2],
-            circleFactor: 1,
+            circleFactor: 2,
+
+            gachaItemsPerRow: 4,
+            gachaItemHeight: 160,
 
             makeItems(body, items) {
                 const itemsPerRow = 4;
@@ -124,30 +126,206 @@ machines.segmented = {
                 }
 
                 return button;
+            },
+
+            toGachaItem(id, item, unlocks) {
+                let unlocked = unlocks.has(id);
+                if (unlocked) {
+                    item.$status.fill = "#fff";
+                    item.$status.text = iconsets.tabler.charmap["circle-filled"].repeat(item.worth);
+                } else {
+                    item.$status.fill = "#9f5";
+                    item.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(item.worth);
+                }
+
+                return item;
             }
         },
-        colors: {
+        color: {
             name: "Colors",
             icon: "palette",
-            unlocked: () => gameData.unlocks.segmented.items.colors > 0,
+            unlocked: () => gameData.unlocks.segmented.items.designColor > 0,
             items: () => data.machines.segmented.colors,
 
-            gachaCost: [50, 1],
-            circleFactor: 1,
-            makeItems(body, items) {
-                // TODO implement this
+            categories: {
+                body: {
+                    title: "Body color",
+                },
+                display: {
+                    title: "Display color",
+                    unlocked: () => gameData.unlocks.segmented.items.designColor >= 2,
+                },
+                button: {
+                    title: "Button color",
+                    unlocked: () => gameData.unlocks.segmented.items.designColor >= 3,
+                    targets: {
+                        button1st: {
+                            title: "Main buttons",
+                        },
+                        button2nd: {
+                            title: "Sub buttons",
+                        }
+                    }
+                },
             },
-            makeItem(id, item) {
-                // TODO implement this
+
+            gachaCost: [30, 1],
+            circleFactor: 1,
+            gachaItemsPerRow: 8,
+            gachaItemHeight: 60,
+
+            makeItems(body, items) {
+                const itemsPerRow = 9;
+                const itemGap = 5;
+                const itemHeight = 55;
+
+                body.size.y -= 30;
+
+                for (const category in this.categories) {
+                    if (this.categories[category].unlocked && !this.categories[category].unlocked()) continue;
+                    let index = 0;
+
+                    body.append(controls.label({
+                        position: Ex(1, body.size.y + 50, 0, 0),
+                        scale: 32,
+                        style: "700",
+                        align: "left",
+                        text: this.categories[category].title,
+                    }));
+                    body.size.y += 80;
+
+                    let box, holder;
+                    body.append(box = controls.rect({
+                        position: Ex(0, body.size.y, 0, 0),
+                        size: Ex(0, 0, 1, 0),
+                        fill: "#2f2f2f",
+                        radius: 20,
+                    }));
+                    box.append(holder = controls.base({
+                        position: Ex(8, 8),
+                        size: Ex(-16, -16, 1, 1),
+                    }))
+
+                    let itemIds = Object.keys(items[category] ?? [])
+                    for (const id of itemIds) {
+                        let item = items[category][id];
+                        items[category][id].index = index;
+
+                        let button = this.makeItem(category, id, item);
+                        button.onClick = () => {
+                            getCurrentMachine().prefs.color[category] = id;
+                            body._updateStatus();
+                            machines.segmented.updateColors();
+                            save();
+                        }
+                        button.position = Ex(
+                            itemGap * (index % itemsPerRow) / itemsPerRow,
+                            Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
+                            (index % itemsPerRow) / itemsPerRow,
+                            0
+                        ),
+                        button.size = Ex(
+                            -itemGap * (itemsPerRow - 1) / itemsPerRow,
+                            itemHeight,
+                            1 / itemsPerRow,
+                            0,
+                        ),
+                        button._updateStatus();
+                        holder.append(button);
+                        
+                        index++;
+                    }
+                    
+                    let totalHeight = Math.ceil(index / itemsPerRow) * (itemHeight + itemGap) - itemGap;
+                    box.size.y = totalHeight + 16;
+                    body.size.y += totalHeight + 16;
+
+                    box._updateStatus = () => {
+                        for (let button of holder.controls) button._updateStatus();
+                    }
+                }
+
+                body._updateStatus = () => {
+                    for (let button of body.controls) if (button._updateStatus) button._updateStatus();
+                }
+            },
+            makeItem(category, id, item) {
+                console.log(id, item.background);
+                let button = controls.button({
+                    fill: item.background,
+                    radius: 15,
+                    mask: true,
+                });
+                if (item.popout) button.append(controls.rect({
+                    size: Ex(0, -5, 1, 1),
+                    radius: 15,
+                    fill: item.popout,
+                }), "popout");
+                button.append(controls.rect({
+                    position: Ex(2, 2),
+                    size: Ex(-4, -4, 1, 1),
+                    radius: 13,
+                    fill: "#000",
+                }), "bg");
+                button.append(controls.icon({
+                    position: Ex(0, 0, 0.5, 0.5),
+                    scale: 20,
+                    fill: item.primary,
+                }), "status");
+
+                button._updateStatus = () => {
+                    let unlocks = gameData.unlocks.segmented;
+                    let unlocked = unlocks.prefs.color[category].has(id);
+                    if (unlocked) {
+                        let equipped = getCurrentMachine().prefs.color[category] == id;
+                        button.clickthrough = equipped;
+                        button.$bg.alpha = 0;
+                        button.$status.fill = item.primary;
+                        button.$status.icon = equipped ? "check" : "square-rotated";
+                    } else {
+                        button.clickthrough = true;
+                        button.$bg.alpha = 0.9;
+                        button.$status.fill = "#9f53";
+                        button.$status.icon = "square-rotated-filled";
+                    }
+                }
+
+                return button;
+            },
+            toGachaItem(category, id, item, unlocks) {
+                let unlocked = unlocks.has(id);
+                item.$bg.alpha = 0;
+                if (unlocked) {
+                    item.$status.icon = "circle-filled";
+                } else {
+                    item.$status.icon = "square-rotated-filled";
+                }
+
+                return item;
             }
         },
-        specs: {
+        spec: {
             name: "Specifications",
             icon: "adjustments-alt",
-            unlocked: () => gameData.unlocks.segmented.items.specs > 0,
+            unlocked: () => gameData.unlocks.segmented.items.designSpec > 0,
             items: () => data.machines.segmented.specs,
 
-            gachaCost: [50, 1],
+            categories: {
+                contrast: {
+                    title: "",
+                },
+                switchFromTime: {
+                    title: "",
+                },
+                switchToTime: {
+                    title: "",
+                },
+                switchThreshold: {
+                    title: "",
+                },
+            },
+
+            gachaCost: [30, 1],
             circleFactor: 1,
             makeItems(body, items) {
                 // TODO implement this
@@ -163,7 +341,7 @@ machines.segmented = {
                 name: "Gain more " + iconsets.tabler.charmap["square-rotated"],
                 category: "Boosts",
                 icon: "square-rotated-filled",
-                effects: [0, 1, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30, 36, 42, 50, 60, 72],
+                effects: [0, 2, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30, 36, 42, 50, 60, 72],
                 effectDisplay(x) { return `+${this.effects[x]} / 1k`; },
                 costs: [1, 2, 4, 7, 10, 16, 25, 36, 50, 72, 100, 140, 200, 300, 500, 800],
                 costType: "circle",
@@ -221,12 +399,23 @@ machines.segmented = {
             size: Ex(0, 0, 0, 0),
             scale: 120,
             digits: 6,
-            fill: "#ffffff",
             design: data.machines.segmented.designs[machine.prefs.design]
         }), "value");
 
         body.setValue = (value) => {
             body.$value.value = gameData.number;
         }
+        
+        this.updateColors();
+    },
+    updateColors() {
+        let currentValues = Object.keys(data.machines.segmented.colors);
+        currentValues = currentValues.map(x => [x, data.machines.segmented.colors[x][getCurrentMachine().prefs.color[x]]]);
+        currentValues = Object.fromEntries(currentValues);
+        scene.$machine.fill = currentValues.body.background;
+        scene.$machine.$body.$label.fill = currentValues.body.secondary;
+        scene.$machine.$body.$valueBackground.fill = currentValues.display.background;
+        scene.$machine.$body.$value.fillMain = currentValues.display.primary;
+        scene.$machine.$body.$value.bloom = 0.1 * currentValues.display.glow;
     }
 }

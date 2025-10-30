@@ -444,7 +444,7 @@ let controls = {
             value: 0,
             scale: 16,
             digits: 0,
-            bloom: true,
+            bloom: 0.1,
 
             currentDigits: [],
             currentAlpha: [],
@@ -496,7 +496,7 @@ let controls = {
                             ctx.fillStyle = this.fillMain;
                             ctx.globalAlpha *= this.currentAlpha[a];
                             if (this.bloom) {
-                                ctx.shadowBlur = 0.1 * this.scale * scale * this.currentAlpha[a] ** 0.5;
+                                ctx.shadowBlur = +this.bloom * this.scale * scale * this.currentAlpha[a] ** 0.5;
                                 ctx.shadowColor = ctx.fillStyle;
                             }
                             ctx.fill(seg);

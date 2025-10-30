@@ -171,9 +171,15 @@ menus.customize = (openMenu, closeMenu) => {
                 onClick: () => {
                     if (gameData.res.square >= gachaCost) {
                         gameData.res.square -= gachaCost;
-                        doGachaAnimation(machInfo.type, view, currentViewScroller.$content, () => {
-                            updateResBox();
-                        })
+                        if (machData.prefs[view].categories) {
+                            doGachaAnimationWithCategories(machInfo.type, view, currentViewScroller.$content, () => {
+                                updateResBox();
+                            })
+                        } else {
+                            doGachaAnimation(machInfo.type, view, currentViewScroller.$content, () => {
+                                updateResBox();
+                            })
+                        }
                         save();
                         updateGachaButton();
                     }
