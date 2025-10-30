@@ -288,10 +288,16 @@ data.machines.segmented = {
                 6: [0, 1, 1, 1, 1, 0, 0, 0, 0],
                 7: [1, 1, 0, 0, 0, 0, 0, 1, 0],
                 8: [1, 1, 1, 1, 1, 1, 0, 0, 0],
-                9: [1, 1, 1, 1, 0, 1, 0, 0, 0],
+                9: [1, 1, 0, 0, 0, 1, 0, 1, 0],
             },
         },
     },
+    colors: {
+        $composite: true,
+    },
+    specs: {
+        $composite: true,
+    }
 }
 
 for (let id in data.machines.segmented.designs) {

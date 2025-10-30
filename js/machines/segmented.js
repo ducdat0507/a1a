@@ -2,6 +2,18 @@ machines.segmented = {
     unlocks: {
         prefs: {
             design: new Set(["basic7_1", "basic7_2"]),
+            colors: {
+                body: new Set(),
+                display: new Set(),
+                button1st: new Set(),
+                button2nd: new Set(),
+            },
+            specs: {
+                contrast: new Set([0]),
+                switchFromTime: new Set([0]),
+                switchToTime: new Set([0]),
+                switchThreshold: new Set([0]),
+            },
         },
         items: {},
     },
@@ -113,17 +125,78 @@ machines.segmented = {
 
                 return button;
             }
-        }
+        },
+        colors: {
+            name: "Colors",
+            icon: "palette",
+            unlocked: () => gameData.unlocks.segmented.items.colors > 0,
+            items: () => data.machines.segmented.colors,
+
+            gachaCost: [50, 1],
+            circleFactor: 1,
+            makeItems(body, items) {
+                // TODO implement this
+            },
+            makeItem(id, item) {
+                // TODO implement this
+            }
+        },
+        specs: {
+            name: "Specifications",
+            icon: "adjustments-alt",
+            unlocked: () => gameData.unlocks.segmented.items.specs > 0,
+            items: () => data.machines.segmented.specs,
+
+            gachaCost: [50, 1],
+            circleFactor: 1,
+            makeItems(body, items) {
+                // TODO implement this
+            },
+            makeItem(id, item) {
+                // TODO implement this
+            }
+        },
     },
     shop: {
         items: {
             squareBoost: {
                 name: "Gain more " + iconsets.tabler.charmap["square-rotated"],
+                category: "Boosts",
                 icon: "square-rotated-filled",
                 effects: [0, 1, 2, 3, 5, 7, 10, 13, 16, 20, 25, 30, 36, 42, 50, 60, 72],
                 effectDisplay(x) { return `+${this.effects[x]} / 1k`; },
                 costs: [1, 2, 4, 7, 10, 16, 25, 36, 50, 72, 100, 140, 200, 300, 500, 800],
                 costType: "circle",
+            },
+            designColor: {
+                name: "Unlock Colors",
+                category: "Customization",
+                icon: "palette",
+                effects: [
+                    "Unlock Body colors",
+                    "Unlock Display colors",
+                    "Unlock Button colors",
+                    "All colors unlocked!",
+                ],
+                effectDisplay(x) { return this.effects[x] },
+                effectType: "single",
+                costs: [2, 3, 3],
+                costType: "pent",
+            },
+            designSpec: {
+                name: "Unlock Specifications",
+                category: "Customization",
+                icon: "adjustments-alt",
+                effects: [
+                    "Unlock Display contrasts",
+                    "Unlock Display transition thresholds",
+                    "Unlock Display transition times",
+                    "All specifications unlocked!",
+                ],
+                effectDisplay(x) { return this.effects[x] },
+                effectType: "single",
+                costs: [1, 2, 2],
+                costType: "pent",
             },
         }
     },

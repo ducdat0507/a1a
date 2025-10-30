@@ -84,6 +84,7 @@ menus.customize = (openMenu, closeMenu) => {
     let machInfo = getCurrentMachine();
     for (let itemId in machines[machInfo.type].prefs) {
         let item = machines[machInfo.type].prefs[itemId];
+        if (item.unlocked && !item.unlocked()) continue;
         makeViewButton(item, () => setView(itemId));
     }
 

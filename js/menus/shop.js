@@ -50,7 +50,7 @@ menus.shop = (openMenu, closeMenu) => {
         let ctrl;
         scroller.$content.append(ctrl = controls.rect({
             position: Ex(0, scroller.$content.size.y),
-            size: Ex(0, 190, 1, 0),
+            size: Ex(0, data.effectDisplay ? 190 : 140, 1, 0),
             fill: "#2f2f2f",
             radius: 20
         }))
@@ -116,13 +116,14 @@ menus.shop = (openMenu, closeMenu) => {
         }), "icon")
 
         if (data.costs.length > 1) {
+            let tickSize = Math.min(80, 440 / (data.costs.length + 2) - 2);
             ctrl.append(controls.base({
-                position: Ex(-115, -22, 1, 1),
+                position: Ex(-95 - tickSize, -22, 1, 1),
             }), "ticks")
             for (let a = 0; a < data.costs.length; a++) {
                 ctrl.$ticks.prepend(controls.rect({
-                    position: Ex(-20 * a, -8, 0, 0),
-                    size: Ex(18, 10),
+                    position: Ex(-(tickSize + 2) * a, -8, 0, 0),
+                    size: Ex(tickSize, 10),
                     radius: 2,
                     fill: "#fff"
                 }), "ticks")
@@ -134,7 +135,12 @@ menus.shop = (openMenu, closeMenu) => {
             let cost = data.costs[amount];
             let canAfford = getCurrency(data.costType) >= cost;
             if (amount < data.costs.length) {
-                ctrl.$effect.text = data.effectDisplay(amount) + "  =>  " + data.effectDisplay(amount + 1);
+                ctrl.$effect.text = data.effectDisplay
+                    ? (
+                        data.effectType == "single"     
+                            ? data.effectDisplay(amount)
+                            : data.effectDisplay(amount) + "  =>  " + data.effectDisplay(amount + 1)
+                    ) : "";
                 ctrl.$buyBtn.alpha = canAfford ? 1 : 0.5;
                 ctrl.$buyBtn.clickthrough = !canAfford;
                 ctrl.$costLabel.text = formatFixed(cost);
@@ -150,12 +156,13 @@ menus.shop = (openMenu, closeMenu) => {
         }
         update();
 
-        scroller.$content.size.y += 200;
+        scroller.$content.size.y += ctrl.size.y + 10;
     }
 
     // Currency display
 
     let machine = getCurrentMachine();
+    
 
     let resBox = controls.rect({
         position: Ex(10, 30),
@@ -195,10 +202,24 @@ menus.shop = (openMenu, closeMenu) => {
     }
     updateResBox();
 
+    let currentCategory = "";
+    forms.beginForms(scroller);
     for (let item in machines[machine.type].shop?.items) 
     {
+        let data = machines[machine.type].shop.items[item];
+        if (currentCategory != data.category) {
+            forms.makeHeader(data.category);
+            currentCategory = data.category;
+        }
         makeShopButton(machine.type, item);
     }
+
+    scroller.$content.size.y += 40;
+    forms.makeHeader("Monetary support?");
+    let donate = forms.makeButton("donate button", () => open("https://liberapay.com/ducdat0507", "_blank"), "currency-dollar");
+    donate.fill = "#552";
+
+    forms.doneForms();
 
 
 
