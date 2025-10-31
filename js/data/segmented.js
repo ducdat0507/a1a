@@ -306,7 +306,7 @@ data.machines.segmented = {
                         `l${lum}c${chr}`,
                         {
                             worth: (lum == 0 && chr == 0) ? 0 : 1,
-                            background: `lch(${(chr ? lumColorTable : lumMonoTable)[lum]} ${chr ? 75 : 0} ${hueTable[chr]})`,
+                            background: lch((chr ? lumColorTable : lumMonoTable)[lum], chr ? 75 : 0, hueTable[chr]),
                             primary: lum < 3 ? "#fff" : "#000a",
                             secondary: lum < 3 ? "#fffa" : "#000a",
                         }
@@ -326,7 +326,7 @@ data.machines.segmented = {
                     {
                         worth: (chr == 0) ? 0 : 1,
                         background: "#000",
-                        primary: `lch(${chr ? 95 : 100} ${chr ? 25 : 0} ${hueTable[chr]})`,
+                        primary: lch(chr ? 95 : 100, chr ? 25 : 0, hueTable[chr]),
                         glow: 1,
                     }
                 ])
@@ -336,8 +336,8 @@ data.machines.segmented = {
                     `l1c${chr}`,
                     {
                         worth: 1,
-                        background: `lch(0.95 0 0)`,
-                        primary: `lch(${chr ? 40 : 30} ${chr ? 50 : 0} ${hueTable[chr]})`,
+                        background: lch(0.95, 0, 0),
+                        primary: lch(chr ? 40 : 30, chr ? 50 : 0, hueTable[chr]),
                         glow: 0,
                     }
                 ])
@@ -347,7 +347,7 @@ data.machines.segmented = {
                     `l2c${chr}`,
                     {
                         worth: 1,
-                        background: `lch(${chr ? 95 : 90} ${chr ? 25 : 0} ${hueTable[chr]})`,
+                        background: lch(chr ? 95 : 90, chr ? 25 : 0, hueTable[chr]),
                         primary: "#000",
                         glow: 0,
                     }
