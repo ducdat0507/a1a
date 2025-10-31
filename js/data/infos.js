@@ -16,15 +16,34 @@ let infos = {
             `(note that this amount may not be upgraded as the counter's main purpose is to`
             + ` keep track of how many times the "${icons["exposure-plus-1"]}" button is pressed.)`
         );
-        forms.makeText(
-            `Progression in A+1→A is handled through the various currencies which are granted when the counter reaches certain milestones.`
-        ).fill = "#fff";
 
         forms.makeHeader("Currencies");
         forms.makeText(
-            `${icons["square-rotated"]} is awarded every time the counter reaches a multiple of 1,000.`
+            `Progression in A+1→A is handled through the various currencies which are granted when the counter reaches certain milestones.`
+            + ` Here are some types of currencies available, their obtaining methods, and use cases:`
+        ).fill = "#fff";
+        forms.makeText(
+            `- ${icons["square-rotated"]} is awarded every time the counter reaches a multiple of 1,000.`
             + ` ${icons["square-rotated"]} is used to obtain cosmetics for your counter.`
         ).fill = "#fff";
+        if (gameData.number >= 1e4) {
+            forms.makeText(
+                `- ${icons["pentagon"]} is awarded every time the counter reaches a multiple of 10,000.`
+                + ` ${icons["pentagon"]} is used to purchase new machine mechanics.`
+            ).fill = "#fff";
+        }
+        if (gameData.number >= 1e5) {
+            forms.makeText(
+                `- ${icons["hexagon"]} is awarded every time the counter reaches a multiple of 100,000.`
+                + ` ${icons["hexagon"]} is used to unlock new machines.`
+            ).fill = "#fff";
+        }
+        if (Object.keys(gameData.res.circle).length) {
+            forms.makeText(
+                `- ${icons["circle"]} is awarded every time you obtain a duplicate cosmetic item.`
+                + ` ${icons["circle"]} is used to purchase additional boosts to your currency gains.`
+            ).fill = "#fff";
+        }
 
         forms.makeSpace(30);
         forms.registerDynamicFlow(0);
@@ -38,8 +57,45 @@ let infos = {
 
         forms.makeHeader("Obtaining");
         forms.makeText(
-            `Cosmetic items are obtaining by spending ${icons["square-rotated"]} for a random cosmetic of a specific category.`
+            `Cosmetic items can be obtained by spending ${icons["square-rotated"]} for a random cosmetic of a specific category.`
         ).fill = "#fff";
+
+        forms.makeHeader("Items");
+        forms.makeText(
+            `In addition to the cosmetic values, each cosmetic item gives bonus ${icons["square-rotated"]} rates based on its worth which is indicated by the number`
+            + ` of ${icons["square-rotated"]} or ${icons["square-rotated-filled"]} icons on the item card.`
+        ).fill = "#fff";
+        
+        forms.makeHeader("Roulette and " + icons["circle"]);
+        forms.makeText(
+            `Items that are worth more than others appears propotionally less often than their counterparts.`
+        ).fill = "#fff";
+        if (Object.keys(gameData.res.circle).length) {
+            forms.makeText(
+                `When the roulette lands on a cosmetic item you already have, it is converted to ${icons["circle"]} based on its worth.`
+                + ` Additionally, items from certain categories award more ${icons["circle"]} than others.`
+            ).fill = "#fff";
+        }
+
+
+        forms.makeSpace(30);
+        forms.registerDynamicFlow(0);
+    },
+    shop(scroller) {
+        let icons = iconsets.tabler.charmap;
+        forms.makeHeader("About");
+        forms.makeText(
+            `The "Shop" menu allows you to purchase upgrades of various uses.`
+        ).fill = "#fff";
+
+        forms.makeHeader("Purchasing");
+        forms.makeText(
+            `Shop upgrades can be bought by spending the currency displayed on the shop upgrade card.`
+        ).fill = "#fff";
+        forms.makeText(
+            `Upgrades can be bought either once or multiple times with differing costs and stronger effects for each purchase.`
+        ).fill = "#fff";
+
 
         forms.makeSpace(30);
         forms.registerDynamicFlow(0);

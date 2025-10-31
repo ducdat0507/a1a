@@ -46,7 +46,8 @@ menus.info = (openMenu, closeMenu) => {
     forms.makeHeader("Help");
     forms.makeButton("Basic", () => setView("help"), "chevron-right");
     forms.makeButton("Customization", () => setView("customize"), "chevron-right");
-    scroller.$content.size.y += 40;
+    forms.makeButton("Shop", () => setView("shop"), "chevron-right");
+    forms.makeHeader("Other informations");
     forms.makeButton("Credits & Acknowledgements", () => setView("credits"), "chevron-right");
 
     forms.doneForms();

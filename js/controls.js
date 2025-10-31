@@ -438,8 +438,8 @@ let controls = {
     counter(args) {
         return {
             ...controls.base(),
-            fillMain: "white",
-            fillSub: "#ffffff0c",
+            fill: "white",
+            contrastFactor: 0,
             align: 0.5,
             value: 0,
             scale: 16,
@@ -448,6 +448,10 @@ let controls = {
 
             currentDigits: [],
             currentAlpha: [],
+            spec: {
+                alphaOn: 1,
+                alphaOff: 0.08,
+            },
 
             render() {
                 let str = this.value.toFixed(0).padStart(this.digits);
@@ -484,27 +488,27 @@ let controls = {
                         offset + this.rect.x + this.rect.width / 2, 
                         this.rect.y - (this.design.height * unit  + this.rect.height) / 2
                     );
-
+                    
+                    let targetAlpha = ctx.globalAlpha;
                     for (let s in this.design.segments) {
                         let seg = this.design.segments[s];
-                        if (!this.design.digits[this.currentDigits[a]]?.[s] || this.currentAlpha[a] < 1) {
-                            ctx.fillStyle = this.fillSub;
-                            ctx.fill(seg);
-                        }
+                        let alpha = 0;
                         if (this.design.digits[this.currentDigits[a]]?.[s]) {
-                            let lastAlpha = ctx.globalAlpha;
-                            ctx.fillStyle = this.fillMain;
-                            ctx.globalAlpha *= this.currentAlpha[a];
-                            if (this.bloom) {
-                                ctx.shadowBlur = +this.bloom * this.scale * scale * this.currentAlpha[a] ** 0.5;
-                                ctx.shadowColor = ctx.fillStyle;
-                            }
-                            ctx.fill(seg);
-                            ctx.globalAlpha = lastAlpha;
-                            ctx.shadowBlur = 0;
-                            ctx.shadowColor = "";
+                            alpha = this.spec.alphaOn * this.currentAlpha[a] + this.spec.alphaOff;
+                        } else {
+                            alpha = this.spec.alphaOff;
                         }
+                        ctx.fillStyle = this.fill;
+                        ctx.globalAlpha = Math.min(Math.max(targetAlpha * alpha, 0), 1);
+                        if (this.bloom && alpha > 0.5) {
+                            ctx.shadowBlur = +this.bloom * this.scale * scale * (alpha * 2 - 1) ** 0.5;
+                            ctx.shadowColor = ctx.fillStyle;
+                        }
+                        ctx.fill(seg);
+                        ctx.shadowBlur = 0;
+                        ctx.shadowColor = "";
                     }
+                    ctx.globalAlpha = targetAlpha;
                     offset -= (this.design.width + this.design.charSpace) * unit;
                 }
 

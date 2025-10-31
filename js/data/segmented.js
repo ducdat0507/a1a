@@ -381,25 +381,27 @@ data.machines.segmented = {
     },
     specs: {
         contrast: Object.fromEntries(new Array(9).fill("").map((x, i) => [
-            i - 4,
+            ["", "~", "+"][Math.sign(i - 4) + 1] + (i - 4).toString(),
             {
                 worth: i == 4 ? 0 : 1,
+                alphaOn: Math.min(1.6 ** (i - 4), 1),
+                alphaOff: Math.min(0.08 * 1.4 ** (i - 4), 1),
             }
         ])),
         switchFromTime: Object.fromEntries(new Array(9).fill("").map((x, i) => [
-            i - 4,
+            ["", "~", "+"][Math.sign(i - 4) + 1] + (i - 4).toString(),
             {
                 worth: i == 4 ? 0 : 1,
             }
         ])),
         switchToTime: Object.fromEntries(new Array(9).fill("").map((x, i) => [
-            i - 4,
+            ["", "~", "+"][Math.sign(i - 4) + 1] + (i - 4).toString(),
             {
                 worth: i == 4 ? 0 : 1,
             }
         ])),
         switchThreshold: Object.fromEntries(new Array(9).fill("").map((x, i) => [
-            i - 4,
+            ["", "~", "+"][Math.sign(i - 4) + 1] + (i - 4).toString(),
             {
                 worth: i == 4 ? 0 : 1,
             }

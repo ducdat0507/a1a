@@ -23,12 +23,12 @@ function getSquareGain() {
             if (data.prefs[pref].categories) {
                 for (let category in data.prefs[pref].categories) {
                     for (let item of unlocks.prefs[pref][category]) {
-                        gain += prefItems[category][item].worth || 0;
+                        gain += prefItems[category][item]?.worth || 0;
                     }
                 }
             } else {
                 for (let item of unlocks.prefs[pref]) {
-                    gain += prefItems[item].worth || 0;
+                    gain += prefItems[item]?.worth || 0;
                 }
             }
         }

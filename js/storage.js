@@ -21,7 +21,13 @@ function getStartGame() {
                     color: {
                         body: "l0c0",
                         display: "l0c0",
-                    }
+                    },
+                    spec: {
+                        contrast: "~0",
+                        switchFromTime: "~0",
+                        switchToTime: "~0",
+                        switchThreshold: "~0",
+                    },
                 }
             }
         ],

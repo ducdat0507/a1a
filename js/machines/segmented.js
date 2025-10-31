@@ -8,10 +8,10 @@ machines.segmented = {
                 button: new Set(["l0c0"]),
             },
             spec: {
-                contrast: new Set([0]),
-                switchFromTime: new Set([0]),
-                switchToTime: new Set([0]),
-                switchThreshold: new Set([0]),
+                contrast: new Set(["~0"]),
+                switchFromTime: new Set(["~0"]),
+                switchToTime: new Set(["~0"]),
+                switchThreshold: new Set(["~0"]),
             },
         },
         items: {},
@@ -83,13 +83,12 @@ machines.segmented = {
                 button.append(controls.counter({
                     position: Ex(-15, 60, 1, 0),
                     scale: 80,
-                    fillSub: "#fff3",
                     design: item,
                     align: 0,
                     digits: 2,
                     value: item.index + 1,
                     bloom: false,
-                }));
+                }), "counter");
                 button.append(controls.rect({
                     position: Ex(0, -40, 0, 1),
                     size: Ex(0, 40, 1, 0),
@@ -99,9 +98,10 @@ machines.segmented = {
                     position: Ex(10, -20, 0, 1),
                     scale: 20,
                     align: "left",
-                    font: "tabler icons",
                     fill: "#0007",
                 }), "status");
+
+                button.$counter.spec.alphaOff = 0.2;
 
                 button._updateStatus = () => {
                     let unlocks = gameData.unlocks.segmented;
@@ -129,13 +129,14 @@ machines.segmented = {
             },
 
             toGachaItem(id, item, unlocks) {
+                let itemData = data.machines.segmented.designs[id];
                 let unlocked = unlocks.has(id);
                 if (unlocked) {
                     item.$status.fill = "#fff";
-                    item.$status.text = iconsets.tabler.charmap["circle-filled"].repeat(item.worth);
+                    item.$status.text = iconsets.tabler.charmap["circle-filled"].repeat(itemData.worth);
                 } else {
                     item.$status.fill = "#9f5";
-                    item.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(item.worth);
+                    item.$status.text = iconsets.tabler.charmap["square-rotated-filled"].repeat(itemData.worth);
                 }
 
                 return item;
@@ -269,7 +270,7 @@ machines.segmented = {
                 }), "bg");
                 button.append(controls.icon({
                     position: Ex(0, 0, 0.5, 0.5),
-                    scale: 20,
+                    scale: 24,
                     fill: item.primary,
                 }), "status");
 
@@ -312,26 +313,176 @@ machines.segmented = {
 
             categories: {
                 contrast: {
-                    title: "",
+                    title: "Lamp contrast",
+                    left: "Lighter",
+                    right: "Darker",
                 },
                 switchFromTime: {
-                    title: "",
+                    title: "Lamp switch off time",
+                    left: "Shorter",
+                    right: "Longer",
+                    unlocked: () => gameData.unlocks.segmented.items.designSpec >= 2,
                 },
                 switchToTime: {
-                    title: "",
+                    title: "Lamp switch on time",
+                    left: "Shorter",
+                    right: "Longer",
+                    unlocked: () => gameData.unlocks.segmented.items.designSpec >= 2,
                 },
                 switchThreshold: {
-                    title: "",
+                    title: "Lamp swtich threshold",
+                    left: "Lower",
+                    right: "Higher",
+                    unlocked: () => gameData.unlocks.segmented.items.designSpec >= 3,
                 },
             },
 
-            gachaCost: [30, 1],
-            circleFactor: 1,
+            gachaCost: [40, 1],
+            circleFactor: 2,
+            gachaItemsPerRow: 8,
+            gachaItemHeight: 60,
+
             makeItems(body, items) {
-                // TODO implement this
+                const itemsPerRow = 9;
+                const itemGap = 5;
+                const itemHeight = 55;
+
+                body.size.y -= 30;
+
+                for (const category in this.categories) {
+                    if (this.categories[category].unlocked && !this.categories[category].unlocked()) continue;
+                    let index = 0;
+
+                    body.append(controls.label({
+                        position: Ex(1, body.size.y + 50, 0, 0),
+                        scale: 32,
+                        style: "700",
+                        align: "left",
+                        text: this.categories[category].title,
+                    }));
+                    body.size.y += 80;
+                    body.append(controls.label({
+                        position: Ex(1, body.size.y + 7, 0, 0),
+                        scale: 24,
+                        fill: "#aaa",
+                        align: "left",
+                        text: this.categories[category].left,
+                    }));
+                    body.append(controls.label({
+                        position: Ex(-1, body.size.y + 7, 1, 0),
+                        scale: 24,
+                        fill: "#aaa",
+                        align: "right",
+                        text: this.categories[category].right,
+                    }));
+                    body.size.y += 30;
+
+                    let box, holder;
+                    body.append(box = controls.rect({
+                        position: Ex(0, body.size.y, 0, 0),
+                        size: Ex(0, 0, 1, 0),
+                        fill: "#2f2f2f",
+                        radius: 20,
+                    }));
+                    box.append(holder = controls.base({
+                        position: Ex(8, 8),
+                        size: Ex(-16, -16, 1, 1),
+                    }))
+
+                    let itemIds = Object.keys(items[category] ?? [])
+                    for (const id of itemIds) {
+                        let item = items[category][id];
+                        items[category][id].index = index;
+
+                        let button = this.makeItem(category, id, item);
+                        button.onClick = () => {
+                            getCurrentMachine().prefs.spec[category] = id;
+                            body._updateStatus();
+                            machines.segmented.updateSpecs();
+                            save();
+                        }
+                        button.position = Ex(
+                            itemGap * (index % itemsPerRow) / itemsPerRow,
+                            Math.floor(index / itemsPerRow) * (itemHeight + itemGap), 
+                            (index % itemsPerRow) / itemsPerRow,
+                            0
+                        ),
+                        button.size = Ex(
+                            -itemGap * (itemsPerRow - 1) / itemsPerRow,
+                            itemHeight,
+                            1 / itemsPerRow,
+                            0,
+                        ),
+                        button._updateStatus();
+                        holder.append(button);
+                        
+                        index++;
+                    }
+                    
+                    let totalHeight = Math.ceil(index / itemsPerRow) * (itemHeight + itemGap) - itemGap;
+                    box.size.y = totalHeight + 16;
+                    body.size.y += totalHeight + 16;
+
+                    box._updateStatus = () => {
+                        for (let button of holder.controls) button._updateStatus();
+                    }
+                }
+
+                body._updateStatus = () => {
+                    for (let button of body.controls) if (button._updateStatus) button._updateStatus();
+                }
             },
-            makeItem(id, item) {
-                // TODO implement this
+            makeItem(category, id, item) {
+                console.log(id, item.background);
+                let button = controls.button({
+                    fill: item.background,
+                    radius: 15,
+                    mask: true,
+                    fill: "#4f4f4f",
+                });
+                button.append(controls.rect({
+                    position: Ex(2, 2),
+                    size: Ex(-4, -4, 1, 1),
+                    radius: 13,
+                    fill: "#000",
+                }), "bg");
+                button.append(controls.label({
+                    position: Ex(0, 2, 0.5, 0.5),
+                    scale: 24,
+                    fill: "#fff",
+                    text: "1",
+                }), "status");
+
+                button._updateStatus = () => {
+                    let unlocks = gameData.unlocks.segmented;
+                    let unlocked = unlocks.prefs.spec[category].has(id);
+                    if (unlocked) {
+                        let equipped = getCurrentMachine().prefs.spec[category] == id;
+                        button.clickthrough = equipped;
+                        button.$bg.alpha = 0;
+                        button.$status.fill = "#fff";
+                        button.$status.text = equipped ? iconsets.tabler.charmap["check"] : id.replace(/^\~+/g, '');
+                    } else {
+                        button.clickthrough = true;
+                        button.$bg.alpha = 0.9;
+                        button.$status.fill = "#9f53";
+                        button.$status.text = iconsets.tabler.charmap["square-rotated-filled"];
+                    }
+                }
+
+                return button;
+            },
+            toGachaItem(category, id, item, unlocks) {
+                let unlocked = unlocks.has(id);
+                item.$bg.alpha = 0;
+                console.log(id, unlocked);
+                if (unlocked) {
+                    item.$status.text = iconsets.tabler.charmap["circle-filled"];
+                } else {
+                    item.$status.text = id.replace(/^\~+/g, '');
+                }
+
+                return item;
             }
         },
     },
@@ -407,6 +558,7 @@ machines.segmented = {
         }
         
         this.updateColors();
+        this.updateSpecs();
     },
     updateColors() {
         let currentValues = Object.keys(data.machines.segmented.colors);
@@ -415,7 +567,14 @@ machines.segmented = {
         scene.$machine.fill = currentValues.body.background;
         scene.$machine.$body.$label.fill = currentValues.body.secondary;
         scene.$machine.$body.$valueBackground.fill = currentValues.display.background;
-        scene.$machine.$body.$value.fillMain = currentValues.display.primary;
+        scene.$machine.$body.$value.fill = currentValues.display.primary;
         scene.$machine.$body.$value.bloom = 0.1 * currentValues.display.glow;
-    }
+    },
+    updateSpecs() {
+        let currentValues = Object.keys(data.machines.segmented.specs);
+        currentValues = currentValues.map(x => [x, data.machines.segmented.specs[x][getCurrentMachine().prefs.spec[x]]]);
+        currentValues = Object.fromEntries(currentValues);
+        scene.$machine.$body.$value.spec.alphaOn = currentValues.contrast.alphaOn;
+        scene.$machine.$body.$value.spec.alphaOff = currentValues.contrast.alphaOff;
+    },
 }
