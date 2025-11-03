@@ -121,13 +121,6 @@ function Vector2(x, y) {
  * @property {Vector2} [bezierP2]
  */
 
-/**
- * @typedef PathDesignNode
- * @property {Vector2} center
- * @property {Vector2} [bezierP1]
- * @property {Vector2} [bezierP2]
- */
-
 
 class SegmentWire {
     constructor(params) {
