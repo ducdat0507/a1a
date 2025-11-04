@@ -13,12 +13,36 @@ tools.cursor = class extends Tool {
         
         for (let item of activeObjects) {
             if (item instanceof PathDesignElement) {
+                let index = 0;
                 for (let node of item.nodes) {
                     this.gizmos.push({
                         type: "node-center",
                         target: node,
+                        index,
                         gridPos: node.center,
                     })
+                    if (node.bezierP1 || node.bezierP2) {
+                        let nextNode = item.nodes[(index + 1) % item.nodes.length]
+                        this.gizmos.push({
+                            type: "node-bezier-p1",
+                            target: node,
+                            index,
+                            gridPos: node.bezierP1 ?? Vector2(
+                                node.center.x + (nextNode.center.x - node.center.x) / 3,
+                                node.center.y + (nextNode.center.y - node.center.y) / 3
+                            ),
+                        })
+                        this.gizmos.push({
+                            type: "node-bezier-p2",
+                            target: node,
+                            index,
+                            gridPos: node.bezierP2 ?? Vector2(
+                                node.center.x + (nextNode.center.x - node.center.x) / 3 * 2,
+                                node.center.y + (nextNode.center.y - node.center.y) / 3 * 2
+                            ),
+                        })
+                    }
+                    index++;
                 }
             } else if (item == currentDesign) {
                 let base = Vector2(
@@ -139,6 +163,31 @@ tools.cursor = class extends Tool {
                         2 * gizmoScale,
                         2 * gizmoScale
                     );
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case "node-bezier-p1": case "node-bezier-p2":
+                    let known = gizmo.type.endsWith("1") ? gizmo.target.bezierP1 : gizmo.target.bezierP2
+                    ctx.fillStyle = known ? "red" : "gray";
+                    ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.moveTo(
+                        gizmo.canvasPos.x - 1.414 * gizmoScale,
+                        gizmo.canvasPos.y,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x,
+                        gizmo.canvasPos.y + 1.414 * gizmoScale,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x + 1.414 * gizmoScale,
+                        gizmo.canvasPos.y,
+                    );
+                    ctx.lineTo(
+                        gizmo.canvasPos.x,
+                        gizmo.canvasPos.y - 1.414 * gizmoScale,
+                    );
+                    ctx.closePath();
                     ctx.fill();
                     ctx.stroke();
                     break;
@@ -316,6 +365,14 @@ tools.cursor = class extends Tool {
                                 if (elm instanceof PathDesignElement) for (let node of elm.nodes) {
                                     node.center.x += offset.x;
                                     node.center.y += offset.y;
+                                    if (node.bezierP1) {
+                                        node.bezierP1.x += offset.x;
+                                        node.bezierP1.y += offset.y;
+                                    }
+                                    if (node.bezierP2) {
+                                        node.bezierP2.x += offset.x;
+                                        node.bezierP2.y += offset.y;
+                                    }
                                 }
                             }
                             oldPos = newPos;

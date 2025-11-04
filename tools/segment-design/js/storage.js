@@ -47,7 +47,8 @@ function load() {
         setDesign(currentData.currentDesign);
     } catch (e) {
         console.log(e);
-        currentDesign = newDesign();
+        currentData = newData();
+        setDesign(currentData.currentDesign);
     }
 }
 
