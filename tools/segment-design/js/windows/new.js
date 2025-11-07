@@ -94,14 +94,14 @@ windows.new = class extends AppWindow {
                 design.design.design.push(
                     new PathDesignElement({
                         nodes: [
-                            { center: Vector2(0, 8) },
-                            { center: Vector2(8, 0), bezierP1: Vector2(0, 4), bezierP2: Vector2(4, 0) },
-                            { center: Vector2(40, 0) },
-                            { center: Vector2(48, 8), bezierP1: Vector2(44, 0), bezierP2: Vector2(48, 4) },
-                            { center: Vector2(48, 112) },
-                            { center: Vector2(40, 120), bezierP1: Vector2(48, 116), bezierP2: Vector2(44, 120) },
-                            { center: Vector2(8, 120) },
-                            { center: Vector2(0, 112), bezierP1: Vector2(4, 120), bezierP2: Vector2(0, 116) },
+                            { center: Vector2(0, 8), bezierNext: Vector2(0, 4) },
+                            { center: Vector2(8, 0), bezierPrev: Vector2(4, 0) },
+                            { center: Vector2(40, 0), bezierNext: Vector2(44, 0) },
+                            { center: Vector2(48, 8), bezierPrev: Vector2(48, 4) },
+                            { center: Vector2(48, 112), bezierNext: Vector2(48, 116) },
+                            { center: Vector2(40, 120), bezierPrev: Vector2(44, 120) },
+                            { center: Vector2(8, 120), bezierNext: Vector2(4, 120) },
+                            { center: Vector2(0, 112), bezierPrev: Vector2(0, 116) },
                         ],
                         operation: DesignElementOperation.ADD,
                         mayClose: true,

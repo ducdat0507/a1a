@@ -55,11 +55,10 @@ class PathDesignElement extends DesignElement {
 
         for (let a = 1; a < this.nodes.length; a++) {
             let node = this.nodes[a];
-            if (node.bezierP1 || node.bezierP2) {
-                let beginNode = this.nodes[a - 1];
-                let endNode = this.nodes[a];
-                let p1 = node.bezierP1 ?? Vector2((beginNode.x * 2 + endNode.x) / 3, (beginNode.y * 2 + endNode.y) / 3);
-                let p2 = node.bezierP2 ?? Vector2((beginNode.x + endNode.x * 2) / 3, (beginNode.y + endNode.y * 2) / 3);
+            let prevNode = this.nodes[a - 1];
+            if (prevNode.bezierNext || node.bezierPrev) {
+                let p1 = prevNode.bezierNext ?? Vector2((prevNode.center.x * 2 + node.center.x) / 3, (prevNode.center.y * 2 + node.center.y) / 3);
+                let p2 = node.bezierPrev ?? Vector2((prevNode.center.x + node.center.x * 2) / 3, (prevNode.center.x + node.center.x * 2) / 3);
                 path.cubicTo(p1.x, p1.y, p2.x, p2.y, node.center.x, node.center.y);
             } else {
                 path.lineTo(node.center.x, node.center.y);
@@ -68,11 +67,10 @@ class PathDesignElement extends DesignElement {
 
         if (this.mayClose) {
             let node = this.nodes[0];
-            if (node.bezierP1 || node.bezierP2) {
-                let beginNode = this.nodes.at(-1);
-                let endNode = this.nodes[0];
-                let p1 = node.bezierP1 ?? Vector2((beginNode.x * 2 + endNode.x) / 3, (beginNode.y * 2 + endNode.y) / 3);
-                let p2 = node.bezierP2 ?? Vector2((beginNode.x + endNode.x * 2) / 3, (beginNode.y + endNode.y * 2) / 3);
+            let prevNode = this.nodes[this.nodes.length - 1];
+            if (prevNode.bezierNext || node.bezierPrev) {
+                let p1 = prevNode.bezierNext ?? Vector2((prevNode.center.x + node.center.x * 2) / 3, (prevNode.center.y + node.center.y * 2) / 3);
+                let p2 = node.bezierPrev ?? Vector2((prevNode.center.x + node.center.x * 2) / 3, (prevNode.center.x + node.center.x * 2) / 3);
                 path.cubicTo(p1.x, p1.y, p2.x, p2.y, node.center.x, node.center.y);
             } else {
                 path.close();
@@ -117,8 +115,8 @@ function Vector2(x, y) {
 /**
  * @typedef PathDesignNode
  * @property {Vector2} center
- * @property {Vector2} [bezierP1]
- * @property {Vector2} [bezierP2]
+ * @property {Vector2} [bezierNext]
+ * @property {Vector2} [bezierPrev]
  */
 
 

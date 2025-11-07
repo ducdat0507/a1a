@@ -15,33 +15,34 @@ tools.cursor = class extends Tool {
             if (item instanceof PathDesignElement) {
                 let index = 0;
                 for (let node of item.nodes) {
+                    if (node.bezierNext || node.bezierPrev || node.forceBezier) {
+                        let prevNode = item.nodes[(index + item.nodes.length - 1) % item.nodes.length]
+                        let nextNode = item.nodes[(index + 1) % item.nodes.length]
+                        this.gizmos.push({
+                            type: "node-bezier-next",
+                            target: node,
+                            index,
+                            gridPos: node.bezierNext ?? Vector2(
+                                node.center.x + (nextNode.center.x - node.center.x) / 3,
+                                node.center.y + (nextNode.center.y - node.center.y) / 3
+                            ),
+                        })
+                        this.gizmos.push({
+                            type: "node-bezier-prev",
+                            target: node,
+                            index,
+                            gridPos: node.bezierPrev ?? Vector2(
+                                node.center.x + (prevNode.center.x - node.center.x) / 3,
+                                node.center.y + (prevNode.center.y - node.center.y) / 3
+                            ),
+                        })
+                    }
                     this.gizmos.push({
                         type: "node-center",
                         target: node,
                         index,
                         gridPos: node.center,
                     })
-                    if (node.bezierP1 || node.bezierP2) {
-                        let nextNode = item.nodes[(index + 1) % item.nodes.length]
-                        this.gizmos.push({
-                            type: "node-bezier-p1",
-                            target: node,
-                            index,
-                            gridPos: node.bezierP1 ?? Vector2(
-                                node.center.x + (nextNode.center.x - node.center.x) / 3,
-                                node.center.y + (nextNode.center.y - node.center.y) / 3
-                            ),
-                        })
-                        this.gizmos.push({
-                            type: "node-bezier-p2",
-                            target: node,
-                            index,
-                            gridPos: node.bezierP2 ?? Vector2(
-                                node.center.x + (nextNode.center.x - node.center.x) / 3 * 2,
-                                node.center.y + (nextNode.center.y - node.center.y) / 3 * 2
-                            ),
-                        })
-                    }
                     index++;
                 }
             } else if (item == currentDesign) {
@@ -95,6 +96,31 @@ tools.cursor = class extends Tool {
         
         ctx.lineWidth = 2 * canvasScale;
 
+
+        // Draw lines
+        for (let gizmo of this.gizmos) {
+            switch (gizmo.type) {
+                case "node-bezier-next": case "node-bezier-prev":
+                    let known = gizmo.type.endsWith("next") ? gizmo.target.bezierNext : gizmo.target.bezierPrev
+                    ctx.fillStyle = known ? "red" : "gray";
+                    ctx.strokeStyle = "white";
+                    ctx.beginPath();
+                    ctx.moveTo(
+                        gizmo.canvasPos.x,
+                        gizmo.canvasPos.y,
+                    );
+                    ctx.lineTo(
+                        (gizmo.target.center.x - gridLeft) * gridZoom,
+                        (gizmo.target.center.y - gridTop) * gridZoom,
+                    );
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+        }
+     
+        // Draw nodes
         for (let gizmo of this.gizmos) {
             switch (gizmo.type) {
                 case "digit-width": case "char-space": case "sep-space":
@@ -166,8 +192,8 @@ tools.cursor = class extends Tool {
                     ctx.fill();
                     ctx.stroke();
                     break;
-                case "node-bezier-p1": case "node-bezier-p2":
-                    let known = gizmo.type.endsWith("1") ? gizmo.target.bezierP1 : gizmo.target.bezierP2
+                case "node-bezier-prev": case "node-bezier-next":
+                    let known = gizmo.type.endsWith("prev") ? gizmo.target.bezierPrev : gizmo.target.bezierNext
                     ctx.fillStyle = known ? "red" : "gray";
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
@@ -233,13 +259,15 @@ tools.cursor = class extends Tool {
      * @param {PointerEvent} e
      */
     onPointerDown(e) {
+        let gizmoScale = 1 / canvasScale;
+        let gizmoRange = 7 * canvasScale;
+
+        let hasDragged = false;
+
         // Primary button
         if (e.button == 0) {
             
             // Check for gizmo clicks
-            let gizmoScale = 1 / canvasScale;
-            let gizmoRange = 7 * canvasScale;
-
             for (let gizmo of this.gizmos) {
                 if (
                     (gizmo.canvasPos.x * gizmoScale - e.offsetX * canvasScale) ** 2 
@@ -290,10 +318,37 @@ tools.cursor = class extends Tool {
                                     newPos.x - gizmo.target.center.x,
                                     newPos.y - gizmo.target.center.y
                                 )
+                                if (offset.x || offset.y) hasDragged = true;
                                 gizmo.target.center.x += offset.x;
                                 gizmo.target.center.y += offset.y;
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
+                                if (!hasDragged && e.button == 2) {
+                                    gizmo.target.forceBezier = !gizmo.target.forceBezier;
+                                }
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                        case "node-bezier-prev": case "node-bezier-next":
+                            doCanvasMouseDrag(e, e2 => {
+                                let newPos = Vector2 (
+                                    Math.round(e2.offsetX / gridZoom + gridLeft),
+                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                )
+                                let offset = Vector2 (
+                                    newPos.x - gizmo.gridPos.x,
+                                    newPos.y - gizmo.gridPos.y
+                                )
+                                gizmo.gridPos.x += offset.x;
+                                gizmo.gridPos.y += offset.y;
+                                if (offset.x || offset.y) hasDragged = true;
+                                console.log(gizmo.gridPos)
+                                gizmo.type == "node-bezier-prev" ? (gizmo.target.bezierPrev = gizmo.gridPos) : (gizmo.target.bezierNext = gizmo.gridPos);
+                                events.emit("property-update", "cursor", -1);
+                            }, () => {
+                                if (!hasDragged && e.button == 2) {
+                                    gizmo.type == "node-bezier-prev" ? (delete gizmo.target.bezierPrev) : (delete gizmo.target.bezierNext);
+                                }
                                 events.emit("property-update", "cursor");
                             })
                             break;
@@ -365,13 +420,13 @@ tools.cursor = class extends Tool {
                                 if (elm instanceof PathDesignElement) for (let node of elm.nodes) {
                                     node.center.x += offset.x;
                                     node.center.y += offset.y;
-                                    if (node.bezierP1) {
-                                        node.bezierP1.x += offset.x;
-                                        node.bezierP1.y += offset.y;
+                                    if (node.bezierNext) {
+                                        node.bezierNext.x += offset.x;
+                                        node.bezierNext.y += offset.y;
                                     }
-                                    if (node.bezierP2) {
-                                        node.bezierP2.x += offset.x;
-                                        node.bezierP2.y += offset.y;
+                                    if (node.bezierPrev) {
+                                        node.bezierPrev.x += offset.x;
+                                        node.bezierPrev.y += offset.y;
                                     }
                                 }
                             }
@@ -395,6 +450,57 @@ tools.cursor = class extends Tool {
             if (activeObjects.size) {
                 activeObjects.clear();
                 events.emit("selection-update");
+            }
+        } else if (e.button == 2) {
+
+            // Check for gizmo clicks
+            for (let gizmo of this.gizmos) {
+                if (
+                    (gizmo.canvasPos.x * gizmoScale - e.offsetX * canvasScale) ** 2 
+                    + (gizmo.canvasPos.y * gizmoScale - e.offsetY * canvasScale) ** 2
+                    <= gizmoRange * gizmoRange
+                ) {
+                    switch (gizmo.type) {
+                        case "node-center":
+                            doCanvasMouseDrag(e, e2 => {
+                                let newPos = Vector2 (
+                                    Math.round(e2.offsetX / gridZoom + gridLeft),
+                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                )
+                                let offset = Vector2 (
+                                    newPos.x - gizmo.target.center.x,
+                                    newPos.y - gizmo.target.center.y
+                                )
+                                if (offset.x || offset.y) hasDragged = true;
+                            }, () => {
+                                if (!hasDragged) {
+                                    console.log("force bezier toggle");
+                                    gizmo.target.forceBezier = !gizmo.target.forceBezier;
+                                }
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                        case "node-bezier-prev": case "node-bezier-next":
+                            doCanvasMouseDrag(e, e2 => {
+                                let newPos = Vector2 (
+                                    Math.round(e2.offsetX / gridZoom + gridLeft),
+                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                )
+                                let offset = Vector2 (
+                                    newPos.x - gizmo.gridPos.x,
+                                    newPos.y - gizmo.gridPos.y
+                                )
+                                if (offset.x || offset.y) hasDragged = true;
+                            }, () => {
+                                if (!hasDragged) {
+                                    gizmo.type == "node-bezier-prev" ? (delete gizmo.target.bezierPrev) : (delete gizmo.target.bezierNext);
+                                }
+                                events.emit("property-update", "cursor");
+                            })
+                            break;
+                    }
+                    return;
+                }
             }
         }
     }
