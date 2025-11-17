@@ -8,6 +8,7 @@ let currentTool = null;
 function setupTools() {
     let tabs = $("#main-tool-strip");
     tabs.append(makeToolButton("cursor", $icon("tabler:pointer"), "Cursor"));
+    tabs.append(makeToolButton("toggle", $icon("tabler:switch"), "Toggle"));
 
     tabs.append($make.hr());
 
@@ -21,8 +22,10 @@ function setupTools() {
 function updateTools() {
     console.log(toolButtons);
     if (toolButtons.pen) {
-        toolButtons["pen"].style.display = currentPanes["pane-holder-top"] instanceof panes.design ? "" : "none";
-        toolButtons["wire"].style.display = currentPanes["pane-holder-top"] instanceof panes.lights ? "" : "none";
+        toolButtons["pen"].style.display 
+            = currentPanes["pane-holder-top"] instanceof panes.design ? "" : "none";
+        toolButtons["toggle"].style.display = toolButtons["wire"].style.display 
+            = currentPanes["pane-holder-top"] instanceof panes.lights ? "" : "none";
     }
 }
 
