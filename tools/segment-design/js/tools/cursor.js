@@ -184,8 +184,8 @@ tools.cursor = class extends Tool {
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
                     ctx.rect(
-                        Math.round(gizmo.canvasPos.x) - gizmoScale,
-                        Math.round(gizmo.canvasPos.y) - gizmoScale,
+                        snap(gizmo.canvasPos.x, gridSnap) - gizmoScale,
+                        snap(gizmo.canvasPos.y, gridSnap) - gizmoScale,
                         2 * gizmoScale,
                         2 * gizmoScale
                     );
@@ -222,8 +222,8 @@ tools.cursor = class extends Tool {
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         2 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -232,8 +232,8 @@ tools.cursor = class extends Tool {
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         1.5 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -243,8 +243,8 @@ tools.cursor = class extends Tool {
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         0.5 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -277,7 +277,7 @@ tools.cursor = class extends Tool {
                     switch (gizmo.type) {
                         case "digit-width":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.width = Math.round(e2.offsetX / gridZoom + gridLeft);
+                                currentDesign.spec.width = snap(e2.offsetX / gridZoom + gridLeft, gridSnap);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -285,7 +285,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "digit-height":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.height = Math.round(e2.offsetY / gridZoom + gridTop);
+                                currentDesign.spec.height = snap(e2.offsetY / gridZoom + gridTop, gridSnap);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -293,7 +293,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "char-space":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.charSpace = Math.round(e2.offsetX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                currentDesign.spec.charSpace = snap(e2.offsetX / gridZoom + gridLeft, gridSnap) - currentDesign.spec.width;
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
                                 events.emit("property-update", "cursor");
@@ -301,7 +301,7 @@ tools.cursor = class extends Tool {
                             break;
                         case "sep-space":
                             doCanvasMouseDrag(e, e2 => {
-                                currentDesign.spec.sepSpace = Math.round(e2.offsetX / gridZoom + gridLeft) - currentDesign.spec.width;
+                                currentDesign.spec.sepSpace = snap(e2.offsetX / gridZoom + gridLeft, gridSnap) - currentDesign.spec.width;
                                 currentDesign.spec.sepSpace = Math.max(currentDesign.spec.sepSpace, currentDesign.spec.charSpace);
                                 events.emit("property-update", "cursor", -1);
                             }, () => {
@@ -311,8 +311,8 @@ tools.cursor = class extends Tool {
                         case "node-center":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.offsetX / gridZoom + gridLeft),
-                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                    snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                    snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.target.center.x,
@@ -332,8 +332,8 @@ tools.cursor = class extends Tool {
                         case "node-bezier-prev": case "node-bezier-next":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.offsetX / gridZoom + gridLeft),
-                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                    snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                    snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.gridPos.x,
@@ -355,8 +355,8 @@ tools.cursor = class extends Tool {
                         case "wire":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.offsetX / gridZoom + gridLeft),
-                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                    snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                    snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.target.position.x,
@@ -404,13 +404,13 @@ tools.cursor = class extends Tool {
                         activeObjects.add(elm);
                         
                         let oldPos = Vector2 (
-                            Math.round(e.offsetX / gridZoom + gridLeft),
-                            Math.round(e.offsetY / gridZoom + gridTop)
+                            snap(e.offsetX / gridZoom + gridLeft, gridSnap),
+                            snap(e.offsetY / gridZoom + gridTop, gridSnap)
                         )
                         doCanvasMouseDrag(e, e2 => {
                             let newPos = Vector2 (
-                                Math.round(e2.offsetX / gridZoom + gridLeft),
-                                Math.round(e2.offsetY / gridZoom + gridTop)
+                                snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                             )
                             let offset = Vector2 (
                                 newPos.x - oldPos.x,
@@ -464,8 +464,8 @@ tools.cursor = class extends Tool {
                         case "node-center":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.offsetX / gridZoom + gridLeft),
-                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                    snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                    snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.target.center.x,
@@ -483,8 +483,8 @@ tools.cursor = class extends Tool {
                         case "node-bezier-prev": case "node-bezier-next":
                             doCanvasMouseDrag(e, e2 => {
                                 let newPos = Vector2 (
-                                    Math.round(e2.offsetX / gridZoom + gridLeft),
-                                    Math.round(e2.offsetY / gridZoom + gridTop)
+                                    snap(e2.offsetX / gridZoom + gridLeft, gridSnap),
+                                    snap(e2.offsetY / gridZoom + gridTop, gridSnap)
                                 )
                                 let offset = Vector2 (
                                     newPos.x - gizmo.gridPos.x,
@@ -510,8 +510,8 @@ tools.cursor = class extends Tool {
      */
     onPointerMove(e) {
         currentTool.mousePos = Vector2(
-            Math.round(e.offsetX / gridZoom + gridLeft),
-            Math.round(e.offsetY / gridZoom + gridTop)
+            snap(e.offsetX / gridZoom + gridLeft, gridSnap),
+            snap(e.offsetY / gridZoom + gridTop, gridSnap)
         )
         setFooterStat("mousePos", "tabler:pointer", `${currentTool.mousePos.x} ${currentTool.mousePos.y}`);
         updateCanvas();

@@ -3,6 +3,16 @@ function guid() {
 }
 
 /**
+ * 
+ * @param {number} value 
+ * @param {number} interval 
+ * @returns {number}
+ */
+function snap(value, interval) {
+    return Math.round(value / interval) * interval;
+}
+
+/**
  * @param {string} str 
  * @param {number} digits 
  * @returns 

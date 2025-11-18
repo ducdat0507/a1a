@@ -46,8 +46,8 @@ tools.toggle = class extends Tool {
                     ctx.strokeStyle = "white";
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         2 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -56,8 +56,8 @@ tools.toggle = class extends Tool {
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         1.5 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -67,8 +67,8 @@ tools.toggle = class extends Tool {
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                        Math.round(gizmo.canvasPos.x),
-                        Math.round(gizmo.canvasPos.y),
+                        snap(gizmo.canvasPos.x, gridSnap),
+                        snap(gizmo.canvasPos.y, gridSnap),
                         0.5 * gizmoScale,
                         0,
                         Math.PI * 2
@@ -112,8 +112,8 @@ tools.toggle = class extends Tool {
      */
     onPointerMove(e) {
         currentTool.mousePos = Vector2(
-            Math.round(e.offsetX / gridZoom + gridLeft),
-            Math.round(e.offsetY / gridZoom + gridTop)
+            snap(e.offsetX / gridZoom + gridLeft, gridSnap),
+            snap(e.offsetY / gridZoom + gridTop, gridSnap)
         )
         setFooterStat("mousePos", "tabler:pointer", `${currentTool.mousePos.x} ${currentTool.mousePos.y}`);
         updateCanvas();

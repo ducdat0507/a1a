@@ -1,6 +1,6 @@
 let canvasScale = 1, canvasWidth = 0, canvasHeight = 0;
 
-let gridLeft = -12.5, gridTop = -12.5, gridZoom = 10;
+let gridLeft = -12.5, gridTop = -12.5, gridZoom = 10, gridSnap = 1;
 let previewNumber = 0;
 
 function setupCanvas() {

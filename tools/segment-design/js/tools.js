@@ -15,6 +15,8 @@ function setupTools() {
     tabs.append(makeToolButton("pen", $icon("tabler:ballpen"), "Pen"));
     tabs.append(makeToolButton("wire", $icon("lucide:lightbulb"), "Light"));
 
+    let options = $("#options-tool-strip");
+
     setTool("cursor");
     updateTools();
 }

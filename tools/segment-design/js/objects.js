@@ -1,5 +1,7 @@
 /** @type {Set<Object>} */
 let activeObjects = new Set();
+/** @type {Set<Object>} */
+let clipboardObjects = new Set();
 
 /** @abstract */
 class DesignElement {
