@@ -49,6 +49,12 @@ function setupHeader() {
             ["Undo",   { icon: "lucide:undo",      shortcut: "Ctrl+Z", },  () => null],
             ["Redo",   { icon: "lucide:redo",      shortcut: "Ctrl+Y", },  () => null],
             null,
+            ["Object", {}, [
+                ["Move to Front", {}, () => null],
+                ["Move Forwards Once", {}, () => null],
+                ["Move Backwards Once", {}, () => null],
+                ["Move to Back", {}, () => null],
+            ]],
             ["Path", {}, [
                 ["Object to Path", {}, () => null],
                 ["Stroke to Path", {}, () => null],

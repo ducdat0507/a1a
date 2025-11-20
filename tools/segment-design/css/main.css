@@ -260,8 +260,12 @@ iconify-icon {
     }
 }
 
+.tooltip {
+    z-index: 1;
+}
 .tooltip.hidden {
     transition: none !important;
+    z-index: 0;
 }
 .tooltip > div {
     background: #444c;
@@ -351,6 +355,7 @@ iconify-icon {
     text-align: start;
     display: flex;
     align-items: center;
+    white-space: nowrap;
 
     & > span {
         display: block;
