@@ -50,10 +50,10 @@ function setupHeader() {
             ["Redo",   { icon: "lucide:redo",      shortcut: "Ctrl+Y", },  () => null],
             null,
             ["Object", {}, [
-                ["Move to Front", {}, () => null],
-                ["Move Forwards Once", {}, () => null],
-                ["Move Backwards Once", {}, () => null],
-                ["Move to Back", {}, () => null],
+                ["Move to Front",       {}, () => moveSelectedItems(Infinity)  ],
+                ["Move Forwards Once",  {}, () => moveSelectedItems(1)         ],
+                ["Move Backwards Once", {}, () => moveSelectedItems(-1)        ],
+                ["Move to Back",        {}, () => moveSelectedItems(-Infinity) ],
             ]],
             ["Path", {}, [
                 ["Object to Path", {}, () => null],

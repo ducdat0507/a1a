@@ -34,3 +34,17 @@ function moveItems(array, items, amount) {
 
     return array;
 }
+
+function moveSelectedItems(amount) {
+    if (activeObjects.size == 0) return;
+    let first = activeObjects.values().next().value;
+    let array = getParentArray(first);
+    moveItems(array, activeObjects, amount);
+    events.emit("selection-update");
+}
+
+function getParentArray(item) {
+    if (item instanceof DesignElement) return currentDesign.design;
+    if (item instanceof SegmentWire) return currentDesign.wires;
+    return null;
+}
