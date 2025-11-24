@@ -344,6 +344,7 @@ data.machines.segmented = {
             },
         },
         fancy21_1: {
+            worth: 3,
             width: 48,
             height: 120,
             charSpace: 10,
